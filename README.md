@@ -1,7 +1,7 @@
 # yuque
 我的语雀备份
 
-# visit
+# visit site
 http://doc.tannn.cn/
 
 # init
