@@ -13,18 +13,18 @@ extMath: true
 ---
 
 # 基础配置
+
 | 属性 | 说明 | 备注 |
 | --- | --- | --- |
 | <font style="color:#080808;background-color:#ffffff;">jdevelops.jdbc.base-package</font> | <font style="color:#080808;background-color:#ffffff;">扫描被标记{@link cn.tannn.jdevelops.annotations.jdbctemplate.JdbcTemplate}的字段，为其生成代理,作用范围为spring bean, 具体请看{@link cn.tannn.jdevelops.jdectemplate.util.AnnotationScanner#scanPackages}</font> | <font style="color:#080808;background-color:#ffffff;">必须填写，要不然代理不生效</font> |
-| | | |
 
 
 # 注解
 ## 主注解
+
 | 注解 | 作用范围 | 使用场景 | 备注 |
 | --- | --- | --- | --- |
 | @JdbcTemplate | 接口字段上 | <font style="color:#080808;background-color:#ffffff;">用于配合 查询 删除 更新 新增 注解</font> | <font style="color:#080808;background-color:#ffffff;">动态代理标记位</font> |
-| | | | |
 
 
 ## 配合注解
@@ -38,7 +38,6 @@ extMath: true
 | 注解 | 作用范围 | 使用场景 | 参数 |
 | --- | --- | --- | --- |
 | @<font style="color:#080808;background-color:#ffffff;">Query</font> | 接口方法 | <font style="color:#080808;background-color:#ffffff;">查询注解</font> | <font style="color:#080808;background-color:#ffffff;">value： 构建sql语句</font> |
-| | | | |
 
 
 ```java
