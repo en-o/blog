@@ -1,7 +1,7 @@
 title: 我的个人主页
 description: 个人主页 & 知识库
 baseurl: ""
-url: "https://github.com/en-o/blog"
+url: https://github.com/en-o/blog
 
 # 集合配置
 collections:
@@ -13,11 +13,9 @@ collections:
 defaults:
   - scope:
       path: ""
-      type: "docs"
+      type: docs
     values:
-      layout: "doc"
-
-# 插件
+      layout: doc
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
