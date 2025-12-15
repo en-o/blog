@@ -264,96 +264,229 @@ document.getElementById('docForm').addEventListener('submit', async (e) => {
 
 // ============= 数据管理 =============
 
+let linksData = [];
+let thoughtsData = [];
+let editingLinkIndex = -1;
+let editingThoughtIndex = -1;
+
 async function loadDataManagement() {
   await loadLinks();
   await loadThoughts();
 }
 
-// 加载友链
+// 友链管理
 async function loadLinks() {
   try {
     const res = await fetch(`${API_BASE}/data/links`);
     const { data } = await res.json();
-
-    const html = `
-      <div id="linksEditor">
-        <textarea id="linksData" style="width:100%; min-height:300px; font-family: monospace;">${JSON.stringify(data, null, 2)}</textarea>
-        <br><br>
-        <button class="btn btn-primary" onclick="saveLinks()">保存友链</button>
-        <small style="display:block; margin-top:10px; color:#999;">编辑 JSON 格式的友链数据</small>
-      </div>
-    `;
-
-    document.getElementById('linksManagement').innerHTML = html;
+    linksData = data || [];
+    renderLinksList();
   } catch (error) {
     showAlert('error', '加载友链失败: ' + error.message);
   }
 }
 
-// 保存友链
-async function saveLinks() {
-  try {
-    const data = JSON.parse(document.getElementById('linksData').value);
+function renderLinksList() {
+  const html = linksData.map((link, index) => `
+    <div class="list-item">
+      <div>
+        <div class="list-item-title">${link.name}</div>
+        <div class="list-item-meta">${link.url}</div>
+        <div class="list-item-meta">${link.description}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-sm btn-primary" onclick="editLink(${index})">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteLink(${index})">删除</button>
+      </div>
+    </div>
+  `).join('');
 
+  document.getElementById('linksList').innerHTML = html || '<p style="color:#999;">暂无友链</p>';
+}
+
+function editLink(index) {
+  const link = linksData[index];
+  document.getElementById('linkName').value = link.name || '';
+  document.getElementById('linkUrl').value = link.url || '';
+  document.getElementById('linkDesc').value = link.description || '';
+  document.getElementById('linkAvatar').value = link.avatar || '';
+
+  editingLinkIndex = index;
+
+  // 修改按钮文本
+  const submitBtn = document.querySelector('#linkForm button[type="submit"]');
+  submitBtn.textContent = '更新友链';
+  submitBtn.className = 'btn btn-success';
+
+  document.getElementById('linkForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteLink(index) {
+  if (!confirm('确定要删除这个友链吗？')) return;
+
+  linksData.splice(index, 1);
+  saveLinksData();
+}
+
+function resetLinkForm() {
+  document.getElementById('linkForm').reset();
+  editingLinkIndex = -1;
+
+  const submitBtn = document.querySelector('#linkForm button[type="submit"]');
+  submitBtn.textContent = '添加友链';
+  submitBtn.className = 'btn btn-primary';
+}
+
+document.getElementById('linkForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const link = {
+    name: document.getElementById('linkName').value,
+    url: document.getElementById('linkUrl').value,
+    description: document.getElementById('linkDesc').value,
+    avatar: document.getElementById('linkAvatar').value || 'https://via.placeholder.com/60'
+  };
+
+  if (editingLinkIndex >= 0) {
+    // 更新
+    linksData[editingLinkIndex] = link;
+  } else {
+    // 添加
+    linksData.push(link);
+  }
+
+  await saveLinksData();
+  resetLinkForm();
+});
+
+async function saveLinksData() {
+  try {
     const res = await fetch(`${API_BASE}/data/links`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(linksData)
     });
 
     const result = await res.json();
 
     if (result.success) {
       showAlert('success', '友链保存成功');
+      renderLinksList();
     } else {
       showAlert('error', result.error);
     }
   } catch (error) {
-    showAlert('error', 'JSON 格式错误或保存失败: ' + error.message);
+    showAlert('error', '保存失败: ' + error.message);
   }
 }
 
-// 加载碎碎念
+// 碎碎念管理
 async function loadThoughts() {
   try {
     const res = await fetch(`${API_BASE}/data/thoughts`);
     const { data } = await res.json();
-
-    const html = `
-      <div id="thoughtsEditor">
-        <textarea id="thoughtsData" style="width:100%; min-height:300px; font-family: monospace;">${JSON.stringify(data, null, 2)}</textarea>
-        <br><br>
-        <button class="btn btn-primary" onclick="saveThoughts()">保存碎碎念</button>
-        <small style="display:block; margin-top:10px; color:#999;">编辑 JSON 格式的碎碎念数据</small>
-      </div>
-    `;
-
-    document.getElementById('thoughtsManagement').innerHTML = html;
+    thoughtsData = data || [];
+    renderThoughtsList();
   } catch (error) {
     showAlert('error', '加载碎碎念失败: ' + error.message);
   }
 }
 
-// 保存碎碎念
-async function saveThoughts() {
-  try {
-    const data = JSON.parse(document.getElementById('thoughtsData').value);
+function renderThoughtsList() {
+  const html = thoughtsData.map((thought, index) => `
+    <div class="list-item">
+      <div>
+        <div class="list-item-title">${thought.content}</div>
+        <div class="list-item-meta">
+          ${thought.date}
+          ${thought.tags ? ' | ' + thought.tags.join(', ') : ''}
+        </div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-sm btn-primary" onclick="editThought(${index})">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteThought(${index})">删除</button>
+      </div>
+    </div>
+  `).join('');
 
+  document.getElementById('thoughtsList').innerHTML = html || '<p style="color:#999;">暂无碎碎念</p>';
+}
+
+function editThought(index) {
+  const thought = thoughtsData[index];
+  document.getElementById('thoughtDate').value = thought.date || new Date().toISOString().split('T')[0];
+  document.getElementById('thoughtContent').value = thought.content || '';
+  document.getElementById('thoughtTags').value = (thought.tags || []).join(', ');
+
+  editingThoughtIndex = index;
+
+  // 修改按钮文本
+  const submitBtn = document.querySelector('#thoughtForm button[type="submit"]');
+  submitBtn.textContent = '更新碎碎念';
+  submitBtn.className = 'btn btn-success';
+
+  document.getElementById('thoughtForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteThought(index) {
+  if (!confirm('确定要删除这条碎碎念吗？')) return;
+
+  thoughtsData.splice(index, 1);
+  saveThoughtsData();
+}
+
+function resetThoughtForm() {
+  document.getElementById('thoughtForm').reset();
+  document.getElementById('thoughtDate').value = new Date().toISOString().split('T')[0];
+  editingThoughtIndex = -1;
+
+  const submitBtn = document.querySelector('#thoughtForm button[type="submit"]');
+  submitBtn.textContent = '添加碎碎念';
+  submitBtn.className = 'btn btn-primary';
+}
+
+document.getElementById('thoughtForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const thought = {
+    date: document.getElementById('thoughtDate').value,
+    content: document.getElementById('thoughtContent').value,
+    tags: document.getElementById('thoughtTags').value
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean)
+  };
+
+  if (editingThoughtIndex >= 0) {
+    // 更新
+    thoughtsData[editingThoughtIndex] = thought;
+  } else {
+    // 添加到开头（最新的在前面）
+    thoughtsData.unshift(thought);
+  }
+
+  await saveThoughtsData();
+  resetThoughtForm();
+});
+
+async function saveThoughtsData() {
+  try {
     const res = await fetch(`${API_BASE}/data/thoughts`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(thoughtsData)
     });
 
     const result = await res.json();
 
     if (result.success) {
       showAlert('success', '碎碎念保存成功');
+      renderThoughtsList();
     } else {
       showAlert('error', result.error);
     }
   } catch (error) {
-    showAlert('error', 'JSON 格式错误或保存失败: ' + error.message);
+    showAlert('error', '保存失败: ' + error.message);
   }
 }
 
@@ -461,4 +594,5 @@ function showAlert(type, message) {
 
 // 初始化
 document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
+document.getElementById('thoughtDate').value = new Date().toISOString().split('T')[0];
 loadPages();

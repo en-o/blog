@@ -376,12 +376,48 @@
     <div id="data" class="tab-content">
       <div class="card">
         <h2>友链管理</h2>
-        <div id="linksManagement"></div>
+        <form id="linkForm" style="margin-bottom: 30px;">
+          <div class="form-group">
+            <label>名称 *</label>
+            <input type="text" id="linkName" placeholder="朋友的名字或网站名" required>
+          </div>
+          <div class="form-group">
+            <label>链接 *</label>
+            <input type="url" id="linkUrl" placeholder="https://example.com" required>
+          </div>
+          <div class="form-group">
+            <label>描述 *</label>
+            <input type="text" id="linkDesc" placeholder="一句话介绍" required>
+          </div>
+          <div class="form-group">
+            <label>头像链接</label>
+            <input type="url" id="linkAvatar" placeholder="https://example.com/avatar.jpg">
+          </div>
+          <button type="submit" class="btn btn-primary">添加友链</button>
+          <button type="button" class="btn btn-secondary" onclick="resetLinkForm()">重置</button>
+        </form>
+        <div id="linksList"></div>
       </div>
 
       <div class="card">
         <h2>碎碎念管理</h2>
-        <div id="thoughtsManagement"></div>
+        <form id="thoughtForm" style="margin-bottom: 30px;">
+          <div class="form-group">
+            <label>日期 *</label>
+            <input type="date" id="thoughtDate" required>
+          </div>
+          <div class="form-group">
+            <label>内容 *</label>
+            <textarea id="thoughtContent" placeholder="记录今天的想法..." rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>标签</label>
+            <input type="text" id="thoughtTags" placeholder="多个标签用逗号分隔，如: 生活, 思考">
+          </div>
+          <button type="submit" class="btn btn-primary">添加碎碎念</button>
+          <button type="button" class="btn btn-secondary" onclick="resetThoughtForm()">重置</button>
+        </form>
+        <div id="thoughtsList"></div>
       </div>
     </div>
 
