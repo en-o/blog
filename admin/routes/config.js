@@ -27,7 +27,12 @@ router.get('/info', async (req, res) => {
         url: config.url || '',
         baseurl: config.baseurl || '',
         favicon: faviconExists ? '/assets/images/favicon.ico' : null,
-        avatar: avatarExists ? '/assets/images/avatar.jpg' : null
+        avatar: avatarExists ? '/assets/images/avatar.jpg' : null,
+        footer_text: config.footer_text || '',
+        footer_powered_by: config.footer_powered_by !== false,
+        footer_powered_by_text: config.footer_powered_by_text || 'Powered by',
+        footer_powered_by_name: config.footer_powered_by_name || 'Jekyll',
+        footer_powered_by_link: config.footer_powered_by_link || 'https://jekyllrb.com/'
       }
     });
   } catch (error) {
@@ -41,7 +46,17 @@ router.get('/info', async (req, res) => {
 // 更新配置信息
 router.put('/info', async (req, res) => {
   try {
-    const { title, description, url, baseurl } = req.body;
+    const {
+      title,
+      description,
+      url,
+      baseurl,
+      footer_text,
+      footer_powered_by,
+      footer_powered_by_text,
+      footer_powered_by_name,
+      footer_powered_by_link
+    } = req.body;
 
     // 读取现有配置内容（保留注释）
     let configContent = await fs.readFile(CONFIG_FILE, 'utf8');
@@ -73,6 +88,62 @@ router.put('/info', async (req, res) => {
         /^baseurl:.*$/m,
         `baseurl: "${baseurl}"`
       );
+    }
+
+    // Footer配置
+    if (footer_text !== undefined) {
+      if (configContent.match(/^footer_text:.*$/m)) {
+        configContent = configContent.replace(
+          /^footer_text:.*$/m,
+          footer_text ? `footer_text: "${footer_text}"` : 'footer_text: ""'
+        );
+      } else {
+        configContent += `\n# Footer配置\nfooter_text: "${footer_text}"`;
+      }
+    }
+
+    if (footer_powered_by !== undefined) {
+      if (configContent.match(/^footer_powered_by:.*$/m)) {
+        configContent = configContent.replace(
+          /^footer_powered_by:.*$/m,
+          `footer_powered_by: ${footer_powered_by}`
+        );
+      } else {
+        configContent += `\nfooter_powered_by: ${footer_powered_by}`;
+      }
+    }
+
+    if (footer_powered_by_text !== undefined) {
+      if (configContent.match(/^footer_powered_by_text:.*$/m)) {
+        configContent = configContent.replace(
+          /^footer_powered_by_text:.*$/m,
+          `footer_powered_by_text: "${footer_powered_by_text}"`
+        );
+      } else {
+        configContent += `\nfooter_powered_by_text: "${footer_powered_by_text}"`;
+      }
+    }
+
+    if (footer_powered_by_name !== undefined) {
+      if (configContent.match(/^footer_powered_by_name:.*$/m)) {
+        configContent = configContent.replace(
+          /^footer_powered_by_name:.*$/m,
+          `footer_powered_by_name: "${footer_powered_by_name}"`
+        );
+      } else {
+        configContent += `\nfooter_powered_by_name: "${footer_powered_by_name}"`;
+      }
+    }
+
+    if (footer_powered_by_link !== undefined) {
+      if (configContent.match(/^footer_powered_by_link:.*$/m)) {
+        configContent = configContent.replace(
+          /^footer_powered_by_link:.*$/m,
+          `footer_powered_by_link: "${footer_powered_by_link}"`
+        );
+      } else {
+        configContent += `\nfooter_powered_by_link: "${footer_powered_by_link}"`;
+      }
     }
 
     // 写回文件

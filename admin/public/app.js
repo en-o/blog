@@ -504,6 +504,13 @@ async function loadConfig() {
     document.getElementById('configUrl').value = data.url || '';
     document.getElementById('configBaseurl').value = data.baseurl || '';
 
+    // Footer配置
+    document.getElementById('configFooterText').value = data.footer_text || '';
+    document.getElementById('configFooterPoweredBy').checked = data.footer_powered_by !== false;
+    document.getElementById('configFooterPoweredByText').value = data.footer_powered_by_text || 'Powered by';
+    document.getElementById('configFooterPoweredByName').value = data.footer_powered_by_name || 'Jekyll';
+    document.getElementById('configFooterPoweredByLink').value = data.footer_powered_by_link || 'https://jekyllrb.com/';
+
     // 显示图标预览
     if (data.favicon) {
       document.getElementById('faviconPreview').innerHTML = `
@@ -533,7 +540,12 @@ document.getElementById('configForm').addEventListener('submit', async (e) => {
     title: document.getElementById('configTitle').value,
     description: document.getElementById('configDescription').value,
     url: document.getElementById('configUrl').value,
-    baseurl: document.getElementById('configBaseurl').value
+    baseurl: document.getElementById('configBaseurl').value,
+    footer_text: document.getElementById('configFooterText').value,
+    footer_powered_by: document.getElementById('configFooterPoweredBy').checked,
+    footer_powered_by_text: document.getElementById('configFooterPoweredByText').value,
+    footer_powered_by_name: document.getElementById('configFooterPoweredByName').value,
+    footer_powered_by_link: document.getElementById('configFooterPoweredByLink').value
   };
 
   try {

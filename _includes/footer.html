@@ -1,7 +1,13 @@
 <footer class="site-footer">
   <div class="footer-content">
+    {% if site.footer_text %}
+    <p>{{ site.footer_text }}</p>
+    {% else %}
     <p>&copy; {{ 'now' | date: "%Y" }} {{ site.title }}. All rights reserved.</p>
-    <p>Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a></p>
+    {% endif %}
+    {% if site.footer_powered_by != false %}
+    <p>{{ site.footer_powered_by_text | default: "Powered by" }} <a href="{{ site.footer_powered_by_link | default: 'https://jekyllrb.com/' }}" target="_blank">{{ site.footer_powered_by_name | default: "Jekyll" }}</a></p>
+    {% endif %}
   </div>
 </footer>
 
