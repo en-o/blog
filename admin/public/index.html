@@ -72,14 +72,17 @@
             <label>分类 *</label>
             <input type="text" id="docCategory" placeholder="例如: frontend, backend" required list="categoryList">
             <datalist id="categoryList"></datalist>
+            <small>用于文档分类，会显示在知识库的左侧导航</small>
           </div>
           <div class="form-group">
             <label>文件名 *</label>
             <input type="text" id="docFilename" placeholder="例如: react-tutorial.md" required>
+            <small>必须以 .md 结尾，用于生成文件路径</small>
           </div>
           <div class="form-group">
             <label>标题 *</label>
             <input type="text" id="docTitle" placeholder="文档标题" required>
+            <small>显示在文档页面顶部和文档列表中</small>
           </div>
           <div class="form-group">
             <label>日期 *</label>
@@ -92,6 +95,16 @@
           <div class="form-group">
             <label>内容 *</label>
             <textarea id="docContent" placeholder="Markdown 内容..." required></textarea>
+            <small style="display: block; margin-top: 5px;">
+              <strong>内容编写说明：</strong><br>
+              • 内容应该以二级标题（##）开始，会自动生成目录<br>
+              • 支持标准 Markdown 语法<br>
+              • 代码块使用三个反引号包裹<br>
+              • 示例：## 简介<br>
+              &nbsp;&nbsp;这是内容段落...<br>
+              &nbsp;&nbsp;## 详细说明<br>
+              &nbsp;&nbsp;更多内容...
+            </small>
           </div>
           <button type="submit" class="btn btn-primary">保存文档</button>
           <button type="button" class="btn btn-secondary" onclick="resetDocForm()">重置</button>
