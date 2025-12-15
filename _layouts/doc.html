@@ -26,7 +26,7 @@ layout: default
   </article>
 
   <aside class="doc-toc">
-    <div class="toc-sticky">
+    <div class="toc-sticky" id="tocSticky">
       <h3>目录</h3>
       <nav id="tocNav"></nav>
     </div>
@@ -38,8 +38,21 @@ layout: default
   document.addEventListener('DOMContentLoaded', function() {
     const content = document.getElementById('docContent');
     const tocNav = document.getElementById('tocNav');
+    const tocSticky = document.getElementById('tocSticky');
 
     if (!content || !tocNav) return;
+
+    // 动态设置目录位置，与文档顶部对齐
+    function updateTocPosition() {
+      const docArticle = document.querySelector('.doc-article');
+      if (docArticle) {
+        const rect = docArticle.getBoundingClientRect();
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const articleTop = rect.top + scrollTop;
+
+        tocSticky.style.top = Math.max(20, articleTop - scrollTop) + 'px';
+      }
+    }
 
     // 获取所有标题
     const headings = content.querySelectorAll('h2, h3');
@@ -68,6 +81,11 @@ layout: default
     });
     tocHTML += '</ul>';
     tocNav.innerHTML = tocHTML;
+
+    // 初始化位置
+    updateTocPosition();
+    window.addEventListener('scroll', updateTocPosition);
+    window.addEventListener('resize', updateTocPosition);
 
     // 平滑滚动
     const tocLinks = tocNav.querySelectorAll('.toc-link');
