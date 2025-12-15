@@ -1,0 +1,27 @@
+name: "tan"
+bio: "全栈开发者 | 开源爱好者 | 终身学习者"
+avatar: "/assets/images/avatar.jpg"
+intro: |
+  你好！我是一名热爱编程的开发者，专注于 Web 全栈开发。
+
+  热衷于探索新技术，喜欢通过代码解决实际问题。
+
+skills:
+  - name: "前端"
+    items: ["React", "Vue", "TypeScript", "Next.js"]
+  - name: "后端"
+    items: ["Node.js", "Python", "Go", "Spring Boot"]
+  - name: "数据库"
+    items: ["MySQL", "PostgreSQL", "MongoDB", "Redis"]
+  - name: "工具"
+    items: ["Git", "Docker", "Kubernetes", "CI/CD"]
+
+currently:
+  - "开发开源项目"
+  - "学习分布式系统设计"
+  - "撰写技术博客"
+
+social:
+  github: "https://github.com/en-o"
+  email: "your@email.com"
+  twitter: ""

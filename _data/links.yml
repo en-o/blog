@@ -7,3 +7,11 @@
   description: 笔记本
   avatar: >-
     https://mdn.alipayobjects.com/huamei_0prmtq/afts/img/A*PXAJTYXseTsAAAAAAAAAAAAADvuFAQ/original
+- name: Algorithms
+  url: https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
+  description: 正则大全
+  avatar: https://www.cs.usfca.edu/~galles/visualization/favicon.ico
+- name: json格式化
+  url: https://www.sojson.com/sql.html
+  description: json
+  avatar: https://cdn.sojson.com/images/logo/index-logo.png
