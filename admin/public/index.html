@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jekyll Blog 管理平台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #e1e4e8;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 15px;
+      color: #666;
+      transition: all 0.3s;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+    }
+
+    .tab:hover {
+      color: #667eea;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      font-weight: 600;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      color: #667eea;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-group textarea {
+      min-height: 200px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .list-item {
+      padding: 15px;
+      border: 1px solid #e1e4e8;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s;
+    }
+
+    .list-item:hover {
+      background: #f8f9fa;
+      border-color: #667eea;
+    }
+
+    .list-item-title {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .list-item-meta {
+      font-size: 13px;
+      color: #999;
+      margin-top: 5px;
+    }
+
+    .list-item-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .git-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .status-box {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      border-left: 4px solid #667eea;
+    }
+
+    .status-box h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+
+    .status-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #e1e4e8;
+      font-size: 14px;
+    }
+
+    .status-item:last-child {
+      border-bottom: none;
+    }
+
+    .alert {
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    @media (max-width: 768px) {
+      .git-section {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        overflow-x: auto;
+      }
+
+      .tab {
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Jekyll Blog 管理平台</h1>
+    <p>可视化管理您的 Jekyll 博客内容</p>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" data-tab="pages">页面管理</button>
+      <button class="tab" data-tab="docs">文档管理</button>
+      <button class="tab" data-tab="data">数据管理</button>
+      <button class="tab" data-tab="git">Git 操作</button>
+    </div>
+
+    <!-- 页面管理 -->
+    <div id="pages" class="tab-content active">
+      <div class="card">
+        <h2>新增/编辑页面</h2>
+        <form id="pageForm">
+          <div class="form-group">
+            <label>页面路径 *</label>
+            <input type="text" id="pagePath" placeholder="例如: about.md 或 projects/project-a.md" required>
+            <small style="color: #999; font-size: 12px;">相对于 pages/ 目录的路径</small>
+          </div>
+          <div class="form-group">
+            <label>标题 *</label>
+            <input type="text" id="pageTitle" placeholder="页面标题" required>
+          </div>
+          <div class="form-group">
+            <label>Permalink</label>
+            <input type="text" id="pagePermalink" placeholder="/about.html">
+            <small style="color: #999; font-size: 12px;">页面访问 URL</small>
+          </div>
+          <div class="form-group">
+            <label>布局</label>
+            <select id="pageLayout">
+              <option value="page">page</option>
+              <option value="default">default</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>内容 *</label>
+            <textarea id="pageContent" placeholder="Markdown 内容..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">保存页面</button>
+          <button type="button" class="btn btn-secondary" onclick="resetPageForm()">重置</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>现有页面列表</h2>
+        <div id="pagesList"></div>
+      </div>
+    </div>
+
+    <!-- 文档管理 -->
+    <div id="docs" class="tab-content">
+      <div class="card">
+        <h2>新增/编辑文档</h2>
+        <form id="docForm">
+          <div class="form-group">
+            <label>分类 *</label>
+            <input type="text" id="docCategory" placeholder="例如: frontend, backend" required list="categoryList">
+            <datalist id="categoryList"></datalist>
+          </div>
+          <div class="form-group">
+            <label>文件名 *</label>
+            <input type="text" id="docFilename" placeholder="例如: react-tutorial.md" required>
+          </div>
+          <div class="form-group">
+            <label>标题 *</label>
+            <input type="text" id="docTitle" placeholder="文档标题" required>
+          </div>
+          <div class="form-group">
+            <label>日期 *</label>
+            <input type="date" id="docDate" required>
+          </div>
+          <div class="form-group">
+            <label>标签</label>
+            <input type="text" id="docTags" placeholder="多个标签用逗号分隔">
+          </div>
+          <div class="form-group">
+            <label>内容 *</label>
+            <textarea id="docContent" placeholder="Markdown 内容..." required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">保存文档</button>
+          <button type="button" class="btn btn-secondary" onclick="resetDocForm()">重置</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>现有文档列表</h2>
+        <div id="docsList"></div>
+      </div>
+    </div>
+
+    <!-- 数据管理 -->
+    <div id="data" class="tab-content">
+      <div class="card">
+        <h2>友链管理</h2>
+        <div id="linksManagement"></div>
+      </div>
+
+      <div class="card">
+        <h2>碎碎念管理</h2>
+        <div id="thoughtsManagement"></div>
+      </div>
+    </div>
+
+    <!-- Git 操作 -->
+    <div id="git" class="tab-content">
+      <div class="card">
+        <h2>Git 状态</h2>
+        <div id="gitStatus" class="loading">加载中...</div>
+      </div>
+
+      <div class="card">
+        <h2>提交并推送</h2>
+        <form id="gitForm">
+          <div class="form-group">
+            <label>提交信息 *</label>
+            <input type="text" id="commitMessage" placeholder="描述本次更改..." required>
+          </div>
+          <div class="form-group">
+            <label>分支</label>
+            <input type="text" id="gitBranch" value="main" placeholder="main">
+          </div>
+          <button type="submit" class="btn btn-success">提交并推送到 GitHub</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>最近提交记录</h2>
+        <div id="gitLog" class="loading">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

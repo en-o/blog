@@ -1,0 +1,37 @@
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const path = require('path');
+
+const app = express();
+const PORT = 3001;
+
+// 中间件
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// 静态文件
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 路由
+app.use('/api/pages', require('./routes/pages'));
+app.use('/api/docs', require('./routes/docs'));
+app.use('/api/data', require('./routes/data'));
+app.use('/api/git', require('./routes/git'));
+
+// 首页
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// 启动服务器
+app.listen(PORT, () => {
+  console.log(`\n🚀 管理平台已启动！`);
+  console.log(`📝 访问地址: http://localhost:${PORT}`);
+  console.log(`\n功能列表:`);
+  console.log(`  - 页面管理: 新增/编辑/删除页面`);
+  console.log(`  - 文档管理: 新增/编辑/删除知识库文档`);
+  console.log(`  - 数据管理: 管理友链和碎碎念`);
+  console.log(`  - Git 操作: 提交和推送到 GitHub\n`);
+});

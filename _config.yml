@@ -34,3 +34,4 @@ exclude:
   - blog.sh
   - jekyll_personal_site.md
   - jekyll_preview.html
+  - admin/                    # 排除管理平台
