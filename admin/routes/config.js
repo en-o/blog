@@ -43,23 +43,40 @@ router.put('/info', async (req, res) => {
   try {
     const { title, description, url, baseurl } = req.body;
 
-    // 读取现有配置
-    const configContent = await fs.readFile(CONFIG_FILE, 'utf8');
-    const config = yaml.load(configContent);
+    // 读取现有配置内容（保留注释）
+    let configContent = await fs.readFile(CONFIG_FILE, 'utf8');
 
-    // 更新配置项
-    if (title !== undefined) config.title = title;
-    if (description !== undefined) config.description = description;
-    if (url !== undefined) config.url = url;
-    if (baseurl !== undefined) config.baseurl = baseurl;
+    // 使用正则表达式替换，保留注释和格式
+    if (title !== undefined) {
+      configContent = configContent.replace(
+        /^title:.*$/m,
+        `title: ${title}`
+      );
+    }
+
+    if (description !== undefined) {
+      configContent = configContent.replace(
+        /^description:.*$/m,
+        `description: ${description}`
+      );
+    }
+
+    if (url !== undefined) {
+      configContent = configContent.replace(
+        /^url:.*$/m,
+        `url: ${url}`
+      );
+    }
+
+    if (baseurl !== undefined) {
+      configContent = configContent.replace(
+        /^baseurl:.*$/m,
+        `baseurl: "${baseurl}"`
+      );
+    }
 
     // 写回文件
-    const newConfigContent = yaml.dump(config, {
-      lineWidth: -1,
-      quotingType: '"'
-    });
-
-    await fs.writeFile(CONFIG_FILE, newConfigContent, 'utf8');
+    await fs.writeFile(CONFIG_FILE, configContent, 'utf8');
 
     res.json({
       success: true,
