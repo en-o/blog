@@ -26,6 +26,7 @@ router.get('/info', async (req, res) => {
         description: config.description || '',
         url: config.url || '',
         baseurl: config.baseurl || '',
+        github_url: config.github_url || '',
         favicon: faviconExists ? '/assets/images/favicon.ico' : null,
         avatar: avatarExists ? '/assets/images/avatar.jpg' : null,
         footer_text: config.footer_text || '',
@@ -51,6 +52,7 @@ router.put('/info', async (req, res) => {
       description,
       url,
       baseurl,
+      github_url,
       footer_text,
       footer_powered_by,
       footer_powered_by_text,
@@ -88,6 +90,17 @@ router.put('/info', async (req, res) => {
         /^baseurl:.*$/m,
         `baseurl: "${baseurl}"`
       );
+    }
+
+    if (github_url !== undefined) {
+      if (configContent.match(/^github_url:.*$/m)) {
+        configContent = configContent.replace(
+          /^github_url:.*$/m,
+          `github_url: ${github_url}`
+        );
+      } else {
+        configContent += `\ngithub_url: ${github_url}`;
+      }
     }
 
     // Footer配置

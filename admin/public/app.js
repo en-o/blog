@@ -503,6 +503,7 @@ async function loadConfig() {
     document.getElementById('configDescription').value = data.description || '';
     document.getElementById('configUrl').value = data.url || '';
     document.getElementById('configBaseurl').value = data.baseurl || '';
+    document.getElementById('configGithubUrl').value = data.github_url || '';
 
     // Footer配置
     document.getElementById('configFooterText').value = data.footer_text || '';
@@ -541,6 +542,7 @@ document.getElementById('configForm').addEventListener('submit', async (e) => {
     description: document.getElementById('configDescription').value,
     url: document.getElementById('configUrl').value,
     baseurl: document.getElementById('configBaseurl').value,
+    github_url: document.getElementById('configGithubUrl').value,
     footer_text: document.getElementById('configFooterText').value,
     footer_powered_by: document.getElementById('configFooterPoweredBy').checked,
     footer_powered_by_text: document.getElementById('configFooterPoweredByText').value,
