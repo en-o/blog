@@ -21,6 +21,24 @@
 </a>
 {% endif %}
 
+<!-- 顶部趴着的蛇装饰 -->
+<div class="snake-decoration">
+  <svg viewBox="0 0 120 20" xmlns="http://www.w3.org/2000/svg">
+    <!-- 蛇身体 -->
+    <path class="snake-body" d="M 10,10 L 110,10" fill="none" stroke="#667eea" stroke-width="3" stroke-linecap="round"/>
+    <!-- 蛇头 -->
+    <ellipse class="snake-head" cx="110" cy="10" rx="8" ry="5" fill="#667eea"/>
+    <!-- 眼睛 -->
+    <circle class="snake-eye-left" cx="108" cy="9" r="1.2" fill="white"/>
+    <circle class="snake-eye-right" cx="112" cy="9" r="1.2" fill="white"/>
+    <!-- 瞳孔 -->
+    <circle cx="108.5" cy="9" r="0.6" fill="#333"/>
+    <circle cx="112.5" cy="9" r="0.6" fill="#333"/>
+    <!-- 舌头 -->
+    <path class="snake-tongue" d="M 118,10 L 122,10 M 120,10 L 119,8 M 120,10 L 119,12" stroke="#e74c3c" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+  </svg>
+</div>
+
 <style>
 .site-footer {
   background: white;
@@ -72,6 +90,54 @@
   }
   .github-corner .octo-arm {
     animation: octocat-wave 560ms ease-in-out;
+  }
+}
+
+.snake-decoration {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  z-index: 998;
+  opacity: 0.7;
+}
+
+.snake-decoration svg {
+  width: 100%;
+  height: auto;
+}
+
+.snake-tongue {
+  animation: tongue-flick 2s ease-in-out infinite;
+}
+
+.snake-eye-left, .snake-eye-right {
+  animation: blink 4s ease-in-out infinite;
+}
+
+@keyframes tongue-flick {
+  0%, 90%, 100% {
+    opacity: 0;
+  }
+  92%, 98% {
+    opacity: 1;
+  }
+}
+
+@keyframes blink {
+  0%, 48%, 52%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .snake-decoration {
+    width: 100px;
+    top: 60px;
   }
 }
 </style>
