@@ -1,19 +1,60 @@
-<header class="header">
-  <a href="{{ site.baseurl }}/" class="logo"></a>
-  <nav class="menu">
-    {% for menu in site.menu -%}
-
-      {%- assign target = "" %}
-      {%- if menu.target %}
-        {% capture target %}target="{{ menu.target }}"{% endcapture %}
-      {%- endif %}
-
-      {%- assign href = menu.url %}
-      {%- unless href contains "://" %}
-        {% capture href %}{{ site.baseurl }}{{ menu.url }}{% endcapture %}
-      {%- endunless -%}
-
-      <a href="{{href}}" {{target}} class="hover-underline">{{ menu.title }}</a>
-    {% endfor -%}
+<header class="site-header">
+  <nav class="main-nav">
+    <a href="/" class="logo">{{ site.title }}</a>
+    <ul class="nav-menu">
+      <li><a href="/">首页</a></li>
+      <li><a href="/docs.html">知识库</a></li>
+      <li><a href="/thoughts.html">碎碎念</a></li>
+      <li><a href="/links.html">友链</a></li>
+    </ul>
   </nav>
 </header>
+
+<style>
+.site-header {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.main-nav {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+}
+
+.nav-menu a {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+  color: #0366d6;
+}
+
+@media (max-width: 768px) {
+  .nav-menu {
+    gap: 15px;
+    font-size: 14px;
+  }
+}
+</style>

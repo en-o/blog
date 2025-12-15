@@ -1,0 +1,29 @@
+- name: 李四的技术博客
+  url: https://lisi.example.com
+  description: 专注前端开发,分享 React 和 Vue 实战经验
+  avatar: https://via.placeholder.com/60
+
+- name: 王五的代码笔记
+  url: https://wangwu.example.com
+  description: 后端工程师,记录 Java 和微服务开发心得
+  avatar: https://via.placeholder.com/60
+
+- name: 赵六的设计世界
+  url: https://zhaoliu.example.com
+  description: UI/UX 设计师,分享设计理念和工具使用
+  avatar: https://via.placeholder.com/60
+
+- name: 钱七的算法笔记
+  url: https://qianqi.example.com
+  description: ACM 选手,专注算法和数据结构学习
+  avatar: https://via.placeholder.com/60
+
+- name: 孙八的全栈之路
+  url: https://sunba.example.com
+  description: 全栈开发者,记录从前端到后端的学习历程
+  avatar: https://via.placeholder.com/60
+
+- name: 周九的运维日志
+  url: https://zhoujiu.example.com
+  description: 运维工程师,分享 DevOps 和云原生实践
+  avatar: https://via.placeholder.com/60

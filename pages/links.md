@@ -1,21 +1,30 @@
 ---
-layout: mypost
+layout: page
 title: 友情链接
+permalink: /links.html
 ---
 
-欢迎各位朋友与我建立友链，如需友链请到[留言板](chat.html)留言，我看到留言后会添加上的，本站的友链信息如下
+<h2>友情链接</h2>
 
-```
-名称：{{ site.title }}
-描述：{{ site.description }}
-地址：{{ site.domainUrl }}{{ site.baseurl }}
-头像：{{ site.domainUrl }}{{ site.baseurl }}/static/img/logo.jpg
-```
+<div class="friends-links">
+  {% for link in site.data.links %}
+  <div class="link-card">
+    <img src="{{ link.avatar }}" alt="{{ link.name }}">
+    <div class="link-info">
+      <h3><a href="{{ link.url }}" target="_blank">{{ link.name }}</a></h3>
+      <p>{{ link.description }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
 
-<ul>
-  {%- for link in site.links %}
-  <li>
-    <p><a href="{{ link.url }}" title="{{ link.desc }}" target="_blank" >{{ link.title }}</a></p>
-  </li>
-  {%- endfor %}
-</ul>
+<div style="margin-top: 40px; padding: 20px; background: white; border-radius: 8px;">
+  <h3>如何添加友链</h3>
+  <p>如果你想交换友链，请提交 Issue 或 PR，格式如下：</p>
+  <ul>
+    <li>名称：你的名字</li>
+    <li>链接：你的网站</li>
+    <li>描述：一句话介绍</li>
+    <li>头像：头像链接</li>
+  </ul>
+</div>
