@@ -1,4 +1,4 @@
-title: 我的个人主页
+title: tan
 description: 个人主页 & 知识库
 baseurl: ""
 url: https://github.com/en-o/blog
@@ -33,3 +33,10 @@ exclude:
   - jekyll_personal_site.md
   - jekyll_preview.html
   - admin/                    # 排除管理平台
+
+# Footer配置
+footer_text: "© 2025 tan. All rights reserved."
+footer_powered_by: true
+footer_powered_by_text: "Powered by"
+footer_powered_by_name: "tan"
+footer_powered_by_link: "https://github.com/en-o"
