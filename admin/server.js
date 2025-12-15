@@ -8,8 +8,8 @@ const PORT = 3001;
 
 // 中间件
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' })); // 增加限制以支持图片上传
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // 静态文件
 app.use(express.static(path.join(__dirname, 'public')));
@@ -19,6 +19,7 @@ app.use('/api/pages', require('./routes/pages'));
 app.use('/api/docs', require('./routes/docs'));
 app.use('/api/data', require('./routes/data'));
 app.use('/api/git', require('./routes/git'));
+app.use('/api/config', require('./routes/config'));
 
 // 首页
 app.get('/', (req, res) => {

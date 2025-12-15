@@ -19,6 +19,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tabName === 'pages') loadPages();
     if (tabName === 'docs') loadDocs();
     if (tabName === 'data') loadDataManagement();
+    if (tabName === 'config') loadConfig();
     if (tabName === 'git') loadGitStatus();
   });
 });
@@ -488,6 +489,150 @@ async function saveThoughtsData() {
   } catch (error) {
     showAlert('error', '保存失败: ' + error.message);
   }
+}
+
+// ============= 配置管理 =============
+
+// 加载配置信息
+async function loadConfig() {
+  try {
+    const res = await fetch(`${API_BASE}/config/info`);
+    const { data } = await res.json();
+
+    document.getElementById('configTitle').value = data.title || '';
+    document.getElementById('configDescription').value = data.description || '';
+    document.getElementById('configUrl').value = data.url || '';
+    document.getElementById('configBaseurl').value = data.baseurl || '';
+
+    // 显示图标预览
+    if (data.favicon) {
+      document.getElementById('faviconPreview').innerHTML = `
+        <img src="${data.favicon}?t=${Date.now()}" style="width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Favicon">
+      `;
+    } else {
+      document.getElementById('faviconPreview').innerHTML = '<p style="color: #999;">暂无图标</p>';
+    }
+
+    if (data.avatar) {
+      document.getElementById('avatarPreview').innerHTML = `
+        <img src="${data.avatar}?t=${Date.now()}" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover;" alt="Avatar">
+      `;
+    } else {
+      document.getElementById('avatarPreview').innerHTML = '<p style="color: #999;">暂无头像</p>';
+    }
+  } catch (error) {
+    showAlert('error', '加载配置失败: ' + error.message);
+  }
+}
+
+// 保存配置
+document.getElementById('configForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const config = {
+    title: document.getElementById('configTitle').value,
+    description: document.getElementById('configDescription').value,
+    url: document.getElementById('configUrl').value,
+    baseurl: document.getElementById('configBaseurl').value
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/config/info`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', '配置保存成功');
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '保存失败: ' + error.message);
+  }
+});
+
+// 上传Favicon
+async function uploadFavicon() {
+  const input = document.getElementById('faviconInput');
+  const file = input.files[0];
+
+  if (!file) {
+    showAlert('error', '请先选择图标文件');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const res = await fetch(`${API_BASE}/config/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'favicon',
+          data: e.target.result,
+          filename: file.name
+        })
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        showAlert('success', '图标上传成功');
+        loadConfig();
+        input.value = '';
+      } else {
+        showAlert('error', result.error);
+      }
+    } catch (error) {
+      showAlert('error', '上传失败: ' + error.message);
+    }
+  };
+
+  reader.readAsDataURL(file);
+}
+
+// 上传Avatar
+async function uploadAvatar() {
+  const input = document.getElementById('avatarInput');
+  const file = input.files[0];
+
+  if (!file) {
+    showAlert('error', '请先选择头像文件');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const res = await fetch(`${API_BASE}/config/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'avatar',
+          data: e.target.result,
+          filename: file.name
+        })
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        showAlert('success', '头像上传成功');
+        loadConfig();
+        input.value = '';
+      } else {
+        showAlert('error', result.error);
+      }
+    } catch (error) {
+      showAlert('error', '上传失败: ' + error.message);
+    }
+  };
+
+  reader.readAsDataURL(file);
 }
 
 // ============= Git 操作 =============
