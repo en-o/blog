@@ -4,8 +4,6 @@ title: 碎碎念
 permalink: /thoughts.html
 ---
 
-<h2>碎碎念</h2>
-
 <div class="timeline">
   {% for thought in site.data.thoughts %}
   <div class="timeline-item">
