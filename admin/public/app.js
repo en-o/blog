@@ -16,6 +16,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.getElementById(tabName).classList.add('active');
 
     // 加载对应数据
+    if (tabName === 'home') loadHomeData();
     if (tabName === 'pages') loadPages();
     if (tabName === 'docs') loadDocs();
     if (tabName === 'data') loadDataManagement();
@@ -23,6 +24,293 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tabName === 'git') loadGitStatus();
   });
 });
+
+// ============= 首页管理 =============
+
+let profileData = {};
+let projectsData = [];
+let editingProjectIndex = -1;
+
+async function loadHomeData() {
+  await loadProfile();
+  await loadProjects();
+}
+
+// 加载个人信息
+async function loadProfile() {
+  try {
+    const res = await fetch(`${API_BASE}/home/profile`);
+    const { data } = await res.json();
+    profileData = data;
+
+    // 填充表单
+    document.getElementById('profileName').value = data.name || '';
+    document.getElementById('profileBio').value = data.bio || '';
+    document.getElementById('profileIntro').value = data.intro || '';
+    document.getElementById('profileGithub').value = data.social?.github || '';
+    document.getElementById('profileEmail').value = data.social?.email || '';
+
+    // 渲染技能栈
+    renderSkillsList(data.skills || []);
+
+    // 渲染当前在做
+    renderCurrentlyList(data.currently || []);
+  } catch (error) {
+    showAlert('error', '加载个人信息失败: ' + error.message);
+  }
+}
+
+// 渲染技能栈列表
+function renderSkillsList(skills) {
+  const html = skills.map((skill, index) => `
+    <div class="list-item">
+      <div>
+        <div class="list-item-title">${skill.name}</div>
+        <div class="list-item-meta">${skill.items.join(', ')}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-sm btn-primary" onclick="editSkill(${index})">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteSkill(${index})">删除</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('skillsList').innerHTML = html || '<p style="color:#999;">暂无技能栈</p>';
+}
+
+// 添加技能分类
+function addSkill() {
+  const name = prompt('技能分类名称（如：前端、后端）：');
+  if (!name) return;
+
+  const items = prompt('技能列表（用逗号分隔）：');
+  if (!items) return;
+
+  profileData.skills = profileData.skills || [];
+  profileData.skills.push({
+    name: name,
+    items: items.split(',').map(i => i.trim()).filter(Boolean)
+  });
+
+  saveProfile();
+}
+
+// 编辑技能
+function editSkill(index) {
+  const skill = profileData.skills[index];
+  const name = prompt('技能分类名称：', skill.name);
+  if (!name) return;
+
+  const items = prompt('技能列表（用逗号分隔）：', skill.items.join(', '));
+  if (!items) return;
+
+  profileData.skills[index] = {
+    name: name,
+    items: items.split(',').map(i => i.trim()).filter(Boolean)
+  };
+
+  saveProfile();
+}
+
+// 删除技能
+function deleteSkill(index) {
+  if (!confirm('确定要删除这个技能分类吗？')) return;
+  profileData.skills.splice(index, 1);
+  saveProfile();
+}
+
+// 渲染当前在做列表
+function renderCurrentlyList(currently) {
+  const html = currently.map((item, index) => `
+    <div class="list-item">
+      <div>
+        <div class="list-item-title">${item}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-sm btn-primary" onclick="editCurrently(${index})">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteCurrently(${index})">删除</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('currentlyList').innerHTML = html || '<p style="color:#999;">暂无内容</p>';
+}
+
+// 添加当前在做
+function addCurrently() {
+  const item = prompt('请输入内容：');
+  if (!item) return;
+
+  profileData.currently = profileData.currently || [];
+  profileData.currently.push(item);
+
+  saveProfile();
+}
+
+// 编辑当前在做
+function editCurrently(index) {
+  const item = prompt('请输入内容：', profileData.currently[index]);
+  if (!item) return;
+
+  profileData.currently[index] = item;
+  saveProfile();
+}
+
+// 删除当前在做
+function deleteCurrently(index) {
+  if (!confirm('确定要删除这一项吗？')) return;
+  profileData.currently.splice(index, 1);
+  saveProfile();
+}
+
+// 保存个人信息
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  profileData.name = document.getElementById('profileName').value;
+  profileData.bio = document.getElementById('profileBio').value;
+  profileData.intro = document.getElementById('profileIntro').value;
+  profileData.social = profileData.social || {};
+  profileData.social.github = document.getElementById('profileGithub').value;
+  profileData.social.email = document.getElementById('profileEmail').value;
+
+  await saveProfile();
+});
+
+async function saveProfile() {
+  try {
+    const res = await fetch(`${API_BASE}/home/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileData)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', '个人信息保存成功');
+      renderSkillsList(profileData.skills || []);
+      renderCurrentlyList(profileData.currently || []);
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '保存失败: ' + error.message);
+  }
+}
+
+// 加载项目列表
+async function loadProjects() {
+  try {
+    const res = await fetch(`${API_BASE}/home/projects`);
+    const { data } = await res.json();
+    projectsData = data || [];
+    renderProjectsList();
+  } catch (error) {
+    showAlert('error', '加载项目列表失败: ' + error.message);
+  }
+}
+
+// 渲染项目列表
+function renderProjectsList() {
+  const html = projectsData.map((project, index) => `
+    <div class="list-item">
+      <div>
+        <div class="list-item-title">
+          ${project.name}
+          ${project.star ? '<span class="star-badge">⭐</span>' : ''}
+        </div>
+        <div class="list-item-meta">${project.description}</div>
+        <div class="list-item-meta">${project.url}</div>
+        <div class="list-item-meta">${(project.tags || []).join(', ')}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-sm btn-primary" onclick="editProject(${index})">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteProject(${index})">删除</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('projectsList').innerHTML = html || '<p style="color:#999;">暂无项目</p>';
+}
+
+// 编辑项目
+function editProject(index) {
+  const project = projectsData[index];
+  document.getElementById('projectName').value = project.name || '';
+  document.getElementById('projectDesc').value = project.description || '';
+  document.getElementById('projectUrl').value = project.url || '';
+  document.getElementById('projectTags').value = (project.tags || []).join(', ');
+  document.getElementById('projectStar').checked = project.star || false;
+
+  editingProjectIndex = index;
+
+  const submitBtn = document.querySelector('#projectForm button[type="submit"]');
+  submitBtn.textContent = '更新项目';
+  submitBtn.className = 'btn btn-success';
+
+  document.getElementById('projectForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+// 删除项目
+function deleteProject(index) {
+  if (!confirm('确定要删除这个项目吗？')) return;
+  projectsData.splice(index, 1);
+  saveProjects();
+}
+
+// 重置项目表单
+function resetProjectForm() {
+  document.getElementById('projectForm').reset();
+  editingProjectIndex = -1;
+
+  const submitBtn = document.querySelector('#projectForm button[type="submit"]');
+  submitBtn.textContent = '添加项目';
+  submitBtn.className = 'btn btn-primary';
+}
+
+// 提交项目表单
+document.getElementById('projectForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const project = {
+    name: document.getElementById('projectName').value,
+    description: document.getElementById('projectDesc').value,
+    url: document.getElementById('projectUrl').value,
+    tags: document.getElementById('projectTags').value.split(',').map(t => t.trim()).filter(Boolean),
+    star: document.getElementById('projectStar').checked
+  };
+
+  if (editingProjectIndex >= 0) {
+    projectsData[editingProjectIndex] = project;
+  } else {
+    projectsData.push(project);
+  }
+
+  await saveProjects();
+  resetProjectForm();
+});
+
+async function saveProjects() {
+  try {
+    const res = await fetch(`${API_BASE}/home/projects`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(projectsData)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', '项目列表保存成功');
+      renderProjectsList();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '保存失败: ' + error.message);
+  }
+}
 
 // ============= 页面管理 =============
 

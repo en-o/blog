@@ -14,11 +14,85 @@
 
   <div class="container">
     <div class="tabs">
-      <button class="tab active" data-tab="pages">📝 页面管理</button>
+      <button class="tab active" data-tab="home">🏠 首页管理</button>
+      <button class="tab" data-tab="pages">📝 页面管理</button>
       <button class="tab" data-tab="docs">📚 文档管理</button>
       <button class="tab" data-tab="data">💾 数据管理</button>
       <button class="tab" data-tab="config">⚙️ 配置管理</button>
       <button class="tab" data-tab="git">🔄 Git 操作</button>
+    </div>
+
+    <!-- 首页管理 -->
+    <div id="home" class="tab-content active">
+      <div class="card">
+        <h2>个人信息</h2>
+        <form id="profileForm">
+          <div class="form-group">
+            <label>姓名 *</label>
+            <input type="text" id="profileName" required>
+          </div>
+          <div class="form-group">
+            <label>个人简介 *</label>
+            <input type="text" id="profileBio" placeholder="全栈开发者 | 开源爱好者" required>
+          </div>
+          <div class="form-group">
+            <label>详细介绍 *</label>
+            <textarea id="profileIntro" rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>GitHub</label>
+            <input type="url" id="profileGithub" placeholder="https://github.com/username">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="profileEmail">
+          </div>
+          <button type="submit" class="btn btn-primary">保存个人信息</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>技能栈管理</h2>
+        <div id="skillsList"></div>
+        <button type="button" class="btn btn-secondary" onclick="addSkill()">+ 添加技能分类</button>
+      </div>
+
+      <div class="card">
+        <h2>当前在做</h2>
+        <div id="currentlyList"></div>
+        <button type="button" class="btn btn-secondary" onclick="addCurrently()">+ 添加项</button>
+      </div>
+
+      <div class="card">
+        <h2>项目管理</h2>
+        <form id="projectForm" style="margin-bottom: 30px;">
+          <div class="form-group">
+            <label>项目名称 *</label>
+            <input type="text" id="projectName" required>
+          </div>
+          <div class="form-group">
+            <label>项目描述 *</label>
+            <textarea id="projectDesc" rows="3" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>项目链接 *</label>
+            <input type="url" id="projectUrl" required>
+          </div>
+          <div class="form-group">
+            <label>技术标签</label>
+            <input type="text" id="projectTags" placeholder="多个标签用逗号分隔">
+          </div>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 8px;">
+              <input type="checkbox" id="projectStar" style="width: auto; margin: 0;">
+              标记为精选项目
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary">添加项目</button>
+          <button type="button" class="btn btn-secondary" onclick="resetProjectForm()">重置</button>
+        </form>
+        <div id="projectsList"></div>
+      </div>
     </div>
 
     <!-- 页面管理 -->

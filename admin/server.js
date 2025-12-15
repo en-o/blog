@@ -20,6 +20,7 @@ app.use('/api/docs', require('./routes/docs'));
 app.use('/api/data', require('./routes/data'));
 app.use('/api/git', require('./routes/git'));
 app.use('/api/config', require('./routes/config'));
+app.use('/api/home', require('./routes/home'));
 
 // 首页
 app.get('/', (req, res) => {
@@ -31,6 +32,7 @@ app.listen(PORT, () => {
   console.log(`\n🚀 管理平台已启动！`);
   console.log(`📝 访问地址: http://localhost:${PORT}`);
   console.log(`\n功能列表:`);
+  console.log(`  - 首页管理: 管理个人信息、技能、项目等`);
   console.log(`  - 页面管理: 新增/编辑/删除页面`);
   console.log(`  - 文档管理: 新增/编辑/删除知识库文档`);
   console.log(`  - 数据管理: 管理友链和碎碎念`);
