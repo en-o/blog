@@ -4,10 +4,8 @@ title: 知识库
 permalink: /docs.html
 ---
 
-<h2>知识库</h2>
-
-<div class="docs-wrapper">
-  <!-- 左侧：分类导航 -->
+<div class="docs-page-wrapper">
+  <!-- 左侧：分类导航（固定） -->
   <aside class="docs-sidebar">
     <div class="docs-sidebar-sticky">
       <h3>分类</h3>
@@ -16,7 +14,8 @@ permalink: /docs.html
           {% assign docs_by_category = site.docs | group_by: "category" %}
           {% for category in docs_by_category %}
           <li class="category-item {% if forloop.first %}active{% endif %}" data-category="{{ category.name }}">
-            <a href="#" class="category-link">{{ category.name }}</a>
+            <span class="category-name">{{ category.name }}</span>
+            <span class="category-count">{{ category.items | size }}</span>
           </li>
           {% endfor %}
         </ul>
@@ -25,23 +24,23 @@ permalink: /docs.html
   </aside>
 
   <!-- 右侧：文档列表 -->
-  <div class="docs-content">
-    <div id="docs-list-container">
-      {% assign docs_by_category = site.docs | group_by: "category" %}
-      {% assign first_category = docs_by_category.first %}
+  <div class="docs-main">
+    <div class="content-section">
+      <div id="docs-list-container">
+        {% assign docs_by_category = site.docs | group_by: "category" %}
+        {% assign first_category = docs_by_category.first %}
 
-      <div class="docs-category-title" id="current-category-title">
-        {{ first_category.name }}
+        <h2 id="current-category-title">{{ first_category.name }}</h2>
+
+        <ul class="doc-list" id="doc-list">
+          {% for doc in first_category.items %}
+          <li>
+            <a href="{{ doc.url }}">{{ doc.title }}</a>
+            <span class="doc-meta">{{ doc.date | date: "%Y-%m-%d" }}</span>
+          </li>
+          {% endfor %}
+        </ul>
       </div>
-
-      <ul class="doc-list" id="doc-list">
-        {% for doc in first_category.items %}
-        <li>
-          <a href="{{ doc.url }}">{{ doc.title }}</a>
-          <span class="doc-meta">{{ doc.date | date: "%Y-%m-%d" }}</span>
-        </li>
-        {% endfor %}
-      </ul>
     </div>
   </div>
 </div>
@@ -72,9 +71,7 @@ permalink: /docs.html
     const categoryTitle = document.getElementById('current-category-title');
 
     categoryItems.forEach(item => {
-      const link = item.querySelector('.category-link');
-
-      link.addEventListener('click', function(e) {
+      item.addEventListener('click', function(e) {
         e.preventDefault();
         const categoryName = item.dataset.category;
 
