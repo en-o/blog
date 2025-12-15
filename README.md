@@ -346,6 +346,17 @@ Jekyll 使用 Liquid 模板引擎，支持变量、循环、条件等：
 {% endfor %}
 ```
 
+## 用当前作为模板创建自己的
+1. 跟这上面的说明启动项目，然后在可视化编辑中编辑信息
+2. 删除我的提交记录
+```shell
+   git checkout --orphan temp
+   git add . && git commit -m init
+   git branch -D main
+   git branch -m temp main
+   git push --force
+```
+
 ## 📦 技术栈
 
 - **前端框架**: Jekyll 4.3
