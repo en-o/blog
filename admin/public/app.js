@@ -1161,4 +1161,15 @@ function closeModal(element) {
 // 初始化
 document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
 document.getElementById('thoughtDate').value = new Date().toISOString().split('T')[0];
-loadPages();
+
+// 加载初始显示的标签页数据
+const initialTab = document.querySelector('.tab.active');
+if (initialTab) {
+  const tabName = initialTab.dataset.tab;
+  if (tabName === 'home') loadHomeData();
+  else if (tabName === 'pages') loadPages();
+  else if (tabName === 'docs') loadDocs();
+  else if (tabName === 'data') loadDataManagement();
+  else if (tabName === 'config') loadConfig();
+  else if (tabName === 'git') loadGitStatus();
+}

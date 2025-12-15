@@ -11,7 +11,8 @@
   url: https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
   description: 正则大全
   avatar: https://www.cs.usfca.edu/~galles/visualization/favicon.ico
-- name: json格式化
-  url: https://www.sojson.com/sql.html
+- name: Cron 表达式解析与生成工具
+  url: https://www.daimagu.com/tools/cron
   description: json
-  avatar: https://cdn.sojson.com/images/logo/index-logo.png
+  avatar: >-
+    https://www.daimagu.com/assets/upload/2025-10/30/61295e9d3de246dcba5a196965dc2908.png
