@@ -2,24 +2,113 @@
 layout: default
 ---
 
-<article class="doc-article">
-  <header class="doc-header">
-    <h1>{{ page.title }}</h1>
-    <div class="doc-meta">
-      <span>分类: {{ page.category }}</span>
-      <span>更新: {{ page.date | date: "%Y-%m-%d" }}</span>
+<div class="doc-wrapper">
+  <article class="doc-article">
+    <header class="doc-header">
+      <h1>{{ page.title }}</h1>
+      <div class="doc-meta">
+        <span>分类: {{ page.category }}</span>
+        <span>更新: {{ page.date | date: "%Y-%m-%d" }}</span>
+      </div>
+    </header>
+
+    <div class="doc-content" id="docContent">
+      {{ content }}
     </div>
-  </header>
 
-  <div class="doc-content">
-    {{ content }}
-  </div>
+    {% if page.tags %}
+    <div class="doc-tags">
+      {% for tag in page.tags %}
+      <span class="tag">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </article>
 
-  {% if page.tags %}
-  <div class="doc-tags">
-    {% for tag in page.tags %}
-    <span class="tag">{{ tag }}</span>
-    {% endfor %}
-  </div>
-  {% endif %}
-</article>
+  <aside class="doc-toc">
+    <div class="toc-sticky">
+      <h3>目录</h3>
+      <nav id="tocNav"></nav>
+    </div>
+  </aside>
+</div>
+
+<script>
+  // 生成目录
+  document.addEventListener('DOMContentLoaded', function() {
+    const content = document.getElementById('docContent');
+    const tocNav = document.getElementById('tocNav');
+
+    if (!content || !tocNav) return;
+
+    // 获取所有标题
+    const headings = content.querySelectorAll('h2, h3');
+
+    if (headings.length === 0) {
+      document.querySelector('.doc-toc').style.display = 'none';
+      return;
+    }
+
+    // 为每个标题添加ID
+    headings.forEach((heading, index) => {
+      if (!heading.id) {
+        heading.id = 'heading-' + index;
+      }
+    });
+
+    // 生成目录HTML
+    let tocHTML = '<ul class="toc-list">';
+    headings.forEach((heading) => {
+      const level = heading.tagName === 'H2' ? 'toc-level-1' : 'toc-level-2';
+      tocHTML += `
+        <li class="${level}">
+          <a href="#${heading.id}" class="toc-link">${heading.textContent}</a>
+        </li>
+      `;
+    });
+    tocHTML += '</ul>';
+    tocNav.innerHTML = tocHTML;
+
+    // 平滑滚动
+    const tocLinks = tocNav.querySelectorAll('.toc-link');
+    tocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // 更新URL但不滚动
+          history.pushState(null, null, '#' + targetId);
+        }
+      });
+    });
+
+    // 滚动高亮
+    let isScrolling = false;
+
+    function highlightTOC() {
+      if (isScrolling) return;
+
+      let current = '';
+      const scrollPosition = window.scrollY + 100;
+
+      headings.forEach(heading => {
+        const headingTop = heading.offsetTop;
+        if (scrollPosition >= headingTop) {
+          current = heading.id;
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', highlightTOC);
+    highlightTOC(); // 初始化
+  });
+</script>
