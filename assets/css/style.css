@@ -228,6 +228,7 @@ body {
   display: flex;
   gap: 30px;
   align-items: flex-start;
+  min-height: calc(100vh - 250px);
 }
 
 .docs-main {
