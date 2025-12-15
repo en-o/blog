@@ -664,12 +664,19 @@ async function loadThoughts() {
 }
 
 function renderThoughtsList() {
-  const html = thoughtsData.map((thought, index) => `
+  // 按日期时间倒序排序（最新的在前）
+  const sortedThoughts = thoughtsData.sort((a, b) => {
+    const dateA = new Date(a.datetime || a.date);
+    const dateB = new Date(b.datetime || b.date);
+    return dateB - dateA;
+  });
+
+  const html = sortedThoughts.map((thought, index) => `
     <div class="list-item">
       <div>
         <div class="list-item-title">${thought.content}</div>
         <div class="list-item-meta">
-          ${thought.date}
+          ${thought.datetime || thought.date}
           ${thought.tags ? ' | ' + thought.tags.join(', ') : ''}
         </div>
       </div>
@@ -685,7 +692,19 @@ function renderThoughtsList() {
 
 function editThought(index) {
   const thought = thoughtsData[index];
-  document.getElementById('thoughtDate').value = thought.date || new Date().toISOString().split('T')[0];
+  const datetime = thought.datetime || thought.date;
+
+  // 转换为 datetime-local 格式 (YYYY-MM-DDTHH:mm)
+  let datetimeValue;
+  if (datetime.includes(' ')) {
+    // 格式: "2025-12-15 14:30"
+    datetimeValue = datetime.replace(' ', 'T');
+  } else {
+    // 格式: "2025-12-15"
+    datetimeValue = datetime + 'T00:00';
+  }
+
+  document.getElementById('thoughtDatetime').value = datetimeValue;
   document.getElementById('thoughtContent').value = thought.content || '';
   document.getElementById('thoughtTags').value = (thought.tags || []).join(', ');
 
@@ -708,7 +727,16 @@ function deleteThought(index) {
 
 function resetThoughtForm() {
   document.getElementById('thoughtForm').reset();
-  document.getElementById('thoughtDate').value = new Date().toISOString().split('T')[0];
+
+  // 设置为当前日期时间
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('thoughtDatetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
   editingThoughtIndex = -1;
 
   const submitBtn = document.querySelector('#thoughtForm button[type="submit"]');
@@ -719,8 +747,12 @@ function resetThoughtForm() {
 document.getElementById('thoughtForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  // 将 datetime-local 格式 (YYYY-MM-DDTHH:mm) 转换为 YAML 格式 (YYYY-MM-DD HH:mm)
+  const datetimeLocal = document.getElementById('thoughtDatetime').value;
+  const datetime = datetimeLocal.replace('T', ' ');
+
   const thought = {
-    date: document.getElementById('thoughtDate').value,
+    datetime: datetime,
     content: document.getElementById('thoughtContent').value,
     tags: document.getElementById('thoughtTags').value
       .split(',')
@@ -1160,7 +1192,15 @@ function closeModal(element) {
 
 // 初始化
 document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
-document.getElementById('thoughtDate').value = new Date().toISOString().split('T')[0];
+
+// 设置碎碎念的初始日期时间
+const now = new Date();
+const year = now.getFullYear();
+const month = String(now.getMonth() + 1).padStart(2, '0');
+const day = String(now.getDate()).padStart(2, '0');
+const hours = String(now.getHours()).padStart(2, '0');
+const minutes = String(now.getMinutes()).padStart(2, '0');
+document.getElementById('thoughtDatetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
 
 // 加载初始显示的标签页数据
 const initialTab = document.querySelector('.tab.active');

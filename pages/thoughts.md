@@ -10,11 +10,12 @@ permalink: /thoughts.html
   </div>
 
   <div class="timeline">
-    {% for thought in site.data.thoughts %}
+    {% assign sorted_thoughts = site.data.thoughts | sort: 'datetime' | reverse %}
+    {% for thought in sorted_thoughts %}
     <div class="timeline-item">
       <div class="timeline-marker"></div>
       <div class="timeline-content">
-        <time>{{ thought.date }}</time>
+        <time>{{ thought.datetime }}</time>
         <p>{{ thought.content }}</p>
         {% if thought.tags %}
         <div class="tags">
