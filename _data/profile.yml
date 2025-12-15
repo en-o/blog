@@ -6,7 +6,7 @@ intro: |
 
   热衷于探索新技术，喜欢通过代码解决实际问题。
 skills:
-  - name: 前端1
+  - name: 前端
     items:
       - TypeScript
       - Next.js
@@ -17,6 +17,8 @@ skills:
       - Python
       - Go
       - Spring Boot
+      - Java
+      - Rust
   - name: 数据库
     items:
       - MySQL
@@ -30,8 +32,8 @@ skills:
       - Kubernetes
       - CI/CD
 currently:
-  - 开发开源项目
-  - 学习分布式系统设计
+  - AI带着我写点小工具项目
+  - 每天没事看看虾仁
   - 撰写技术博客
 social:
   github: https://github.com/en-o
