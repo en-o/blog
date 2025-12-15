@@ -80,36 +80,20 @@ function renderSkillsList(skills) {
 
 // 添加技能分类
 function addSkill() {
-  const name = prompt('技能分类名称（如：前端、后端）：');
-  if (!name) return;
-
-  const items = prompt('技能列表（用逗号分隔）：');
-  if (!items) return;
-
-  profileData.skills = profileData.skills || [];
-  profileData.skills.push({
-    name: name,
-    items: items.split(',').map(i => i.trim()).filter(Boolean)
+  showSkillModal(null, (skillData) => {
+    profileData.skills = profileData.skills || [];
+    profileData.skills.push(skillData);
+    saveProfile();
   });
-
-  saveProfile();
 }
 
 // 编辑技能
 function editSkill(index) {
   const skill = profileData.skills[index];
-  const name = prompt('技能分类名称：', skill.name);
-  if (!name) return;
-
-  const items = prompt('技能列表（用逗号分隔）：', skill.items.join(', '));
-  if (!items) return;
-
-  profileData.skills[index] = {
-    name: name,
-    items: items.split(',').map(i => i.trim()).filter(Boolean)
-  };
-
-  saveProfile();
+  showSkillModal(skill, (skillData) => {
+    profileData.skills[index] = skillData;
+    saveProfile();
+  });
 }
 
 // 删除技能
@@ -138,22 +122,20 @@ function renderCurrentlyList(currently) {
 
 // 添加当前在做
 function addCurrently() {
-  const item = prompt('请输入内容：');
-  if (!item) return;
-
-  profileData.currently = profileData.currently || [];
-  profileData.currently.push(item);
-
-  saveProfile();
+  showCurrentlyModal(null, (item) => {
+    profileData.currently = profileData.currently || [];
+    profileData.currently.push(item);
+    saveProfile();
+  });
 }
 
 // 编辑当前在做
 function editCurrently(index) {
-  const item = prompt('请输入内容：', profileData.currently[index]);
-  if (!item) return;
-
-  profileData.currently[index] = item;
-  saveProfile();
+  const item = profileData.currently[index];
+  showCurrentlyModal(item, (newItem) => {
+    profileData.currently[index] = newItem;
+    saveProfile();
+  });
 }
 
 // 删除当前在做
@@ -1037,6 +1019,143 @@ function showAlert(type, message) {
   document.querySelector('.container').insertBefore(alert, document.querySelector('.tabs'));
 
   setTimeout(() => alert.remove(), 5000);
+}
+
+// 显示技能模态框
+function showSkillModal(skill, onSave) {
+  const isEdit = !!skill;
+  const skillItems = skill?.items || [];
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>${isEdit ? '编辑技能分类' : '添加技能分类'}</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>分类名称 *</label>
+          <input type="text" id="skillModalName" value="${skill?.name || ''}" placeholder="如：前端、后端、数据库">
+        </div>
+        <div class="form-group">
+          <label>技能项目 *</label>
+          <input type="text" id="skillModalItemInput" placeholder="输入技能名称后按回车添加">
+          <div class="skill-items-input" id="skillItemsContainer"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+        <button class="btn btn-primary" id="saveSkillBtn">保存</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // 渲染已有技能项
+  const container = document.getElementById('skillItemsContainer');
+  const renderItems = () => {
+    container.innerHTML = skillItems.map((item, idx) => `
+      <span class="skill-item-tag">
+        ${item}
+        <button onclick="removeSkillItem(${idx})">&times;</button>
+      </span>
+    `).join('');
+  };
+  renderItems();
+
+  // 添加技能项
+  const itemInput = document.getElementById('skillModalItemInput');
+  itemInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const value = itemInput.value.trim();
+      if (value) {
+        skillItems.push(value);
+        itemInput.value = '';
+        renderItems();
+      }
+    }
+  });
+
+  // 移除技能项
+  window.removeSkillItem = (idx) => {
+    skillItems.splice(idx, 1);
+    renderItems();
+  };
+
+  // 保存
+  document.getElementById('saveSkillBtn').onclick = () => {
+    const name = document.getElementById('skillModalName').value.trim();
+    if (!name) {
+      showAlert('error', '请输入分类名称');
+      return;
+    }
+    if (skillItems.length === 0) {
+      showAlert('error', '请至少添加一个技能项目');
+      return;
+    }
+    onSave({ name, items: skillItems });
+    closeModal(modal);
+  };
+
+  // 点击遮罩关闭
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 显示当前在做模态框
+function showCurrentlyModal(item, onSave) {
+  const isEdit = !!item;
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>${isEdit ? '编辑项目' : '添加项目'}</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>内容 *</label>
+          <textarea id="currentlyModalContent" rows="3" placeholder="描述你正在做的事情...">${item || ''}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+        <button class="btn btn-primary" id="saveCurrentlyBtn">保存</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // 保存
+  document.getElementById('saveCurrentlyBtn').onclick = () => {
+    const content = document.getElementById('currentlyModalContent').value.trim();
+    if (!content) {
+      showAlert('error', '请输入内容');
+      return;
+    }
+    onSave(content);
+    closeModal(modal);
+  };
+
+  // 点击遮罩关闭
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+
+  // 聚焦到输入框
+  setTimeout(() => document.getElementById('currentlyModalContent').focus(), 100);
+}
+
+// 关闭模态框
+function closeModal(element) {
+  const modal = element.closest ? element.closest('.modal-overlay') : element;
+  if (modal) modal.remove();
 }
 
 // 初始化

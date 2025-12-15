@@ -6,12 +6,11 @@ intro: |
 
   热衷于探索新技术，喜欢通过代码解决实际问题。
 skills:
-  - name: 前端
+  - name: 前端1
     items:
-      - React
-      - Vue
       - TypeScript
       - Next.js
+      - React
   - name: 后端
     items:
       - Node.js
@@ -36,5 +35,5 @@ currently:
   - 撰写技术博客
 social:
   github: https://github.com/en-o
-  email: your@email.com
+  email: 1445763190@qq.com
   twitter: ''
