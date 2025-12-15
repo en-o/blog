@@ -38,10 +38,10 @@ async function loadPages() {
           <div class="list-item-title">${page.title}</div>
           <div class="list-item-meta">${page.path} → ${page.permalink}</div>
         </div>
-        <div class="list-item-actions">
-          <button class="btn btn-sm btn-primary" onclick="editPage('${page.path}')">编辑</button>
-          <button class="btn btn-sm btn-danger" onclick="deletePage('${page.path}')">删除</button>
-        </div>
+<!--        <div class="list-item-actions">-->
+<!--          <button class="btn btn-sm btn-primary" onclick="editPage('${page.path}')">编辑</button>-->
+<!--          <button class="btn btn-sm btn-danger" onclick="deletePage('${page.path}')">删除</button>-->
+<!--        </div>-->
       </div>
     `).join('');
 
