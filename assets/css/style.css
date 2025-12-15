@@ -974,23 +974,21 @@ body {
 }
 
 /* 时间轴样式 */
-.thoughts-snake {
+.thoughts-plum {
   position: absolute;
-  top: 75px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 32px;
-  animation: snake-wiggle 3s ease-in-out infinite;
-  z-index: 10;
+  top: -30px;
+  right: 20px;
+  width: 180px;
+  height: 180px;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 1;
 }
 
-@keyframes snake-wiggle {
-  0%, 100% {
-    transform: translateX(-50%) rotate(-5deg);
-  }
-  50% {
-    transform: translateX(-50%) rotate(5deg);
-  }
+.thoughts-plum img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .timeline {

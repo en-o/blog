@@ -1,10 +1,8 @@
 name: tan
-bio: 全栈开发者 | 开源爱好者 | 终身学习者
+bio: 不曾养性与修真，混沌迷心熬日月
 avatar: /assets/images/avatar.jpg
 intro: |
-  你好！我是一名热爱编程的开发者，专注于 Web 全栈开发。
-
-  热衷于探索新技术，喜欢通过代码解决实际问题。
+  日日如梭，认真对待
 skills:
   - name: 前端
     items:
@@ -23,14 +21,13 @@ skills:
     items:
       - MySQL
       - PostgreSQL
-      - MongoDB
       - Redis
   - name: 工具
     items:
       - Git
       - Docker
-      - Kubernetes
       - CI/CD
+      - Shell
 currently:
   - AI带着我写点小工具项目
   - 每天没事看看虾仁

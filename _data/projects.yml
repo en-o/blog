@@ -1,17 +1,50 @@
-- name: "个人博客系统"
-  description: "基于 Jekyll 的个人博客，支持知识库管理、碎碎念记录"
-  url: "https://github.com/en-o/blog"
-  tags: ["Jekyll", "Ruby", "Markdown"]
+- name: 个人博客系统
+  description: 基于 Jekyll 的个人博客，支持知识库管理、碎碎念记录
+  url: https://github.com/en-o/blog
+  tags:
+    - Jekyll
+    - Ruby
+    - Markdown
   star: true
-
-- name: "项目示例 A"
-  description: "这是一个项目示例描述"
-  url: "https://github.com/yourusername/project-a"
-  tags: ["React", "TypeScript"]
+- name: 站点导航
+  description: 自用的一个业务导航项目
+  url: https://gitee.com/tanoo/oasis
+  tags:
+    - JAVA
+    - React
+    - 浏览器插件
+  star: true
+- name: Nginx证书管理
+  description: 处理 ssl证书，密钥管理，端口查询，数据库备份
+  url: https://gitee.com/tanoo/ops
+  tags:
+    - Nginx
+    - 运维
   star: false
-
-- name: "项目示例 B"
-  description: "另一个项目示例"
-  url: "https://github.com/yourusername/project-b"
-  tags: ["Node.js", "Express"]
+- name: ncli
+  description: rust 构建的命令行工具，其中一个命令具有简单的nginx功能
+  url: https://gitee.com/tanoo/ncli
+  tags:
+    - 工具
+    - rust
   star: false
+- name: tfiles
+  description: 文件服务，快速聚合OSS存储功能
+  url: https://gitee.com/tanoo/tfiles
+  tags:
+    - minio
+    - file
+  star: false
+- name: omniscient
+  description: Java项目管理， 同时带有一个自启工具
+  url: https://gitee.com/tanoo/omniscient
+  tags: []
+  star: false
+- name: Jdevelops
+  description: 开发中的一些积累！ 简单的web基础jar,附带的业务脚手架目前没有开源【Jdevelops-archetype，jdevelops-maven-plugin】
+  url: https://github.com/en-o/Jdevelops
+  tags:
+    - 基础依赖
+    - JAVA
+    - Maven
+  star: true
