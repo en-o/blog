@@ -4,6 +4,8 @@ title: 碎碎念
 permalink: /thoughts.html
 ---
 
+<div class="thoughts-snake">🐍</div>
+
 <div class="timeline">
   {% for thought in site.data.thoughts %}
   <div class="timeline-item">

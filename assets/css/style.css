@@ -738,6 +738,25 @@ body {
 }
 
 /* 时间轴样式 */
+.thoughts-snake {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32px;
+  animation: snake-wiggle 3s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes snake-wiggle {
+  0%, 100% {
+    transform: translateX(-50%) rotate(-5deg);
+  }
+  50% {
+    transform: translateX(-50%) rotate(5deg);
+  }
+}
+
 .timeline {
   position: relative;
   padding: 20px 0;
