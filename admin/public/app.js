@@ -528,12 +528,12 @@ function importYuqueDoc() {
   input.click();
 }
 
-// 解析语雀导出的 Markdown 文档
+// 解析语雀导出的 Markdown 文档 - 仅处理标题降级
 function parseYuqueMarkdown(content) {
   let title = '';
   let processedContent = content;
 
-  // 1. 提取标题（从第一个 h1 标签或第一个 # 标题）
+  // 1. 提取标题（从第一个 h1 标签或第一个 # 标题）用于填充表单
   const h1Match = content.match(/<h1[^>]*>(.*?)<\/h1>/);
   if (h1Match) {
     const h1Content = h1Match[1];
@@ -547,138 +547,36 @@ function parseYuqueMarkdown(content) {
     }
   }
 
-  // 2. 移除文档开头的引用块（通常是描述信息）
-  processedContent = processedContent.replace(/^>.*?\n>\n/s, '');
-
-  // 3. 移除分隔线
-  processedContent = processedContent.replace(/^---\n/gm, '');
-
-  // 4. 【关键】在引用块后、代码块前自动插入空行（修复Kramdown渲染问题）
-  // 匹配: 以>开头的行(引用块，包括空的>行)，后面可能有0-1个空行，然后是```代码块
-  // 需要确保引用块和代码块之间至少有一个完整的空行(两个\n)
-  processedContent = processedContent.replace(/((?:^>.*$\n)+)\n?(```)/gm, (match, blockquote, codeBlock) => {
-    // 移除blockquote末尾可能存在的换行符
-    const cleanBlockquote = blockquote.trimEnd();
-    // 确保引用块和代码块之间有两个换行符(一个空行)
-    return cleanBlockquote + '\n\n' + codeBlock;
-  });
-
-  // 5. 【智能标题降级】检测第一个标题级别，决定是否降级
-  // 查找第一个标题（HTML或Markdown格式）
-  const firstHtmlHeading = processedContent.match(/<h(\d)[^>]*>/);
+  // 2. 【智能标题降级】检测第一个标题级别，决定是否降级
+  // 查找第一个标题（Markdown格式 # 开头）
   const firstMdHeading = processedContent.match(/^(#{1,6})\s/m);
 
-  let shouldDemoteHeadings = false;
+  // 只有当第一个标题是 # (h1) 时才降级
+  const shouldDemoteHeadings = firstMdHeading && firstMdHeading[1] === '#';
 
-  if (firstHtmlHeading) {
-    // 如果第一个HTML标题是h1，需要降级
-    shouldDemoteHeadings = firstHtmlHeading[1] === '1';
-  } else if (firstMdHeading) {
-    // 如果第一个Markdown标题是#（h1），需要降级
-    shouldDemoteHeadings = firstMdHeading[1] === '#';
-  }
-
-  // 6. 转换 HTML 标题为 Markdown 标题，保留锚点作为注释
+  // 3. 处理 Markdown 格式的标题降级（保持内容完全不变）
   if (shouldDemoteHeadings) {
-    // 降一级：h1 -> ##, h2 -> ###, h3 -> ####, h4 -> #####, h5 -> ######, h6 -> ######
-    processedContent = processedContent.replace(/<h1\s+id="([^"]*)">(.*?)<\/h1>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `## ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h2\s+id="([^"]*)">(.*?)<\/h2>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `### ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h3\s+id="([^"]*)">(.*?)<\/h3>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `#### ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h4\s+id="([^"]*)">(.*?)<\/h4>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `##### ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h5\s+id="([^"]*)">(.*?)<\/h5>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `###### ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h6\s+id="([^"]*)">(.*?)<\/h6>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `###### ${text}\n<!-- anchor: ${id} -->`;
-    });
-  } else {
-    // 不降级：h1 -> #, h2 -> ##, h3 -> ###, 保持原级别
-    processedContent = processedContent.replace(/<h1\s+id="([^"]*)">(.*?)<\/h1>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `# ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h2\s+id="([^"]*)">(.*?)<\/h2>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `## ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h3\s+id="([^"]*)">(.*?)<\/h3>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `### ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h4\s+id="([^"]*)">(.*?)<\/h4>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `#### ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h5\s+id="([^"]*)">(.*?)<\/h5>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `##### ${text}\n<!-- anchor: ${id} -->`;
-    });
-    processedContent = processedContent.replace(/<h6\s+id="([^"]*)">(.*?)<\/h6>/g, (match, id, content) => {
-      const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
-      return `###### ${text}\n<!-- anchor: ${id} -->`;
-    });
+    // 使用临时标记避免重复替换,保持标题内容完全不变
+    processedContent = processedContent.replace(/^# (.*)$/gm, '{{H1}}$1');
+    processedContent = processedContent.replace(/^## (.*)$/gm, '{{H2}}$1');
+    processedContent = processedContent.replace(/^### (.*)$/gm, '{{H3}}$1');
+    processedContent = processedContent.replace(/^#### (.*)$/gm, '{{H4}}$1');
+    processedContent = processedContent.replace(/^##### (.*)$/gm, '{{H5}}$1');
+    processedContent = processedContent.replace(/^###### (.*)$/gm, '{{H6}}$1');
+
+    // 替换为降级后的标题（内容保持原样）
+    processedContent = processedContent.replace(/^\{\{H1\}\}(.*)$/gm, '## $1');
+    processedContent = processedContent.replace(/^\{\{H2\}\}(.*)$/gm, '### $1');
+    processedContent = processedContent.replace(/^\{\{H3\}\}(.*)$/gm, '#### $1');
+    processedContent = processedContent.replace(/^\{\{H4\}\}(.*)$/gm, '##### $1');
+    processedContent = processedContent.replace(/^\{\{H5\}\}(.*)$/gm, '###### $1');
+    processedContent = processedContent.replace(/^\{\{H6\}\}(.*)$/gm, '###### $1');
   }
-
-  // 7. 处理 Markdown 格式的标题（根据检测结果决定是否降级）
-  if (shouldDemoteHeadings) {
-    // 使用临时标记避免重复替换
-    processedContent = processedContent.replace(/^# (.+)$/gm, '{{H1}}$1');
-    processedContent = processedContent.replace(/^## (.+)$/gm, '{{H2}}$1');
-    processedContent = processedContent.replace(/^### (.+)$/gm, '{{H3}}$1');
-    processedContent = processedContent.replace(/^#### (.+)$/gm, '{{H4}}$1');
-    processedContent = processedContent.replace(/^##### (.+)$/gm, '{{H5}}$1');
-    processedContent = processedContent.replace(/^###### (.+)$/gm, '{{H6}}$1');
-
-    // 替换为降级后的标题
-    processedContent = processedContent.replace(/^\{\{H1\}\}(.+)$/gm, '## $1');
-    processedContent = processedContent.replace(/^\{\{H2\}\}(.+)$/gm, '### $1');
-    processedContent = processedContent.replace(/^\{\{H3\}\}(.+)$/gm, '#### $1');
-    processedContent = processedContent.replace(/^\{\{H4\}\}(.+)$/gm, '##### $1');
-    processedContent = processedContent.replace(/^\{\{H5\}\}(.+)$/gm, '###### $1');
-    processedContent = processedContent.replace(/^\{\{H6\}\}(.+)$/gm, '###### $1');
-  }
-  // 如果不需要降级，保持原标题级别不变
-
-  // 8. 【保留HTML标签】保留带颜色样式的font标签（Kramdown可以渲染）
-  // 不处理 rgb() 格式的颜色样式，保持原样
-  // 只处理特定语雀颜色的 font 标签转换
-  processedContent = processedContent.replace(/<font\s+style="color:#DF2A3F[^"]*">(.*?)<\/font>/g, '**`$1`**');
-  processedContent = processedContent.replace(/<font\s+style="color:#74B602[^"]*">(.*?)<\/font>/g, '`$1`');
-  // 其他font标签（包括rgb颜色）保持不变，不做处理
-
-  // 9. 处理引用块中的特定font标签（不包含rgb颜色）
-  processedContent = processedContent.replace(/^>\s*<font\s+style="color:#[0-9A-F]{6}[^"]*">(.*?)<\/font>/gm, '> $1');
-
-  // 10. 处理内联代码中的 font 标签
-  processedContent = processedContent.replace(/`\s*\*\*<font[^>]*>(.*?)<\/font>\*\*\s*`/g, '**`$1`**');
-
-  // 11. 转换语雀的锚点链接格式（保持不变）
-  processedContent = processedContent.replace(/\[([^\]]+)\]\(#([^\)]+)\)/g, '[$1](#$2)');
-
-  // 12. 清理多余的空行（超过2个连续空行）
-  processedContent = processedContent.replace(/\n{3,}/g, '\n\n');
-
-  // 13. 清理代码块前后的额外空格
-  processedContent = processedContent.replace(/```(\w+)\n\s+/g, '```$1\n');
-  processedContent = processedContent.replace(/\s+\n```/g, '\n```');
+  // 如果不需要降级，保持原标题级别和内容完全不变
 
   return {
     title,
-    content: processedContent.trim()
+    content: processedContent
   };
 }
 
