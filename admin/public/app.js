@@ -503,13 +503,23 @@ function importYuqueDoc() {
       const content = await file.text();
       const parsed = parseYuqueMarkdown(content);
 
-      // 自动填充表单
-      const filename = file.name;
-      document.getElementById('docFilename').value = filename;
-      document.getElementById('docTitle').value = parsed.title || filename.replace('.md', '');
-      document.getElementById('docContent').value = parsed.content;
+      // 检查是否正在编辑现有文档
+      const isEditing = document.getElementById('docFilename').value.trim() !== '' &&
+                        document.getElementById('docCategory').value.trim() !== '';
 
-      showAlert('success', '语雀文档导入成功！请补充分类、日期等信息后保存。');
+      if (isEditing) {
+        // 编辑模式：只更新内容,保留其他字段
+        document.getElementById('docContent').value = parsed.content;
+        showAlert('success', '文档内容已更新！其他信息保持不变,请检查后保存。');
+      } else {
+        // 新建模式：填充所有字段
+        const filename = file.name;
+        document.getElementById('docFilename').value = filename;
+        document.getElementById('docTitle').value = parsed.title || filename.replace('.md', '');
+        document.getElementById('docContent').value = parsed.content;
+        showAlert('success', '语雀文档导入成功！请补充分类、日期等信息后保存。');
+      }
+
       document.getElementById('docForm').scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
       showAlert('error', '导入失败: ' + error.message);
