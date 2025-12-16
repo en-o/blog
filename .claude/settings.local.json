@@ -5,7 +5,8 @@
       "Bash(tree:*)",
       "Bash(ruby -v:*)",
       "Bash(cat:*)",
-      "WebFetch(domain:doc.tannn.cn)"
+      "WebFetch(domain:doc.tannn.cn)",
+      "Read(//mnt/c/Users/tan/Downloads/**)"
     ],
     "deny": [],
     "ask": []

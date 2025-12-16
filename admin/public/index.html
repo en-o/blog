@@ -141,6 +141,18 @@
     <div id="docs" class="tab-content">
       <div class="card">
         <h2>新增/编辑文档</h2>
+        <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fc; border-radius: 8px; border-left: 4px solid #667eea;">
+          <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #667eea;">📥 导入语雀文档</h3>
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: #64748b;">
+            支持导入语雀导出的 Markdown 文档。导出时请选择：
+            <strong>导出 LaTeX 公式为 Markdown 语法</strong>、
+            <strong>保持语雀的换行</strong>、
+            <strong>保持语雀的锚点</strong>
+          </p>
+          <button type="button" class="btn btn-success" onclick="importYuqueDoc()">
+            📄 选择语雀 .md 文件导入
+          </button>
+        </div>
         <form id="docForm">
           <div class="form-group">
             <label>分类 *</label>

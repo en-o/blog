@@ -490,6 +490,103 @@ function resetDocForm() {
   document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
 }
 
+// 导入语雀文档
+function importYuqueDoc() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.md';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const content = await file.text();
+      const parsed = parseYuqueMarkdown(content);
+
+      // 自动填充表单
+      const filename = file.name;
+      document.getElementById('docFilename').value = filename;
+      document.getElementById('docTitle').value = parsed.title || filename.replace('.md', '');
+      document.getElementById('docContent').value = parsed.content;
+
+      showAlert('success', '语雀文档导入成功！请补充分类、日期等信息后保存。');
+      document.getElementById('docForm').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+      showAlert('error', '导入失败: ' + error.message);
+    }
+  };
+  input.click();
+}
+
+// 解析语雀导出的 Markdown 文档
+function parseYuqueMarkdown(content) {
+  let title = '';
+  let processedContent = content;
+
+  // 1. 提取标题（从第一个 h1 或引用块中的标题）
+  const h1Match = content.match(/<h1[^>]*>(.*?)<\/h1>/);
+  if (h1Match) {
+    const h1Content = h1Match[1];
+    // 移除 font 标签获取纯文本
+    title = h1Content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
+  }
+
+  // 2. 移除文档开头的引用块（通常是描述信息）
+  processedContent = processedContent.replace(/^>.*?\n>\n/s, '');
+
+  // 3. 移除分隔线
+  processedContent = processedContent.replace(/^---\n/gm, '');
+
+  // 4. 转换 HTML 标题为 Markdown 标题，保留锚点作为注释
+  // h1 -> ## (因为文档内容应该从二级标题开始)
+  processedContent = processedContent.replace(/<h1\s+id="([^"]*)">(.*?)<\/h1>/g, (match, id, content) => {
+    const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
+    return `## ${text}\n<!-- anchor: ${id} -->`;
+  });
+
+  // h2 -> ###
+  processedContent = processedContent.replace(/<h2\s+id="([^"]*)">(.*?)<\/h2>/g, (match, id, content) => {
+    const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
+    return `### ${text}\n<!-- anchor: ${id} -->`;
+  });
+
+  // h3 -> ####
+  processedContent = processedContent.replace(/<h3\s+id="([^"]*)">(.*?)<\/h3>/g, (match, id, content) => {
+    const text = content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
+    return `#### ${text}\n<!-- anchor: ${id} -->`;
+  });
+
+  // 5. 处理行内的 font 标签和特殊样式
+  // 将带颜色的 font 标签转换为加粗或代码格式
+  processedContent = processedContent.replace(/<font\s+style="color:#DF2A3F[^"]*">(.*?)<\/font>/g, '**`$1`**');
+  processedContent = processedContent.replace(/<font\s+style="color:#74B602[^"]*">(.*?)<\/font>/g, '`$1`');
+  processedContent = processedContent.replace(/<font[^>]*>(.*?)<\/font>/g, '$1');
+
+  // 6. 处理引用块中的内容 - 保持引用格式，但清理 font 标签
+  processedContent = processedContent.replace(/^>\s*<font[^>]*>(.*?)<\/font>/gm, '> $1');
+
+  // 7. 处理内联代码中的 font 标签
+  processedContent = processedContent.replace(/`\s*\*\*<font[^>]*>(.*?)<\/font>\*\*\s*`/g, '**`$1`**');
+
+  // 8. 转换语雀的锚点链接格式
+  processedContent = processedContent.replace(/\[([^\]]+)\]\(#([^\)]+)\)/g, '[$1](#$2)');
+
+  // 9. 清理多余的空行（超过2个连续空行的情况）
+  processedContent = processedContent.replace(/\n{3,}/g, '\n\n');
+
+  // 10. 清理代码块前后的额外空格
+  processedContent = processedContent.replace(/```(\w+)\n\s+/g, '```$1\n');
+  processedContent = processedContent.replace(/\s+\n```/g, '\n```');
+
+  // 11. 保持语雀的换行 - 确保引用块和列表项之间的换行
+  // 这部分已经在语雀导出时处理好了，我们只需确保不破坏它
+
+  return {
+    title,
+    content: processedContent.trim()
+  };
+}
+
 // 提交文档表单
 document.getElementById('docForm').addEventListener('submit', async (e) => {
   e.preventDefault();
