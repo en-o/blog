@@ -69,6 +69,11 @@
   display: block !important;
 }
 
+/* 移动端触摸支持 */
+.help-icon.active .help-tooltip {
+  display: block !important;
+}
+
 /* 移动端优化 */
 @media (max-width: 768px) {
   .friends-links {
@@ -78,6 +83,36 @@
 
   .link-card {
     padding: 15px;
+  }
+
+  /* 移动端提示框全屏显示 */
+  .help-tooltip {
+    position: fixed !important;
+    left: 20px !important;
+    right: 20px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: auto !important;
+    max-width: none !important;
+    background: white !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+  }
+
+  .help-icon.active::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+
+  .help-tooltip {
+    z-index: 1001 !important;
   }
 }
 

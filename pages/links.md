@@ -21,6 +21,31 @@ permalink: /links.html
   </div>
 </div>
 
+<script>
+(function() {
+  var helpIcon = document.querySelector('.help-icon');
+  var isActive = false;
+
+  helpIcon.addEventListener('click', function(e) {
+    e.stopPropagation();
+    isActive = !isActive;
+    if (isActive) {
+      this.classList.add('active');
+    } else {
+      this.classList.remove('active');
+    }
+  });
+
+  // 点击页面其他地方关闭提示框
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.help-icon') && isActive) {
+      helpIcon.classList.remove('active');
+      isActive = false;
+    }
+  });
+})();
+</script>
+
 <div class="friends-links">
   {% for link in site.data.links %}
   <div class="link-card">
