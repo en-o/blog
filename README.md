@@ -70,6 +70,10 @@ bundle install
 
 ```bash
 # 启动 Jekyll 服务
+# bundle exec jekyll serve --host=0.0.0.0
+# 想永久生效，在 _config.yml 里加
+# host: 0.0.0.0
+# port: 4000
 bundle exec jekyll serve
 
 # 访问 http://localhost:4000
