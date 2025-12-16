@@ -16,3 +16,7 @@
   description: json
   avatar: >-
     https://www.daimagu.com/assets/upload/2025-10/30/61295e9d3de246dcba5a196965dc2908.png
+- name: 跨平台传输文件
+  url: https://pairdrop.net/
+  description: 实现跨平台文件传输。无需安装，无需注册
+  avatar: https://pairdrop.net/images/favicon-96x96.png
