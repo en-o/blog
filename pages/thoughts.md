@@ -11,8 +11,10 @@ permalink: /thoughts.html
 
   <div class="timeline">
     {% assign sorted_thoughts = site.data.thoughts | sort: 'datetime' | reverse %}
+    {% assign emojis = "🌸,🐾,🍓,🦭,☁️,🧸,🫧,🐌,🌈,🍡,🐇,🪴,🧁,💤,🌟" | split: "," %}
     {% for thought in sorted_thoughts %}
-    <div class="timeline-item">
+    {% assign random_index = forloop.index | modulo: emojis.size %}
+    <div class="timeline-item" data-emoji="{{ emojis[random_index] }}">
       <div class="timeline-marker"></div>
       <div class="timeline-content">
         <time>{{ thought.datetime }}</time>

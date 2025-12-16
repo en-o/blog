@@ -75,6 +75,7 @@
 
 /* timeline-content 的 emoji 装饰 */
 .timeline-content::after {
+  content: attr(data-emoji);
   position: absolute;
   left: 8px;
   bottom: 8px;
@@ -83,21 +84,9 @@
   pointer-events: none;
 }
 
-.timeline-item:nth-child(15n+1) .timeline-content::after { content: '🌸'; }
-.timeline-item:nth-child(15n+2) .timeline-content::after { content: '🐾'; }
-.timeline-item:nth-child(15n+3) .timeline-content::after { content: '🍓'; }
-.timeline-item:nth-child(15n+4) .timeline-content::after { content: '🦭'; }
-.timeline-item:nth-child(15n+5) .timeline-content::after { content: '☁️'; }
-.timeline-item:nth-child(15n+6) .timeline-content::after { content: '🧸'; }
-.timeline-item:nth-child(15n+7) .timeline-content::after { content: '🫧'; }
-.timeline-item:nth-child(15n+8) .timeline-content::after { content: '🐌'; }
-.timeline-item:nth-child(15n+9) .timeline-content::after { content: '🌈'; }
-.timeline-item:nth-child(15n+10) .timeline-content::after { content: '🍡'; }
-.timeline-item:nth-child(15n+11) .timeline-content::after { content: '🐇'; }
-.timeline-item:nth-child(15n+12) .timeline-content::after { content: '🪴'; }
-.timeline-item:nth-child(15n+13) .timeline-content::after { content: '🧁'; }
-.timeline-item:nth-child(15n+14) .timeline-content::after { content: '💤'; }
-.timeline-item:nth-child(15n+15) .timeline-content::after { content: '🌟'; }
+.timeline-item[data-emoji] .timeline-content::after {
+  content: attr(data-emoji);
+}
 
 .timeline-item:last-child {
   margin-bottom: 0;
