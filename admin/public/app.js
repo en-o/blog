@@ -554,8 +554,12 @@ function parseYuqueMarkdown(content) {
   processedContent = processedContent.replace(/^---\n/gm, '');
 
   // 4. 【关键】在引用块后、代码块前自动插入空行（修复Kramdown渲染问题）
-  // 匹配: 以>开头的行(引用块)，后面可能有0个空行，然后是```代码块
-  processedContent = processedContent.replace(/((?:^>.*\n)+)(```)/gm, '$1\n$2');
+  // 匹配: 以>开头的行(引用块，包括空的>行)，后面可能有0-1个空行，然后是```代码块
+  // 需要确保引用块和代码块之间至少有一个完整的空行(两个\n)
+  processedContent = processedContent.replace(/((?:^>.*\n)+)\n?(```)/gm, (match, blockquote, codeBlock) => {
+    // 确保引用块和代码块之间有两个换行符(一个空行)
+    return blockquote + '\n' + codeBlock;
+  });
 
   // 5. 【智能标题降级】检测第一个标题级别，决定是否降级
   // 查找第一个标题（HTML或Markdown格式）
