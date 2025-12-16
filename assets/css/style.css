@@ -1545,6 +1545,32 @@ body {
   font-size: 16px;
   line-height: 1.8;
   color: #475569;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.doc-content * {
+  max-width: 100%;
+}
+
+.doc-content img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 15px 0;
+}
+
+.doc-content table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.doc-content pre {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .doc-content h2 {
@@ -2090,6 +2116,8 @@ body {
   .doc-article {
     padding: 15px;
     border-radius: 10px;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   /* 移动端显示移动端头部 */
@@ -2119,6 +2147,7 @@ body {
 
   .doc-header h1 {
     font-size: 22px;
+    word-wrap: break-word;
   }
 
   .doc-meta {
@@ -2131,45 +2160,50 @@ body {
   .doc-content {
     font-size: 14px;
     line-height: 1.7;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
-  .doc-content h2 {
-    font-size: 18px;
-    margin-top: 20px;
-    margin-bottom: 12px;
+  .doc-content * {
+    max-width: 100%;
   }
 
-  .doc-content h3 {
-    font-size: 16px;
-    margin-top: 18px;
-    margin-bottom: 10px;
-  }
-
-  .doc-content p {
-    margin-bottom: 12px;
-  }
-
-  .doc-content ul,
-  .doc-content ol {
-    margin-left: 20px;
-    margin-bottom: 12px;
-  }
-
-  .doc-content code {
-    font-size: 13px;
-    padding: 2px 6px;
+  .doc-content img {
+    max-width: 100% !important;
+    height: auto !important;
   }
 
   .doc-content pre {
-    padding: 15px;
+    padding: 12px;
     margin-bottom: 12px;
     border-radius: 8px;
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .doc-content code {
+    font-size: 12px;
+    padding: 2px 5px;
+    word-break: break-all;
+  }
+
+  .doc-content pre code {
+    font-size: 12px;
+    word-break: normal;
+  }
+
+  .doc-content table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    font-size: 13px;
   }
 
   .doc-content blockquote {
-    padding: 12px 15px;
-    margin: 12px 0;
+    padding: 10px 12px;
+    margin: 10px 0;
     border-radius: 0 8px 8px 0;
+    word-wrap: break-word;
   }
 
   /* 文档分类 */
