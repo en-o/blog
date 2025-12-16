@@ -573,10 +573,11 @@ function previewMarkdown() {
         </div>
       </div>
       <div style="padding: 12px 20px; background: #f8f9fc; border-radius: 8px; margin: 0 20px 20px 20px; font-size: 13px; color: #64748b;">
-        <strong>提示：</strong>左侧源码可实时编辑，点击"刷新预览"查看效果。实际渲染以Jekyll为准。
+        <strong>提示：</strong>左侧源码可实时编辑，点击"刷新预览"查看效果。关闭时会自动保存编辑内容。实际渲染以Jekyll为准。
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal(this)">关闭</button>
+        <button class="btn btn-primary" id="savePreviewChanges">✅ 保存并关闭</button>
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
       </div>
     </div>
   `;
@@ -588,6 +589,15 @@ function previewMarkdown() {
 
   // 刷新预览按钮事件
   document.getElementById('refreshPreview').addEventListener('click', renderMarkdownPreview);
+
+  // 保存并关闭按钮事件
+  document.getElementById('savePreviewChanges').addEventListener('click', function() {
+    const editedContent = document.getElementById('previewSource').value;
+    // 回填到原始文档内容输入框
+    document.getElementById('docContent').value = editedContent;
+    closeModal(modal);
+    showAlert('success', '内容已更新，请点击"保存文档"按钮保存修改');
+  });
 
   // 点击遮罩关闭
   modal.addEventListener('click', (e) => {
