@@ -1501,6 +1501,46 @@ body {
   word-break: break-word;
 }
 
+/* 复制源码按钮 */
+.copy-markdown-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  z-index: 10;
+}
+
+.copy-markdown-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.copy-markdown-btn:active {
+  transform: scale(0.95);
+}
+
+.copy-markdown-btn .copy-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.copy-markdown-btn .copy-text {
+  font-size: 13px;
+  line-height: 1;
+}
+
 /* 移动端文章列表侧边栏 */
 .mobile-articles-sidebar {
   position: fixed;

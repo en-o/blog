@@ -128,7 +128,13 @@ layout: default
 
     <!-- Markdown源码视图（默认隐藏） -->
     <div class="doc-source" id="docSource" style="display: none;">
-      <pre><code class="language-markdown" id="markdownSource"></code></pre>
+      <div style="position: relative;">
+        <button id="copyMarkdownBtn" class="copy-markdown-btn" title="复制全部源码">
+          <span class="copy-icon">📋</span>
+          <span class="copy-text">复制源码</span>
+        </button>
+        <pre><code class="language-markdown" id="markdownSource"></code></pre>
+      </div>
     </div>
   </article>
 
@@ -609,6 +615,56 @@ date: {{ page.date | date: "%Y-%m-%d" }}
 
       // 初始化tooltip
       viewModeBtn.title = '查看源码';
+    }
+
+    // 复制Markdown源码功能
+    const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
+    if (copyMarkdownBtn) {
+      copyMarkdownBtn.addEventListener('click', async function() {
+        const sourceText = markdownSource.textContent;
+
+        try {
+          await navigator.clipboard.writeText(sourceText);
+
+          // 显示成功反馈
+          const originalText = this.querySelector('.copy-text').textContent;
+          this.querySelector('.copy-text').textContent = '已复制!';
+          this.querySelector('.copy-icon').textContent = '✅';
+          this.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+
+          // 2秒后恢复
+          setTimeout(() => {
+            this.querySelector('.copy-text').textContent = originalText;
+            this.querySelector('.copy-icon').textContent = '📋';
+            this.style.background = '';
+          }, 2000);
+        } catch (error) {
+          // 降级方案：使用旧的 execCommand
+          const textArea = document.createElement('textarea');
+          textArea.value = sourceText;
+          textArea.style.position = 'fixed';
+          textArea.style.left = '-9999px';
+          document.body.appendChild(textArea);
+          textArea.select();
+
+          try {
+            document.execCommand('copy');
+            this.querySelector('.copy-text').textContent = '已复制!';
+            this.querySelector('.copy-icon').textContent = '✅';
+            this.style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+
+            setTimeout(() => {
+              this.querySelector('.copy-text').textContent = '复制源码';
+              this.querySelector('.copy-icon').textContent = '📋';
+              this.style.background = '';
+            }, 2000);
+          } catch (err) {
+            alert('复制失败，请手动选择复制');
+          }
+
+          document.body.removeChild(textArea);
+        }
+      });
     }
   });
 </script>

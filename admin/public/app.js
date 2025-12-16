@@ -542,28 +542,38 @@ function previewMarkdown() {
   const modal = document.createElement('div');
   modal.className = 'modal-overlay';
   modal.innerHTML = `
-    <div class="modal" style="width: 90%; max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+    <div class="modal" style="width: 95%; max-width: 1400px; height: 90vh; display: flex; flex-direction: column;">
       <div class="modal-header">
         <h3>📖 Markdown 预览 - ${escapeHtml(title)}</h3>
       </div>
-      <div class="modal-body">
-        <div style="display: flex; gap: 20px; height: 70vh;">
-          <!-- 左侧：源码 -->
-          <div style="flex: 1; display: flex; flex-direction: column;">
-            <h4 style="margin: 0 0 10px 0; color: #667eea;">源码</h4>
-            <textarea id="previewSource" readonly style="flex: 1; font-family: 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.6; resize: none; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">${escapeHtml(content)}</textarea>
+      <div class="modal-body" style="flex: 1; display: flex; gap: 20px; padding: 20px; overflow: hidden;">
+        <!-- 左侧：可编辑源码 -->
+        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; color: #667eea; font-size: 14px;">源码 (可编辑)</h4>
+            <button id="refreshPreview" class="btn btn-sm" style="padding: 6px 12px; margin: 0; font-size: 12px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">🔄 刷新预览</button>
           </div>
-          <!-- 右侧：预览 -->
-          <div style="flex: 1; display: flex; flex-direction: column;">
-            <h4 style="margin: 0 0 10px 0; color: #667eea;">预览效果</h4>
-            <div id="previewRendered" style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; background: #fff; line-height: 1.8;">
-              <!-- 渲染后的内容 -->
-            </div>
+          <textarea id="previewSource" style="flex: 1; font-family: 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.6; resize: none; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; overflow-y: auto;">${escapeHtml(content)}</textarea>
+        </div>
+
+        <!-- 中间：目录导航 -->
+        <div id="previewTocContainer" style="width: 200px; flex-shrink: 0; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 0 15px;">
+          <h4 style="margin: 0 0 10px 0; color: #667eea; font-size: 14px;">目录</h4>
+          <nav id="previewToc" style="flex: 1; overflow-y: auto;">
+            <!-- 动态生成目录 -->
+          </nav>
+        </div>
+
+        <!-- 右侧：预览效果 -->
+        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+          <h4 style="margin: 0 0 10px 0; color: #667eea; font-size: 14px;">预览效果</h4>
+          <div id="previewRendered" style="flex: 1; overflow-y: auto; overflow-x: hidden; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; background: #fff; line-height: 1.8; word-wrap: break-word; overflow-wrap: break-word;">
+            <!-- 渲染后的内容 -->
           </div>
         </div>
-        <div style="margin-top: 15px; padding: 12px; background: #f8f9fc; border-radius: 8px; font-size: 13px; color: #64748b;">
-          <strong>提示：</strong>这是一个简单的Markdown预览，实际渲染效果以Jekyll为准。建议预览后及时保存，发现问题可在源码区手动修复后再保存。
-        </div>
+      </div>
+      <div style="padding: 12px 20px; background: #f8f9fc; border-radius: 8px; margin: 0 20px 20px 20px; font-size: 13px; color: #64748b;">
+        <strong>提示：</strong>左侧源码可实时编辑，点击"刷新预览"查看效果。实际渲染以Jekyll为准。
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="closeModal(this)">关闭</button>
@@ -573,7 +583,24 @@ function previewMarkdown() {
 
   document.body.appendChild(modal);
 
-  // 渲染Markdown
+  // 初始渲染
+  renderMarkdownPreview();
+
+  // 刷新预览按钮事件
+  document.getElementById('refreshPreview').addEventListener('click', renderMarkdownPreview);
+
+  // 点击遮罩关闭
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 渲染Markdown预览
+function renderMarkdownPreview() {
+  const source = document.getElementById('previewSource').value;
+  const rendered = document.getElementById('previewRendered');
+  const tocContainer = document.getElementById('previewToc');
+
   try {
     // 配置marked选项
     if (typeof marked !== 'undefined') {
@@ -584,18 +611,85 @@ function previewMarkdown() {
         mangle: false
       });
 
-      const rendered = marked.parse(content);
-      document.getElementById('previewRendered').innerHTML = rendered;
+      const html = marked.parse(source);
+      rendered.innerHTML = html;
+
+      // 生成目录
+      generatePreviewToc(rendered, tocContainer);
+
+      // 为所有元素添加边界保护
+      rendered.querySelectorAll('*').forEach(el => {
+        el.style.maxWidth = '100%';
+        el.style.overflowWrap = 'break-word';
+        el.style.wordWrap = 'break-word';
+      });
+
+      // 特别处理代码块和表格
+      rendered.querySelectorAll('pre, table').forEach(el => {
+        el.style.overflowX = 'auto';
+        el.style.maxWidth = '100%';
+      });
+
+      // 处理图片
+      rendered.querySelectorAll('img').forEach(img => {
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+      });
     } else {
-      document.getElementById('previewRendered').innerHTML = '<p style="color: red;">Markdown渲染库加载失败</p>';
+      rendered.innerHTML = '<p style="color: red;">Markdown渲染库加载失败</p>';
     }
   } catch (error) {
-    document.getElementById('previewRendered').innerHTML = `<p style="color: red;">渲染失败: ${escapeHtml(error.message)}</p>`;
+    rendered.innerHTML = `<p style="color: red;">渲染失败: ${escapeHtml(error.message)}</p>`;
+  }
+}
+
+// 生成预览目录
+function generatePreviewToc(container, tocNav) {
+  const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  if (headings.length === 0) {
+    tocNav.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">无标题</p>';
+    return;
   }
 
-  // 点击遮罩关闭
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal(modal);
+  let tocHTML = '<ul style="list-style: none; margin: 0; padding: 0;">';
+  headings.forEach((heading, index) => {
+    const level = parseInt(heading.tagName.substring(1));
+    const text = heading.textContent;
+    const id = heading.id || `preview-heading-${index}`;
+
+    if (!heading.id) {
+      heading.id = id;
+    }
+
+    const indent = (level - 1) * 12;
+    tocHTML += `
+      <li style="margin-bottom: 6px;">
+        <a href="#${id}"
+           class="preview-toc-link"
+           style="display: block; padding: 6px 8px; padding-left: ${indent + 8}px; color: #475569; text-decoration: none; font-size: ${14 - (level - 1)}px; border-radius: 6px; transition: all 0.3s ease; border-left: 2px solid transparent;"
+           onclick="event.preventDefault(); document.getElementById('${id}').scrollIntoView({behavior: 'smooth', block: 'start'});">
+          ${escapeHtml(text)}
+        </a>
+      </li>
+    `;
+  });
+  tocHTML += '</ul>';
+
+  tocNav.innerHTML = tocHTML;
+
+  // 添加悬停效果
+  tocNav.querySelectorAll('.preview-toc-link').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      this.style.background = 'rgba(102, 126, 234, 0.1)';
+      this.style.color = '#667eea';
+      this.style.borderLeftColor = '#667eea';
+    });
+    link.addEventListener('mouseleave', function() {
+      this.style.background = '';
+      this.style.color = '#475569';
+      this.style.borderLeftColor = 'transparent';
+    });
   });
 }
 
