@@ -19,26 +19,18 @@
 /* 时间轴样式 */
 .timeline {
   position: relative;
-  padding: 20px 0;
+  padding: 40px;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 20px;
-  padding: 40px;
   box-shadow: 0 8px 32px rgba(102, 126, 234, 0.1);
 }
 
+/* 移除原有的直线 */
 .timeline::before {
-  content: '';
-  position: absolute;
-  left: 60px;
-  top: 40px;
-  bottom: 40px;
-  width: 3px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-  border-radius: 2px;
-  opacity: 0.3;
+  display: none;
 }
 
 .timeline-item {
@@ -46,7 +38,66 @@
   padding-left: 100px;
   margin-bottom: 40px;
   animation: fadeIn 0.5s ease-in-out;
+  z-index: 1;
 }
+
+/* marker 向上的曲线连接（除了第一个） */
+.timeline-item:not(:first-child) .timeline-marker::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg width='30' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='upGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(102,126,234,0.3);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(102,126,234,0.6);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 15 0 Q 5 15 15 40' stroke='url(%23upGrad)' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* marker 向下的曲线连接（除了最后一个） */
+.timeline-item:not(:last-child) .timeline-marker::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg width='30' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='downGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(102,126,234,0.6);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(102,126,234,0.3);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 15 0 Q 25 25 15 40' stroke='url(%23downGrad)' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* timeline-content 的 emoji 装饰 */
+.timeline-content::after {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  font-size: 16px;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.timeline-item:nth-child(15n+1) .timeline-content::after { content: '🌸'; }
+.timeline-item:nth-child(15n+2) .timeline-content::after { content: '🐾'; }
+.timeline-item:nth-child(15n+3) .timeline-content::after { content: '🍓'; }
+.timeline-item:nth-child(15n+4) .timeline-content::after { content: '🦭'; }
+.timeline-item:nth-child(15n+5) .timeline-content::after { content: '☁️'; }
+.timeline-item:nth-child(15n+6) .timeline-content::after { content: '🧸'; }
+.timeline-item:nth-child(15n+7) .timeline-content::after { content: '🫧'; }
+.timeline-item:nth-child(15n+8) .timeline-content::after { content: '🐌'; }
+.timeline-item:nth-child(15n+9) .timeline-content::after { content: '🌈'; }
+.timeline-item:nth-child(15n+10) .timeline-content::after { content: '🍡'; }
+.timeline-item:nth-child(15n+11) .timeline-content::after { content: '🐇'; }
+.timeline-item:nth-child(15n+12) .timeline-content::after { content: '🪴'; }
+.timeline-item:nth-child(15n+13) .timeline-content::after { content: '🧁'; }
+.timeline-item:nth-child(15n+14) .timeline-content::after { content: '💤'; }
+.timeline-item:nth-child(15n+15) .timeline-content::after { content: '🌟'; }
 
 .timeline-item:last-child {
   margin-bottom: 0;
@@ -67,19 +118,21 @@
   position: absolute;
   left: 52px;
   top: 0;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: 3px solid white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-  z-index: 2;
+  border: 4px solid white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15),
+              0 2px 8px rgba(102, 126, 234, 0.4);
+  z-index: 3;
   transition: all 0.3s ease;
 }
 
 .timeline-item:hover .timeline-marker {
-  transform: scale(1.3);
-  box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.2);
+  transform: scale(1.4);
+  box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.2),
+              0 4px 16px rgba(102, 126, 234, 0.5);
 }
 
 .timeline-content {
@@ -110,6 +163,7 @@
   border-right-color: rgba(248, 249, 252, 0.6);
   transition: all 0.3s ease;
   filter: drop-shadow(-2px 0 2px rgba(102, 126, 234, 0.1));
+  z-index: 1;
 }
 
 .timeline-content:hover::before {
@@ -143,19 +197,39 @@
     padding: 25px 15px;
   }
 
-  .timeline::before {
-    left: 20px;
-  }
-
   .timeline-item {
     padding-left: 50px;
     margin-bottom: 30px;
   }
 
+  .timeline-item:not(:first-child) .timeline-marker::before {
+    width: 25px;
+    height: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg width='25' height='30' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='upGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(102,126,234,0.3);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(102,126,234,0.6);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 12.5 0 Q 4 11 12.5 30' stroke='url(%23upGrad)' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  .timeline-item:not(:last-child) .timeline-marker::after {
+    width: 25px;
+    height: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg width='25' height='30' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='downGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(102,126,234,0.6);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(102,126,234,0.3);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 12.5 0 Q 21 19 12.5 30' stroke='url(%23downGrad)' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    font-size: 10px;
+    line-height: 30px;
+  }
+
   .timeline-marker {
     left: 12px;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+    border: 3px solid white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15),
+                0 2px 6px rgba(102, 126, 234, 0.3);
+    z-index: 3;
+  }
+
+  .timeline-item:hover .timeline-marker {
+    transform: scale(1.3);
+    box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.2),
+                0 3px 12px rgba(102, 126, 234, 0.4);
   }
 
   .timeline-content {
@@ -177,21 +251,39 @@
     border-radius: 12px;
   }
 
-  .timeline::before {
-    left: 15px;
-    width: 2px;
-  }
-
   .timeline-item {
     padding-left: 40px;
     margin-bottom: 25px;
   }
 
+  .timeline-item:not(:first-child) .timeline-marker::before {
+    width: 20px;
+    height: 25px;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='upGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(102,126,234,0.3);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(102,126,234,0.6);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 10 0 Q 3 9 10 25' stroke='url(%23upGrad)' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  .timeline-item:not(:last-child) .timeline-marker::after {
+    width: 20px;
+    height: 25px;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='downGrad' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:rgba(102,126,234,0.6);stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:rgba(102,126,234,0.3);stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 10 0 Q 17 16 10 25' stroke='url(%23downGrad)' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    font-size: 9px;
+    line-height: 25px;
+  }
+
   .timeline-marker {
     left: 8px;
-    width: 14px;
-    height: 14px;
-    border: 2px solid white;
+    width: 16px;
+    height: 16px;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15),
+                0 2px 4px rgba(102, 126, 234, 0.25);
+    z-index: 3;
+  }
+
+  .timeline-item:hover .timeline-marker {
+    transform: scale(1.25);
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2),
+                0 2px 8px rgba(102, 126, 234, 0.35);
   }
 
   .timeline-content {
