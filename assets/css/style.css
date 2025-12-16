@@ -992,8 +992,9 @@ body {
 }
 
 .neighbors-sticky {
-  position: sticky;
+  position: fixed;
   top: 110px;
+  width: 200px;
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1004,6 +1005,7 @@ body {
   max-height: calc(100vh - 130px);
   overflow-y: auto;
   transition: all 0.3s ease;
+  z-index: 100;
 }
 
 .neighbors-sticky:hover {
