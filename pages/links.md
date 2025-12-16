@@ -32,9 +32,3 @@ permalink: /links.html
   </div>
   {% endfor %}
 </div>
-
-<style>
-.help-icon:hover .help-tooltip {
-  display: block !important;
-}
-</style>
