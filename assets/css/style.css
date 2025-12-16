@@ -1831,6 +1831,25 @@ body {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.doc-content table th,
+.doc-content table td {
+  border: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.doc-content table th {
+  background: rgba(248, 249, 252, 0.9);
+  font-weight: 600;
+  color: #475569;
+}
+
+.doc-content table tr:nth-child(even) {
+  background: rgba(248, 249, 252, 0.5);
 }
 
 .doc-content pre {
@@ -2617,6 +2636,26 @@ body {
     width: 100%;
     overflow-x: auto;
     font-size: 13px;
+    border-collapse: collapse;
+    margin: 12px 0;
+  }
+
+  .doc-content table th,
+  .doc-content table td {
+    border: 1px solid #e2e8f0;
+    padding: 8px 10px;
+    text-align: left;
+  }
+
+  .doc-content table th {
+    background: rgba(248, 249, 252, 0.9);
+    font-weight: 600;
+    color: #475569;
+    font-size: 12px;
+  }
+
+  .doc-content table tr:nth-child(even) {
+    background: rgba(248, 249, 252, 0.5);
   }
 
   .doc-content blockquote {
