@@ -17,6 +17,9 @@
   {% if page.url == '/thoughts.html' %}
   <link rel="stylesheet" href="{{ '/assets/css/thoughts.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   {% endif %}
+  {% if page.layout == 'doc' or page.url == '/docs.html' %}
+  <link rel="stylesheet" href="{{ '/assets/css/docs.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+  {% endif %}
 </head>
 <body>
   {% include header.html %}

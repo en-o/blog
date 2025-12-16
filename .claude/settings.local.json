@@ -11,7 +11,9 @@
       "Bash(./blog.sh:*)",
       "WebFetch(domain:www.yuque.com)",
       "Bash(find:*)",
-      "Bash(bundle exec jekyll build:*)"
+      "Bash(bundle exec jekyll build:*)",
+      "Read(///**)",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": []
