@@ -4,6 +4,8 @@ title: 碎碎念
 permalink: /thoughts.html
 ---
 
+<script src="{{ '/assets/js/thoughts.js' | relative_url }}"></script>
+
 <div style="position: relative;">
   <div class="thoughts-plum">
     <img src="{{ '/assets/images/plum.svg' | relative_url }}" alt="梅花装饰">
