@@ -4,7 +4,22 @@ layout: default
 
 <div class="doc-wrapper">
   <article class="doc-article">
-    <header class="doc-header">
+    <!-- 移动端专属头部 -->
+    <div class="mobile-doc-header">
+      <div class="mobile-doc-title-row">
+        <h1 class="mobile-doc-h1">{{ page.title }}</h1>
+        <button class="mobile-articles-toggle" id="mobileArticlesBtn" data-category="{{ page.category }}" style="display: none;">
+          <img src="{{ '/assets/images/catalog_32.png' | relative_url }}" alt="文章列表">
+        </button>
+      </div>
+      <div class="mobile-doc-meta">
+        <span>{{ page.category }}</span>
+        <span>{{ page.date | date: "%Y-%m-%d" }}</span>
+      </div>
+    </div>
+
+    <!-- 桌面端头部（保持原样） -->
+    <header class="doc-header desktop-only">
       <h1>{{ page.title }}</h1>
       <div class="doc-meta">
         <span>分类: {{ page.category }}</span>
@@ -44,6 +59,31 @@ layout: default
     </div>
   </aside>
 </div>
+
+<!-- 移动端文章列表侧边栏 -->
+<div class="mobile-articles-sidebar" id="mobileArticlesSidebar">
+  <div class="mobile-articles-header">
+    <h3 id="mobileArticlesCategory"></h3>
+    <button class="mobile-articles-close" id="mobileArticlesClose">×</button>
+  </div>
+  <ul class="mobile-articles-list" id="mobileArticlesList"></ul>
+</div>
+<div class="mobile-articles-overlay" id="mobileArticlesOverlay"></div>
+
+<!-- 移动端悬浮目录按钮 -->
+<button class="mobile-floating-toc-btn" id="mobileFloatingTocBtn">
+  <img src="{{ '/assets/images/catalog_2_32.png' | relative_url }}" alt="目录">
+</button>
+
+<!-- 移动端底部弹出目录 -->
+<div class="mobile-bottom-toc" id="mobileBottomToc">
+  <div class="mobile-bottom-toc-header">
+    <h3>文档目录</h3>
+    <button class="mobile-bottom-toc-close" id="mobileBottomTocClose">×</button>
+  </div>
+  <nav id="mobileBottomTocNav" class="mobile-bottom-toc-nav"></nav>
+</div>
+<div class="mobile-bottom-toc-overlay" id="mobileBottomTocOverlay"></div>
 
 <script>
   // 生成目录
@@ -171,5 +211,146 @@ layout: default
 
     window.addEventListener('scroll', highlightTOC);
     highlightTOC(); // 初始化
+
+    // === 移动端功能 ===
+
+    // 1. 从URL获取来源参数，判断是否从知识库进入
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromCategory = urlParams.get('from');
+    const mobileArticlesBtn = document.getElementById('mobileArticlesBtn');
+    const mobileArticlesSidebar = document.getElementById('mobileArticlesSidebar');
+    const mobileArticlesOverlay = document.getElementById('mobileArticlesOverlay');
+    const mobileArticlesClose = document.getElementById('mobileArticlesClose');
+    const mobileArticlesList = document.getElementById('mobileArticlesList');
+    const mobileArticlesCategory = document.getElementById('mobileArticlesCategory');
+
+    // 如果是从知识库进入（有from参数），显示文章列表按钮
+    if (fromCategory && mobileArticlesBtn) {
+      mobileArticlesBtn.style.display = 'flex';
+
+      // 加载该分类的所有文章
+      fetch('/docs.html')
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const docsDataScript = doc.getElementById('docs-data');
+          if (docsDataScript) {
+            const docsData = JSON.parse(docsDataScript.textContent);
+            const categoryDocs = docsData[fromCategory] || [];
+
+            // 更新分类标题
+            mobileArticlesCategory.textContent = fromCategory;
+
+            // 生成文章列表
+            let html = '';
+            categoryDocs.forEach(doc => {
+              const isActive = window.location.pathname === doc.url ? 'active' : '';
+              html += `<li><a href="${doc.url}?from=${encodeURIComponent(fromCategory)}" class="${isActive}">${doc.title}</a></li>`;
+            });
+            mobileArticlesList.innerHTML = html || '<li style="padding: 14px; color: #999;">暂无文档</li>';
+          }
+        })
+        .catch(error => console.error('加载文章列表失败:', error));
+
+      // 点击按钮打开侧边栏
+      mobileArticlesBtn.addEventListener('click', function() {
+        mobileArticlesSidebar.classList.add('open');
+        mobileArticlesOverlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      });
+
+      // 关闭侧边栏
+      function closeMobileArticles() {
+        mobileArticlesSidebar.classList.remove('open');
+        mobileArticlesOverlay.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+
+      mobileArticlesClose.addEventListener('click', closeMobileArticles);
+      mobileArticlesOverlay.addEventListener('click', closeMobileArticles);
+    }
+
+    // 2. 移动端悬浮目录按钮
+    const mobileFloatingTocBtn = document.getElementById('mobileFloatingTocBtn');
+    const mobileBottomToc = document.getElementById('mobileBottomToc');
+    const mobileBottomTocOverlay = document.getElementById('mobileBottomTocOverlay');
+    const mobileBottomTocClose = document.getElementById('mobileBottomTocClose');
+    const mobileBottomTocNav = document.getElementById('mobileBottomTocNav');
+
+    // 复制目录HTML到底部弹出目录
+    if (mobileBottomTocNav && tocHTML) {
+      mobileBottomTocNav.innerHTML = tocHTML;
+    }
+
+    // 打开底部目录
+    if (mobileFloatingTocBtn) {
+      mobileFloatingTocBtn.addEventListener('click', function() {
+        mobileBottomToc.classList.add('open');
+        mobileBottomTocOverlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    // 关闭底部目录
+    function closeMobileBottomToc() {
+      mobileBottomToc.classList.remove('open');
+      mobileBottomTocOverlay.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    if (mobileBottomTocClose) {
+      mobileBottomTocClose.addEventListener('click', closeMobileBottomToc);
+    }
+
+    if (mobileBottomTocOverlay) {
+      mobileBottomTocOverlay.addEventListener('click', closeMobileBottomToc);
+    }
+
+    // 点击底部目录链接后跳转并关闭
+    const mobileBottomTocLinks = mobileBottomTocNav.querySelectorAll('.toc-link');
+    mobileBottomTocLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+
+        // 先关闭目录
+        closeMobileBottomToc();
+
+        // 延迟一点跳转，让关闭动画完成
+        setTimeout(() => {
+          if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            history.pushState(null, null, '#' + targetId);
+          }
+        }, 300);
+      });
+    });
+
+    // 同步底部目录的高亮状态
+    function highlightBottomTOC() {
+      if (!mobileBottomTocLinks.length) return;
+
+      let current = '';
+      const scrollPosition = window.scrollY + 100;
+
+      headings.forEach(heading => {
+        const headingTop = heading.offsetTop;
+        if (scrollPosition >= headingTop) {
+          current = heading.id;
+        }
+      });
+
+      mobileBottomTocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', highlightBottomTOC);
+    highlightBottomTOC(); // 初始化
   });
 </script>

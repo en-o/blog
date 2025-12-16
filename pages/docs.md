@@ -162,13 +162,13 @@ permalink: /docs.html
         mobileDocsSection.style.display = 'block';
         mobileCurrentCategory.textContent = categoryName;
 
-        // 更新移动端文档列表
+        // 更新移动端文档列表（添加from参数）
         const docs = docsData[categoryName] || [];
         let html = '';
         docs.forEach(doc => {
           html += `
             <li>
-              <a href="${doc.url}">${doc.title}</a>
+              <a href="${doc.url}?from=${encodeURIComponent(categoryName)}">${doc.title}</a>
               <span class="mobile-doc-date">${doc.date}</span>
             </li>
           `;
