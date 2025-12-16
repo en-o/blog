@@ -10,7 +10,7 @@ permalink: /links.html
     <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; background: #667eea; color: white; border-radius: 50%; font-size: 14px; font-weight: bold;">?</span>
     <div class="help-tooltip" style="display: none; position: absolute; left: 30px; top: -10px; background: white; border: 1px solid #e1e4e8; border-radius: 8px; padding: 15px; width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000;">
       <h4 style="margin: 0 0 10px 0; color: #667eea;">如何添加友链</h4>
-      <p style="margin: 0 0 10px 0; font-size: 14px;">如果你想交换友链，请提交 Issue 或 PR，格式如下：</p>
+      <p style="margin: 0 0 10px 0; font-size: 14px;">如果你想交换友链，请提交 <a href="https://github.com/en-o/blog/issues" target="_blank" style="color: #667eea; text-decoration: none;">Issue</a> 或 <a href="https://github.com/en-o/blog/pulls" target="_blank" style="color: #667eea; text-decoration: none;">PR</a>，格式如下：</p>
       <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
         <li>名称：你的名字</li>
         <li>链接：你的网站</li>
