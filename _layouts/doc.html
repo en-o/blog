@@ -12,6 +12,18 @@ layout: default
       </div>
     </header>
 
+    <!-- 移动端目录折叠按钮 -->
+    <div class="mobile-toc-toggle">
+      <button id="mobileTocBtn" class="toc-toggle-btn">
+        <span class="toc-icon">📑</span>
+        <span class="toc-text">目录</span>
+        <span class="toc-arrow">▼</span>
+      </button>
+      <div id="mobileTocContent" class="mobile-toc-content">
+        <nav id="mobileTocNav"></nav>
+      </div>
+    </div>
+
     <div class="doc-content" id="docContent">
       {{ content }}
     </div>
@@ -38,7 +50,11 @@ layout: default
   document.addEventListener('DOMContentLoaded', function() {
     const content = document.getElementById('docContent');
     const tocNav = document.getElementById('tocNav');
+    const mobileTocNav = document.getElementById('mobileTocNav');
     const tocSticky = document.getElementById('tocSticky');
+    const mobileTocToggle = document.querySelector('.mobile-toc-toggle');
+    const mobileTocBtn = document.getElementById('mobileTocBtn');
+    const mobileTocContent = document.getElementById('mobileTocContent');
 
     if (!content || !tocNav) return;
 
@@ -59,6 +75,9 @@ layout: default
 
     if (headings.length === 0) {
       document.querySelector('.doc-toc').style.display = 'none';
+      if (mobileTocToggle) {
+        mobileTocToggle.style.display = 'none';
+      }
       return;
     }
 
@@ -80,16 +99,40 @@ layout: default
       `;
     });
     tocHTML += '</ul>';
+
+    // 同时更新桌面端和移动端目录
     tocNav.innerHTML = tocHTML;
+    if (mobileTocNav) {
+      mobileTocNav.innerHTML = tocHTML;
+    }
+
+    // 移动端目录折叠功能
+    if (mobileTocBtn && mobileTocContent) {
+      mobileTocBtn.addEventListener('click', function() {
+        const isOpen = mobileTocContent.classList.toggle('open');
+        const arrow = this.querySelector('.toc-arrow');
+        arrow.textContent = isOpen ? '▲' : '▼';
+      });
+
+      // 点击移动端目录链接后自动折叠
+      const mobileTocLinks = mobileTocNav.querySelectorAll('.toc-link');
+      mobileTocLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          mobileTocContent.classList.remove('open');
+          const arrow = mobileTocBtn.querySelector('.toc-arrow');
+          arrow.textContent = '▼';
+        });
+      });
+    }
 
     // 初始化位置
     updateTocPosition();
     window.addEventListener('scroll', updateTocPosition);
     window.addEventListener('resize', updateTocPosition);
 
-    // 平滑滚动
-    const tocLinks = tocNav.querySelectorAll('.toc-link');
-    tocLinks.forEach(link => {
+    // 平滑滚动（桌面端和移动端通用）
+    const allTocLinks = document.querySelectorAll('.toc-link');
+    allTocLinks.forEach(link => {
       link.addEventListener('click', function(e) {
         e.preventDefault();
         const targetId = this.getAttribute('href').substring(1);
@@ -118,7 +161,7 @@ layout: default
         }
       });
 
-      tocLinks.forEach(link => {
+      allTocLinks.forEach(link => {
         link.classList.remove('active');
         if (link.getAttribute('href') === '#' + current) {
           link.classList.add('active');
