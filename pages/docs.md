@@ -11,7 +11,8 @@ permalink: /docs.html
     <section class="mobile-recent-docs">
       <h3 class="mobile-section-title">最近更新</h3>
       <div class="mobile-recent-grid">
-        {% assign recent_docs = site.docs | sort: 'date' | reverse | limit: 3 %}
+        {% assign all_docs = site.docs | sort: 'date' | reverse %}
+        {% assign recent_docs = all_docs | slice: 0, 3 %}
         {% for doc in recent_docs %}
         <a href="{{ doc.url }}" class="mobile-recent-card">
           <img src="{{ '/assets/images/book_text_128.png' | relative_url }}" alt="{{ doc.title }}">
