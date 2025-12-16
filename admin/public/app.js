@@ -528,7 +528,85 @@ function importYuqueDoc() {
   input.click();
 }
 
-// 解析语雀导出的 Markdown 文档 - 仅处理标题降级
+// 预览Markdown
+function previewMarkdown() {
+  const content = document.getElementById('docContent').value;
+  const title = document.getElementById('docTitle').value || '未命名文档';
+
+  if (!content.trim()) {
+    showAlert('error', '请先输入Markdown内容');
+    return;
+  }
+
+  // 创建预览模态框
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal" style="width: 90%; max-width: 1200px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3>📖 Markdown 预览 - ${escapeHtml(title)}</h3>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; gap: 20px; height: 70vh;">
+          <!-- 左侧：源码 -->
+          <div style="flex: 1; display: flex; flex-direction: column;">
+            <h4 style="margin: 0 0 10px 0; color: #667eea;">源码</h4>
+            <textarea id="previewSource" readonly style="flex: 1; font-family: 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.6; resize: none; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px;">${escapeHtml(content)}</textarea>
+          </div>
+          <!-- 右侧：预览 -->
+          <div style="flex: 1; display: flex; flex-direction: column;">
+            <h4 style="margin: 0 0 10px 0; color: #667eea;">预览效果</h4>
+            <div id="previewRendered" style="flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; background: #fff; line-height: 1.8;">
+              <!-- 渲染后的内容 -->
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 15px; padding: 12px; background: #f8f9fc; border-radius: 8px; font-size: 13px; color: #64748b;">
+          <strong>提示：</strong>这是一个简单的Markdown预览，实际渲染效果以Jekyll为准。建议预览后及时保存，发现问题可在源码区手动修复后再保存。
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">关闭</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // 渲染Markdown
+  try {
+    // 配置marked选项
+    if (typeof marked !== 'undefined') {
+      marked.setOptions({
+        breaks: true,
+        gfm: true,
+        headerIds: true,
+        mangle: false
+      });
+
+      const rendered = marked.parse(content);
+      document.getElementById('previewRendered').innerHTML = rendered;
+    } else {
+      document.getElementById('previewRendered').innerHTML = '<p style="color: red;">Markdown渲染库加载失败</p>';
+    }
+  } catch (error) {
+    document.getElementById('previewRendered').innerHTML = `<p style="color: red;">渲染失败: ${escapeHtml(error.message)}</p>`;
+  }
+
+  // 点击遮罩关闭
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// HTML转义工具函数
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// 解析语雀导出的 Markdown 文档 - 处理标题降级、引用块和表格
 function parseYuqueMarkdown(content) {
   let title = '';
   let processedContent = content;
@@ -547,14 +625,89 @@ function parseYuqueMarkdown(content) {
     }
   }
 
-  // 2. 【智能标题降级】检测第一个标题级别，决定是否降级
+  // 2. 【修复引用块】确保引用块每行都有 > 符号
+  // 语雀导出的引用块可能只在第一行有 >,后续行缺少 >
+  processedContent = processedContent.replace(/^(>.*?)(\n(?!>|\n|$))/gm, function(match, quoteLine, nextLine) {
+    // 如果引用块后面跟着非引用块行且不是空行,给后续行添加 >
+    return quoteLine + nextLine;
+  });
+
+  // 处理多行引用块：确保连续的非空行都有 > 符号
+  const lines = processedContent.split('\n');
+  let inBlockquote = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // 检测引用块开始
+    if (line.trim().startsWith('>')) {
+      inBlockquote = true;
+    }
+    // 如果在引用块中，且当前行不是空行，且没有 > 符号
+    else if (inBlockquote && line.trim() !== '' && !line.startsWith('>')) {
+      // 检查是否是表格或其他特殊格式
+      if (!line.trim().startsWith('|') && !line.trim().startsWith('#')) {
+        lines[i] = '> ' + line;
+      } else {
+        // 遇到表格或标题，结束引用块
+        inBlockquote = false;
+      }
+    }
+    // 遇到空行，结束引用块
+    else if (line.trim() === '') {
+      inBlockquote = false;
+    }
+  }
+  processedContent = lines.join('\n');
+
+  // 3. 【修复表格】确保表格格式正确
+  // 语雀导出的表格可能格式不规范，需要确保表格行都有正确的格式
+  const tableLines = processedContent.split('\n');
+  let inTable = false;
+  let tableStart = -1;
+
+  for (let i = 0; i < tableLines.length; i++) {
+    const line = tableLines[i].trim();
+
+    // 检测表格开始（包含 | 的行）
+    if (line.includes('|') && !inTable) {
+      inTable = true;
+      tableStart = i;
+    }
+    // 如果在表格中
+    else if (inTable) {
+      // 如果当前行不包含 | 或者是空行，表格结束
+      if (!line.includes('|') || line === '') {
+        // 验证表格是否有分隔行（第二行应该是 |---|---|）
+        if (tableStart >= 0 && i - tableStart >= 2) {
+          const headerLine = tableLines[tableStart].trim();
+          const separatorLine = tableLines[tableStart + 1].trim();
+
+          // 如果第二行不是分隔符，尝试修复
+          if (!separatorLine.match(/^[\|\s:-]+$/)) {
+            // 统计表头的列数
+            const headerCols = headerLine.split('|').filter(cell => cell.trim() !== '').length;
+            // 生成分隔行
+            const separator = '| ' + Array(headerCols).fill('---').join(' | ') + ' |';
+            tableLines.splice(tableStart + 1, 0, separator);
+            i++; // 调整索引
+          }
+        }
+
+        inTable = false;
+        tableStart = -1;
+      }
+    }
+  }
+  processedContent = tableLines.join('\n');
+
+  // 4. 【智能标题降级】检测第一个标题级别，决定是否降级
   // 查找第一个标题（Markdown格式 # 开头）
   const firstMdHeading = processedContent.match(/^(#{1,6})\s/m);
 
   // 只有当第一个标题是 # (h1) 时才降级
   const shouldDemoteHeadings = firstMdHeading && firstMdHeading[1] === '#';
 
-  // 3. 处理 Markdown 格式的标题降级（保持内容完全不变）
+  // 5. 处理 Markdown 格式的标题降级（保持内容完全不变）
   if (shouldDemoteHeadings) {
     // 使用临时标记避免重复替换,保持标题内容完全不变
     processedContent = processedContent.replace(/^# (.*)$/gm, '{{H1}}$1');

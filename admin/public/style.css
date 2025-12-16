@@ -576,3 +576,132 @@ small {
     padding: 16px 20px;
   }
 }
+
+/* Markdown预览样式 */
+#previewRendered h1,
+#previewRendered h2,
+#previewRendered h3,
+#previewRendered h4,
+#previewRendered h5,
+#previewRendered h6 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1e293b;
+}
+
+#previewRendered h1 {
+  font-size: 2em;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+#previewRendered h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+#previewRendered h3 {
+  font-size: 1.25em;
+}
+
+#previewRendered h4 {
+  font-size: 1em;
+}
+
+#previewRendered p {
+  margin-bottom: 16px;
+  line-height: 1.8;
+}
+
+#previewRendered code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.9em;
+  color: #e53e3e;
+}
+
+#previewRendered pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+#previewRendered pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: 0.9em;
+}
+
+#previewRendered blockquote {
+  border-left: 4px solid #667eea;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #64748b;
+  font-style: italic;
+}
+
+#previewRendered ul,
+#previewRendered ol {
+  margin-bottom: 16px;
+  padding-left: 28px;
+}
+
+#previewRendered li {
+  margin-bottom: 8px;
+}
+
+#previewRendered table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+#previewRendered table th,
+#previewRendered table td {
+  border: 1px solid #e2e8f0;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+#previewRendered table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #475569;
+}
+
+#previewRendered table tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+#previewRendered a {
+  color: #667eea;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+#previewRendered a:hover {
+  border-bottom-color: #667eea;
+}
+
+#previewRendered img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+#previewRendered hr {
+  border: none;
+  border-top: 2px solid #e2e8f0;
+  margin: 24px 0;
+}

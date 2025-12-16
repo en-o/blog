@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog 管理平台</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Markdown渲染库 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
 </head>
 <body>
   <div class="header">
@@ -196,6 +198,7 @@
           </div>
           <button type="submit" class="btn btn-primary">保存文档</button>
           <button type="button" class="btn btn-secondary" onclick="resetDocForm()">重置</button>
+          <button type="button" class="btn btn-success" onclick="previewMarkdown()">👁️ 预览</button>
         </form>
       </div>
 

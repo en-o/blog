@@ -424,45 +424,176 @@ layout: default
     let isSourceMode = false;
     let rawMarkdown = '';
 
-    // 获取原始Markdown内容
-    async function loadMarkdownSource() {
-      if (rawMarkdown) return; // 已加载过
+    // HTML转Markdown - 从渲染的HTML反解析成Markdown
+    function htmlToMarkdown(element) {
+      let markdown = '';
+      const nodes = element.childNodes;
+
+      nodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          // 文本节点直接添加
+          markdown += node.textContent;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase();
+
+          switch(tag) {
+            case 'h1':
+              markdown += '# ' + node.textContent.trim() + '\n\n';
+              break;
+            case 'h2':
+              markdown += '## ' + node.textContent.trim() + '\n\n';
+              break;
+            case 'h3':
+              markdown += '### ' + node.textContent.trim() + '\n\n';
+              break;
+            case 'h4':
+              markdown += '#### ' + node.textContent.trim() + '\n\n';
+              break;
+            case 'h5':
+              markdown += '##### ' + node.textContent.trim() + '\n\n';
+              break;
+            case 'h6':
+              markdown += '###### ' + node.textContent.trim() + '\n\n';
+              break;
+            case 'p':
+              markdown += htmlToMarkdown(node) + '\n\n';
+              break;
+            case 'strong':
+            case 'b':
+              markdown += '**' + node.textContent + '**';
+              break;
+            case 'em':
+            case 'i':
+              markdown += '*' + node.textContent + '*';
+              break;
+            case 'code':
+              // 检查是否在pre中（代码块）
+              if (node.parentElement.tagName.toLowerCase() !== 'pre') {
+                markdown += '`' + node.textContent + '`';
+              }
+              break;
+            case 'pre':
+              const codeNode = node.querySelector('code');
+              if (codeNode) {
+                const codeText = codeNode.textContent;
+                const langMatch = codeNode.className.match(/language-(\w+)/);
+                const lang = langMatch ? langMatch[1] : '';
+                markdown += '```' + lang + '\n' + codeText + '\n```\n\n';
+              } else {
+                markdown += '```\n' + node.textContent + '\n```\n\n';
+              }
+              break;
+            case 'a':
+              const href = node.getAttribute('href') || '';
+              markdown += '[' + node.textContent + '](' + href + ')';
+              break;
+            case 'img':
+              const src = node.getAttribute('src') || '';
+              const alt = node.getAttribute('alt') || '';
+              markdown += '![' + alt + '](' + src + ')';
+              break;
+            case 'ul':
+              node.querySelectorAll('li').forEach(li => {
+                markdown += '- ' + htmlToMarkdown(li).trim() + '\n';
+              });
+              markdown += '\n';
+              break;
+            case 'ol':
+              node.querySelectorAll('li').forEach((li, index) => {
+                markdown += (index + 1) + '. ' + htmlToMarkdown(li).trim() + '\n';
+              });
+              markdown += '\n';
+              break;
+            case 'li':
+              // 已在ul/ol中处理，这里直接返回内容
+              return htmlToMarkdown(node);
+            case 'blockquote':
+              const quoteLines = htmlToMarkdown(node).trim().split('\n');
+              quoteLines.forEach(line => {
+                markdown += '> ' + line + '\n';
+              });
+              markdown += '\n';
+              break;
+            case 'hr':
+              markdown += '---\n\n';
+              break;
+            case 'table':
+              markdown += convertTableToMarkdown(node) + '\n\n';
+              break;
+            case 'br':
+              markdown += '  \n';
+              break;
+            case 'div':
+            case 'span':
+              // 容器元素，递归处理子元素
+              markdown += htmlToMarkdown(node);
+              break;
+            default:
+              // 其他元素递归处理
+              markdown += htmlToMarkdown(node);
+          }
+        }
+      });
+
+      return markdown;
+    }
+
+    // 表格转Markdown
+    function convertTableToMarkdown(table) {
+      let markdown = '';
+      const rows = table.querySelectorAll('tr');
+
+      rows.forEach((row, rowIndex) => {
+        const cells = row.querySelectorAll('th, td');
+        const cellTexts = Array.from(cells).map(cell => cell.textContent.trim());
+
+        markdown += '| ' + cellTexts.join(' | ') + ' |\n';
+
+        // 在表头后添加分隔行
+        if (rowIndex === 0) {
+          markdown += '| ' + cellTexts.map(() => '---').join(' | ') + ' |\n';
+        }
+      });
+
+      return markdown;
+    }
+
+    // 生成Markdown源码
+    function generateMarkdownSource() {
+      if (rawMarkdown) return; // 已生成过
 
       try {
-        const currentPath = window.location.pathname;
-        // 将HTML路径转换为MD文件路径
-        const mdPath = currentPath.replace(/\.html$/, '.md').replace(/\/$/, '.md');
-        const response = await fetch(mdPath);
+        // 从页面信息生成Front Matter
+        const frontMatter = `---
+layout: doc
+title: {{ page.title }}
+category: {{ page.category }}
+date: {{ page.date | date: "%Y-%m-%d" }}
+{% if page.tags %}tags:
+{% for tag in page.tags %}  - {{ tag }}
+{% endfor %}{% endif %}---
 
-        if (!response.ok) {
-          // 尝试从源文件路径获取
-          const docPath = '{{ page.path }}';
-          const sourceResponse = await fetch('/' + docPath);
-          if (sourceResponse.ok) {
-            rawMarkdown = await sourceResponse.text();
-          } else {
-            throw new Error('无法加载Markdown源文件');
-          }
-        } else {
-          rawMarkdown = await response.text();
-        }
+`;
 
-        // 显示到源码区域
+        // 从HTML内容转换为Markdown
+        const contentMarkdown = htmlToMarkdown(docContent);
+
+        rawMarkdown = frontMatter + contentMarkdown;
         markdownSource.textContent = rawMarkdown;
       } catch (error) {
-        console.error('加载Markdown源码失败:', error);
-        markdownSource.textContent = '无法加载Markdown源码，请刷新页面重试';
+        console.error('生成Markdown源码失败:', error);
+        markdownSource.textContent = '生成Markdown源码失败: ' + error.message;
       }
     }
 
     // 切换视图模式
     if (viewModeBtn) {
-      viewModeBtn.addEventListener('click', async function() {
+      viewModeBtn.addEventListener('click', function() {
         isSourceMode = !isSourceMode;
 
         if (isSourceMode) {
           // 切换到源码模式
-          await loadMarkdownSource();
+          generateMarkdownSource();
           docContent.style.display = 'none';
           docSource.style.display = 'block';
           this.querySelector('.mode-icon').textContent = '👁️';
