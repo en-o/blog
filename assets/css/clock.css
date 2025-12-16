@@ -28,9 +28,9 @@
     height: 24px;
     background: url('/assets/images/cat.png') no-repeat center center;
     background-size: contain;
+    border-radius: 50%;
     transform: translate(-50%, -50%);
     z-index: 4;
-    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
 }
 
 /* 时钟刻度 */
