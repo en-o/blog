@@ -90,7 +90,13 @@ layout: default
 
     <!-- 桌面端头部（保持原样） -->
     <header class="doc-header desktop-only">
-      <h1>{{ page.title }}</h1>
+      <div class="doc-header-row">
+        <h1>{{ page.title }}</h1>
+        <!-- MD源码/渲染视图切换按钮 -->
+        <button id="viewModeBtn" class="view-mode-btn">
+          <span class="mode-icon">🪄</span>
+        </button>
+      </div>
       <div class="doc-meta">
         <span>分类: {{ page.category }}</span>
         <span>更新: {{ page.date | date: "%Y-%m-%d" }}</span>
@@ -118,6 +124,11 @@ layout: default
 
     <div class="doc-content" id="docContent">
       {{ content }}
+    </div>
+
+    <!-- Markdown源码视图（默认隐藏） -->
+    <div class="doc-source" id="docSource" style="display: none;">
+      <pre><code class="language-markdown" id="markdownSource"></code></pre>
     </div>
   </article>
 
@@ -403,5 +414,70 @@ layout: default
 
     window.addEventListener('scroll', highlightBottomTOC);
     highlightBottomTOC(); // 初始化
+
+    // === MD源码/渲染视图切换功能 ===
+    const viewModeBtn = document.getElementById('viewModeBtn');
+    const docContent = document.getElementById('docContent');
+    const docSource = document.getElementById('docSource');
+    const markdownSource = document.getElementById('markdownSource');
+
+    let isSourceMode = false;
+    let rawMarkdown = '';
+
+    // 获取原始Markdown内容
+    async function loadMarkdownSource() {
+      if (rawMarkdown) return; // 已加载过
+
+      try {
+        const currentPath = window.location.pathname;
+        // 将HTML路径转换为MD文件路径
+        const mdPath = currentPath.replace(/\.html$/, '.md').replace(/\/$/, '.md');
+        const response = await fetch(mdPath);
+
+        if (!response.ok) {
+          // 尝试从源文件路径获取
+          const docPath = '{{ page.path }}';
+          const sourceResponse = await fetch('/' + docPath);
+          if (sourceResponse.ok) {
+            rawMarkdown = await sourceResponse.text();
+          } else {
+            throw new Error('无法加载Markdown源文件');
+          }
+        } else {
+          rawMarkdown = await response.text();
+        }
+
+        // 显示到源码区域
+        markdownSource.textContent = rawMarkdown;
+      } catch (error) {
+        console.error('加载Markdown源码失败:', error);
+        markdownSource.textContent = '无法加载Markdown源码，请刷新页面重试';
+      }
+    }
+
+    // 切换视图模式
+    if (viewModeBtn) {
+      viewModeBtn.addEventListener('click', async function() {
+        isSourceMode = !isSourceMode;
+
+        if (isSourceMode) {
+          // 切换到源码模式
+          await loadMarkdownSource();
+          docContent.style.display = 'none';
+          docSource.style.display = 'block';
+          this.querySelector('.mode-icon').textContent = '👁️';
+          this.title = '查看渲染';
+        } else {
+          // 切换回渲染模式
+          docContent.style.display = 'block';
+          docSource.style.display = 'none';
+          this.querySelector('.mode-icon').textContent = '🪄';
+          this.title = '查看源码';
+        }
+      });
+
+      // 初始化tooltip
+      viewModeBtn.title = '查看源码';
+    }
   });
 </script>

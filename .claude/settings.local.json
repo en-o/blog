@@ -6,7 +6,10 @@
       "Bash(ruby -v:*)",
       "Bash(cat:*)",
       "WebFetch(domain:doc.tannn.cn)",
-      "Read(//mnt/c/Users/tan/Downloads/**)"
+      "Read(//mnt/c/Users/tan/Downloads/**)",
+      "Bash(bundle exec jekyll serve:*)",
+      "Bash(./blog.sh:*)",
+      "WebFetch(domain:www.yuque.com)"
     ],
     "deny": [],
     "ask": []

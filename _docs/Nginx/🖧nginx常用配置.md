@@ -3,10 +3,11 @@ layout: doc
 title: "\U0001F5A7nginx常用配置"
 category: Nginx
 date: '2025-12-16'
-tags: []
+tags:
+  - nginx
+  - 运维
 ---
-## 代理示例
-<!-- anchor: UJmXp -->
+## <font style="color:rgb(51, 51, 51);">代理示例</font>
 ```nginx
 #常用
 location /test-api/ {
@@ -17,7 +18,7 @@ location /test-api/ {
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 }
-# 补全，更多的proxy_set_header可以让接口程序获取更多的接口请求信息
+## 补全，更多的proxy_set_header可以让接口程序获取更多的接口请求信息
 location /test-api2/ {
     proxy_pass http://localhost:9002/;
     proxy_read_timeout 300s;
@@ -34,7 +35,6 @@ location /test-api2/ {
 ```
 
 ### 透传了前缀处理
-<!-- anchor: gFYpf -->
 `  ****`rewrite ^/api/(.*)$ /$1 break;`****`
 ```nginx
 # api
@@ -53,15 +53,14 @@ location /test-api2/ {
 	}
 ```
 
-## https 配置 (SSL)
-<!-- anchor: bHVzZ -->
-> 🧅 listen
+## <font style="color:rgb(51, 51, 51);">https 配置 (SSL)</font>
+> <font style="color:rgb(119, 119, 119);">🧅</font><font style="color:rgb(119, 119, 119);"> listen</font>
 >
-> 🧅 ssl_certificate
+> <font style="color:rgb(119, 119, 119);">🧅</font><font style="color:rgb(119, 119, 119);"> ssl_certificate</font>
 >
-> 🧅 ssl_certificate_key
+> <font style="color:rgb(119, 119, 119);">🧅</font><font style="color:rgb(119, 119, 119);"> ssl_certificate_key</font>
 >
-> 🧅 proxy_set_header X-Forwarded-Proto https; 
+> <font style="color:rgb(119, 119, 119);">🧅</font><font style="color:rgb(119, 119, 119);"> proxy_set_header X-Forwarded-Proto https; </font>
 >
 ```nginx
 server {
@@ -98,9 +97,8 @@ server {
 }
 ```
 
-## http 自动导向https
-<!-- anchor: cq6pG -->
-> rewrite ^(.*) https://$server_name$1 permanent;
+## <font style="color:rgb(51, 51, 51);">http 自动导向https</font>
+> <font style="color:rgb(119, 119, 119);">rewrite ^(.*) https://$server_name$1 permanent;</font>
 >
 ```nginx
 server {
@@ -152,17 +150,15 @@ server {
 ```
 
 ## 代理静态文件
-<!-- anchor: dLj9m -->
-### VUE / React
-<!-- anchor: zV55p -->
+### VUE / React 
 > vue项目配置了访问前缀：admin
 >
 
-> 1. `/`admin`/index.html` 中的 ``admin``` `根据前端打包时的 `vue.config.js` 中的`**`module.exports.publicPath`**`和 `router/index.js`中的 `createRouter.base`设置
+> 1. `/`admin`/index.html` 中的 ``admin``` `根据前端打包时的 `vue.config.js` 中的`**`module.exports.publicPath`**`和 `router/index.js`中的 `<font style="color:#080808;background-color:#ffffff;">createRouter.base</font>`设置
 > 2. alias 中的地址是静态文件的绝对地址，且做好有 `chmod -R 777 ../admin` 权限
 >
 ```nginx
-# 有路由  Router 
+## 有路由  Router 
 location /admin {
   alias ../html/admin;
   index index.html;
@@ -175,16 +171,15 @@ location /todo {
   try_files $uri $uri/ /todo/index.html;
 }
 
-# 没路由 e.g http://127.0.0.1/admin -> /root/html/admin/
-# 也可以用alias写全路径 alias /root/html/admin/
+## 没路由 e.g http://127.0.0.1/admin -> /root/html/admin/
+## 也可以用alias写全路径 alias /root/html/admin/
 location /admin {
    root   ../html/;
    index  index.html;
 }
 ```
 
-### 纯静态
-<!-- anchor: OqhIP -->
+### <font style="color:rgb(51, 51, 51);">纯静态</font>
 > 代理到 所有文件的公共根目录
 >
 > 目录结构
@@ -201,8 +196,7 @@ location /bistdashboard/ {
 }
 ```
 
-### 搭建文件服务器
-<!-- anchor: tJ4FZ -->
+### <font style="color:rgb(51, 51, 51);">搭建文件服务器</font>
 > auth_basic_user_file: 开的基本验证的密码文件
 >
 > + [配置登录验证](#n6U9K)
@@ -222,7 +216,6 @@ location / {
 ```
 
 ## 限制上传文件大小
-<!-- anchor: SyZUa -->
 > client_max_body_size 主要就是限制请求的body数据大小
 >
 ```nginx
@@ -250,7 +243,6 @@ http {
 ```
 
 ## 设置响应时间
-<!-- anchor: EypF4 -->
 ```nginx
 server {
     listen 80;
@@ -273,13 +265,12 @@ ai说的默认值。我没仔细看过
 | proxy_send_timeout | 60 s |
 | proxy_read_timeout | 60 s |
 
-## 负载均衡
-<!-- anchor: RNTJH -->
-> + 权重
->     - weight (数字越大访问比例越高) : weight和访问比率成正比
->     - iphash(ip_hash可以和weight配合使用)：每个请求都根据访问ip的hash结果分配，经过这样的处理，每个访客固定访问一个后端服务。
->     - least_conn(least_conn可以和weight配合使用)：将请求分配到连接数最少的服务上
->     - fair(fair可以和weight配合使用)：按后端服务器的响应时间来分配请求，响应时间短的优先分配
+## <font style="color:rgb(51, 51, 51);">负载均衡</font>
+> + <font style="color:rgb(119, 119, 119);">权重</font>
+>     - <font style="color:rgb(119, 119, 119);">weight (数字越大访问比例越高) : weight和访问比率成正比</font>
+>     - <font style="color:rgb(119, 119, 119);">iphash(ip_hash可以和weight配合使用)：每个请求都根据访问ip的hash结果分配，经过这样的处理，每个访客固定访问一个后端服务。</font>
+>     - <font style="color:rgb(119, 119, 119);">least_conn(least_conn可以和weight配合使用)：将请求分配到连接数最少的服务上</font>
+>     - <font style="color:rgb(119, 119, 119);">fair(fair可以和weight配合使用)：按后端服务器的响应时间来分配请求，响应时间短的优先分配</font>
 >
 ```nginx
 upstream www.api.com {
@@ -309,12 +300,10 @@ server {
 ```
 
 ## 重定向到其他地址
-<!-- anchor: jIof0 -->
-> rewrite
+> <font style="color:rgb(119, 119, 119);">rewrite</font>
 >
 
 ### 带参数
-<!-- anchor: NWZhE -->
 ```nginx
 server {
 	listen   8085 ssl;
@@ -346,7 +335,6 @@ server {
 ```
 
 ### 不带参数
-<!-- anchor: b70Jk -->
 ```nginx
 server {
 	listen   8085 ssl;
@@ -378,7 +366,6 @@ server {
 ```
 
 ## 跨域处理
-<!-- anchor: EAzdm -->
 ```nginx
 location / {  
     add_header Access-Control-Allow-Origin *;
@@ -391,18 +378,16 @@ location / {
 }
 ```
 
-## 流穿透
-<!-- anchor: b85KN -->
-> 我使用的是 [openresty](http://openresty.org/) 自带 stream模块
+## <font style="color:rgb(51, 51, 51);">流穿透</font>
+> <font style="color:rgb(119, 119, 119);">我使用的是 </font>[openresty](http://openresty.org/)<font style="color:rgb(119, 119, 119);"> 自带 stream模块</font>
 >
-> 原生请参考：[我也没试过，百度来的](https://www.cnblogs.com/crysmile/p/9565048.html)
+> <font style="color:rgb(119, 119, 119);">原生请参考：</font>[我也没试过，百度来的](https://www.cnblogs.com/crysmile/p/9565048.html)
 >
-> mysql redis
+> <font style="color:rgb(119, 119, 119);">mysql redis</font>
 >
 
-### MySql
-<!-- anchor: FwJrO -->
->  stream 模块配置和 http 模块在相同级别
+### <font style="color:rgb(119, 119, 119);">MySql</font>
+> <font style="color:rgb(119, 119, 119);"> stream 模块配置和 http 模块在相同级别</font>
 >
 ```nginx
 stream {
@@ -423,8 +408,7 @@ stream {
 ```
 
 ### Redis
-<!-- anchor: CCkpg -->
-> stream 模块配置和 http 模块在相同级别
+> <font style="color:rgb(119, 119, 119);">stream 模块配置和 http 模块在相同级别</font>
 >
 ```nginx
 stream {
@@ -443,7 +427,6 @@ stream {
 ```
 
 ## MinIO
-<!-- anchor: NzHhN -->
 > 1. 9100 ：web控制台默认端口
 > 2. 9000 ：api 接口端口
 > 3. [官网](https://min.io/docs/minio/linux/integrations/setup-nginx-proxy-with-minio.html)
@@ -451,7 +434,6 @@ stream {
 >
 
 ### 独立域名
-<!-- anchor: gzIfq -->
 ```nginx
 upstream minio {
 	server 127.0.0.1:9000;
@@ -463,7 +445,7 @@ upstream console {
 	# server 127.0.0.1:9100;
 }
 
-# 控制台
+## 控制台
 server {
 	listen   8081 ssl;
 	server_name  example.com;
@@ -499,7 +481,7 @@ server {
 	}
 }
 
-# 接口
+## 接口
 server {
 	listen   443 ssl;
 	server_name  example.com;
@@ -519,11 +501,10 @@ server {
 ```
 
 ### 非独立域名
-<!-- anchor: D4jgw -->
 > 主要是 api 接口的需要特殊处理，如下：
 >
 ```nginx
-# 文件访问：http://127.0.0.1/files/xx/xx/xx.png
+## 文件访问：http://127.0.0.1/files/xx/xx/xx.png
 location ~^/files {
    proxy_buffering off;
    proxy_set_header Host $http_host;
@@ -532,40 +513,35 @@ location ~^/files {
  }
 ```
 
-## IPV6配置
-<!-- anchor: EYwBk -->
-### 同时监听IPV4和IPV6
-<!-- anchor: HFSfe -->
+## <font style="color:rgb(51, 51, 51);">IPV6配置</font>
+### <font style="color:rgb(51, 51, 51);">同时监听IPV4和IPV6</font>
 ```plain
 server {
     listen [::]:80;
 }
 ```
 
-### 只监听IPV6
-<!-- anchor: ITFnn -->
+### <font style="color:rgb(51, 51, 51);">只监听IPV6</font>
 ```plain
 server {
     listen [::]:80 default ipv6only=on;
 }
 ```
 
-### 监听指定IPV6地址
-<!-- anchor: eEzti -->
+### <font style="color:rgb(51, 51, 51);">监听指定IPV6地址</font>
 ```plain
 server {
     listen [xx:xx:xx:xx:1]:80;
 }
 ```
 
-## 防止独立IP被其它恶意域名恶意解析
-<!-- anchor: Y8weT -->
+## <font style="color:rgb(51, 51, 51);">防止独立IP被其它恶意域名恶意解析</font>
 > [参考](https://www.cnblogs.com/dadonggg/p/8398112.html)
 >
 
-1. 定义一个默认的空主机名，禁止其访问，需要通过的域名一定要在其他server里配置。也可以直接重定向： rewrite ^(.*) http://www.baidu.com/$1 permanent;
+1. <font style="color:rgb(51, 51, 51);">定义一个默认的空主机名，禁止其访问，需要通过的域名一定要在其他server里配置。</font><font style="color:rgb(119, 119, 119);">也可以直接重定向： rewrite ^(.*) </font>http://www.baidu.com/<font style="color:rgb(119, 119, 119);">$1 permanent; </font>
 ```plain
-## 80
+### 80
 server {
     listen       80  default_server;
     server_name  _;
@@ -573,7 +549,7 @@ server {
     return       444;
 }
 
-# ssl 
+## ssl 
 server {
     listen 443 ssl;     
     server_name  _;
@@ -584,8 +560,7 @@ server {
 }
 ```
 
-## 配置登录验证
-<!-- anchor: VtEU4 -->
+## <font style="color:rgb(51, 51, 51);">配置登录验证</font>
 > 注意会跟接口原本的`_**`Authorization`**_`冲突
 >
 > + 要么改变接口的认证方式
@@ -593,19 +568,17 @@ server {
 > + 使用lua重写nginx的验证方式
 >
 
-### 安装htpasswd工具
-<!-- anchor: rP9qK -->
+### <font style="color:rgb(51, 51, 51);">安装htpasswd工具</font>
 ```shell
-# centos  
+## centos  
 yum -y install nginx    #安装nginx
 yum -y install httpd-tools    #安装httpd-tools	
-# ubuntu 
+## ubuntu 
 sudo apt search htpasswd
 sudo apt install apache2-utils
 ```
 
-### 生成密钥文件
-<!-- anchor: d7k5F -->
+### <font style="color:rgb(51, 51, 51);">生成密钥文件</font>
 > 1. 创建文件 `touch  htpasswd`
 > 2. 在执行下面的
 >
@@ -616,8 +589,7 @@ Re-type new password:     #再次输入密码，回车
 Adding password for user crystal
 ```
 
-### 在原有密码文件中增加下一个用户
-<!-- anchor: uyGUA -->
+### <font style="color:rgb(51, 51, 51);">在原有密码文件中增加下一个用户</font>
 ```shell
 htpasswd -b /etc/nginx/htpasswd ren002 456
 
@@ -626,15 +598,13 @@ ren001:$apr1$Ln1ZsyVn$2hn3VFqP0L5tNA1UCSU8F.
 ren002:$apr1$hCiMb9jc$Z.m7ZgOBCj0ISeIieTaVy/    #去掉c选项，即可在第一个用户之后添加第二个用户，依此类推
 ```
 
-### 不更新密码文件，只显示加密后的用户名和密码
-<!-- anchor: MmEcV -->
+### <font style="color:rgb(51, 51, 51);">不更新密码文件，只显示加密后的用户名和密码</font>
 ```shell
 htpasswd -nb ren002 456
 ren002:$apr1$DT53A20W$YRS7p4j.1Wum9q0kG3OQv.    #不更新.passwd文件，只在屏幕上输出用户名和经过加密后的密码
 ```
 
-### 用htpasswd命令删除用户名和密码
-<!-- anchor: bxqq8 -->
+### <font style="color:rgb(51, 51, 51);">用htpasswd命令删除用户名和密码</font>
 ```shell
 htpasswd -D /etc/nginx/htpasswd ren002
 Deleting password for user ren002
@@ -643,8 +613,7 @@ cat /etc/nginx/htpasswd
 ren001:$apr1$Ln1ZsyVn$2hn3VFqP0L5tNA1UCSU8F.
 ```
 
-### 用 htpasswd 命令修改密码
-<!-- anchor: uh7Bv -->
+### <font style="color:rgb(51, 51, 51);">用 htpasswd 命令修改密码</font>
 ```shell
 htpasswd -D /etc/nginx/htpasswd ren001
 Deleting password for user ren001
@@ -653,33 +622,31 @@ htpasswd -b /etc/nginx/htpasswd ren001 123456
 Adding password for user ren001
 ```
 
-### htpasswd命令选项参数说明
-<!-- anchor: y4OTM -->
--c 创建一个加密文件
+### <font style="color:rgb(51, 51, 51);">htpasswd命令选项参数说明</font>
+<font style="color:rgb(119, 119, 119);">-c 创建一个加密文件</font>
 
--n 不更新加密文件，只将htpasswd命令加密后的用户名，密码显示在屏幕上
+<font style="color:rgb(119, 119, 119);">-n 不更新加密文件，只将htpasswd命令加密后的用户名，密码显示在屏幕上</font>
 
--m 默认htpassswd命令采用MD5算法对密码进行加密
+<font style="color:rgb(119, 119, 119);">-m 默认htpassswd命令采用MD5算法对密码进行加密</font>
 
--d htpassswd命令采用CRYPT算法对密码进行加密
+<font style="color:rgb(119, 119, 119);">-d htpassswd命令采用CRYPT算法对密码进行加密</font>
 
--p htpassswd命令不对密码进行进行加密，即明文密码
+<font style="color:rgb(119, 119, 119);">-p htpassswd命令不对密码进行进行加密，即明文密码</font>
 
--s htpassswd命令采用SHA算法对密码进行加密
+<font style="color:rgb(119, 119, 119);">-s htpassswd命令采用SHA算法对密码进行加密</font>
 
--b htpassswd命令行中一并输入用户名和密码而不是根据提示输入密码
+<font style="color:rgb(119, 119, 119);">-b htpassswd命令行中一并输入用户名和密码而不是根据提示输入密码</font>
 
--D 删除指定的用户
+<font style="color:rgb(119, 119, 119);">-D 删除指定的用户</font>
 
-### nginx配置登录验证
-<!-- anchor: fJU5m -->
-> windows路径注意：
+### <font style="color:rgb(51, 51, 51);">nginx配置登录验证</font>
+> <font style="color:rgb(119, 119, 119);">windows路径注意：</font>
 >
-> ❌D:\tools\nginx\openresty-1.19.3.1-win64\htpasswd
+> <font style="color:rgb(119, 119, 119);">❌</font><font style="color:rgb(119, 119, 119);">D:\tools\nginx\openresty-1.19.3.1-win64\htpasswd</font>
 >
-> ✅D:/tools/nginx/openresty-1.19.3.1-win64/htpasswd
+> <font style="color:rgb(119, 119, 119);">✅</font><font style="color:rgb(119, 119, 119);">D:/tools/nginx/openresty-1.19.3.1-win64/htpasswd</font>
 >
-> Linux 路径注意权限问题
+> <font style="color:rgb(119, 119, 119);">Linux 路径注意权限问题</font>
 >
 ```nginx
 location /password {
@@ -688,7 +655,7 @@ location /password {
     auth_basic "登陆验证";
     auth_basic_user_file /etc/nginx/htpasswd;   #/etc/nginx/htpasswd是密码文件，路径自定义
 }
-# 例子
+## 例子
 location /api {
     #加上下面两行内容：
     auth_basic "登陆验证";
@@ -702,7 +669,6 @@ location /api {
 ```
 
 ### okhtpp使用
-<!-- anchor: Qime9 -->
 ```java
 private void okHttpClient(long connectTimeout, long writeTimeout, long readTimeout, Proxy proxy) {
         OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -723,8 +689,7 @@ private void okHttpClient(long connectTimeout, long writeTimeout, long readTimeo
     }
 ```
 
-## Spring boot admin
-<!-- anchor: A1vPE -->
+## <font style="color:rgb(51, 51, 51);">Spring boot admin</font>
 > 1. public-url： 配置访问域名
 > 2. 如果要设置前缀：
 >     - context-path: /abc
@@ -733,7 +698,7 @@ private void okHttpClient(long connectTimeout, long writeTimeout, long readTimeo
 >         * location /abc { proxy_pass  https://m.tannn.cn/abc; }
 >
 ```yaml
-# spring配置文件
+## spring配置文件
 server:
   port: 8001
   forward-headers-strategy: native
@@ -746,7 +711,7 @@ spring:
         public-url: https://m.tannn.cn/
         cache:
           no-cache: true
-# nginx配置
+## nginx配置
 location / {
     proxy_pass http://localhost:8001;
     proxy_set_header Host $proxy_host;
@@ -761,7 +726,6 @@ location / {
 ```
 
 ### 如果配置文件不配置的情况下要用前缀
-<!-- anchor: PwNpW -->
 > 但是我没测试过
 >
 
@@ -778,8 +742,7 @@ location /admin {
 }
 ```
 
-## 正确地识别实际用户发出的协议是 http 还是 https
-<!-- anchor: d4o4u -->
+## <font style="color:rgb(51, 51, 51);">正确地识别实际用户发出的协议是 http 还是 https</font>
 > 配置X-Forwarded-Proto
 >
 ```nginx
@@ -788,12 +751,11 @@ proxy_set_header X-Forwarded-Port $server_port;
 ```
 
 ## websocket
-<!-- anchor: fqTEW -->
 [WebSocket 配置](https://www.yuque.com/tanning/mbquef/mbcgixgixac1fkor?singleDoc#)
 
 1. http版本一定要是1.1 +
-2. Connection: 规定必需的字段，值必需为 Upgrade
-3. Upgrade: 规定必需的字段，其值必需为 websocket
+2. <font style="color:rgb(34, 34, 34);">Connection: 规定必需的字段，值必需为 Upgrade</font>
+3. <font style="color:rgb(34, 34, 34);">Upgrade: 规定必需的字段，其值必需为 websocket</font>
 ```nginx
 map $http_upgrade $connection_upgrade{
     default upgrade;
@@ -817,7 +779,6 @@ location /ws {
 ```
 
 ## Nexus Httpscd
-<!-- anchor: ZJuVi -->
 ```nginx
 server {
     listen   443 ssl;
@@ -853,9 +814,8 @@ server {
 ```
 
 ## openresty 隐藏版本号
-<!-- anchor: U41h7 -->
 ```nginx
-## 在http节点下加入下面的配置2
+### 在http节点下加入下面的配置2
 http {
   sendfile        on;
 }
