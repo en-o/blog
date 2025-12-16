@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blog 管理平台</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Markdown渲染库 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
 </head>
 <body>
   <div class="header">
@@ -96,7 +98,7 @@
     </div>
 
     <!-- 页面管理 -->
-    <div id="pages" class="tab-content active">
+    <div id="pages" class="tab-content">
       <div class="card">
         <h2>新增/编辑页面</h2>
         <form id="pageForm">
@@ -141,6 +143,19 @@
     <div id="docs" class="tab-content">
       <div class="card">
         <h2>新增/编辑文档</h2>
+        <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fc; border-radius: 8px; border-left: 4px solid #667eea;">
+          <h3 style="margin: 0 0 10px 0; font-size: 14px; color: #667eea;">📥 导入语雀文档</h3>
+          <p style="margin: 0 0 12px 0; font-size: 13px; color: #64748b;">
+            支持导入语雀导出的 Markdown 文档。导出时请选择：
+            <strong>导出 LaTeX 公式为 Markdown 语法</strong>、
+            <strong style="color: red">不允许选择：</strong>[
+            <strong style="color: #ae3647">保持语雀的换行</strong>、
+            <strong style="color: #ae3647">保持语雀的锚点</strong>]
+          </p>
+          <button type="button" class="btn btn-success" onclick="importYuqueDoc()">
+            📄 选择语雀 .md 文件导入
+          </button>
+        </div>
         <form id="docForm">
           <div class="form-group">
             <label>分类 *</label>
@@ -173,6 +188,7 @@
               <strong>内容编写说明：</strong><br>
               • 内容应该以二级标题（##）开始，会自动生成目录<br>
               • 支持标准 Markdown 语法<br>
+              • 注意引用快前后要有空格，要不然Kramdown解析会有问题<br>
               • 代码块使用三个反引号包裹<br>
               • 示例：## 简介<br>
               &nbsp;&nbsp;这是内容段落...<br>
@@ -182,6 +198,7 @@
           </div>
           <button type="submit" class="btn btn-primary">保存文档</button>
           <button type="button" class="btn btn-secondary" onclick="resetDocForm()">重置</button>
+          <button type="button" class="btn btn-success" onclick="previewMarkdown()">👁️ 预览</button>
         </form>
       </div>
 

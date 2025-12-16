@@ -45,6 +45,10 @@ ruby -v
 gem -v
 
 # 4. 安装 Bundler
+# 换 gem 源
+# gem sources --remove https://rubygems.org/
+# gem sources --add https://mirrors.tuna.tsinghua.edu.cn/rubygems/
+# gem sources -l          # 确认只剩一个国内源
 gem install bundler
 ```
 
@@ -56,6 +60,9 @@ git clone https://github.com/en-o/blog.git
 cd blog
 
 # 安装 Jekyll 依赖
+# 让 Bundler 也走 gem 同一镜像
+# bundle config mirror.https://rubygems.org https://mirrors.tuna.tsinghua.edu.cn/rubygems
+# 加 --full-index 一次性拉取索引，减少小请求
 bundle install
 ```
 
@@ -63,6 +70,10 @@ bundle install
 
 ```bash
 # 启动 Jekyll 服务
+# bundle exec jekyll serve --host=0.0.0.0
+# 想永久生效，在 _config.yml 里加
+# host: 0.0.0.0
+# port: 4000
 bundle exec jekyll serve
 
 # 访问 http://localhost:4000

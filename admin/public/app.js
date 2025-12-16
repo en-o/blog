@@ -490,6 +490,353 @@ function resetDocForm() {
   document.getElementById('docDate').value = new Date().toISOString().split('T')[0];
 }
 
+// 导入语雀文档
+function importYuqueDoc() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.md';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      const content = await file.text();
+      const parsed = parseYuqueMarkdown(content);
+
+      // 检查是否正在编辑现有文档
+      const isEditing = document.getElementById('docFilename').value.trim() !== '' &&
+                        document.getElementById('docCategory').value.trim() !== '';
+
+      if (isEditing) {
+        // 编辑模式：只更新内容,保留其他字段
+        document.getElementById('docContent').value = parsed.content;
+        showAlert('success', '文档内容已更新！其他信息保持不变,请检查后保存。');
+      } else {
+        // 新建模式：填充所有字段
+        const filename = file.name;
+        document.getElementById('docFilename').value = filename;
+        document.getElementById('docTitle').value = parsed.title || filename.replace('.md', '');
+        document.getElementById('docContent').value = parsed.content;
+        showAlert('success', '语雀文档导入成功！请补充分类、日期等信息后保存。');
+      }
+
+      document.getElementById('docForm').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+      showAlert('error', '导入失败: ' + error.message);
+    }
+  };
+  input.click();
+}
+
+// 预览Markdown
+function previewMarkdown() {
+  const content = document.getElementById('docContent').value;
+  const title = document.getElementById('docTitle').value || '未命名文档';
+
+  if (!content.trim()) {
+    showAlert('error', '请先输入Markdown内容');
+    return;
+  }
+
+  // 创建预览模态框
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal" style="width: 95%; max-width: 1400px; height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header">
+        <h3>📖 Markdown 预览 - ${escapeHtml(title)}</h3>
+      </div>
+      <div class="modal-body" style="flex: 1; display: flex; gap: 20px; padding: 20px; overflow: hidden;">
+        <!-- 左侧：可编辑源码 -->
+        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; color: #667eea; font-size: 14px;">源码 (可编辑)</h4>
+            <button id="refreshPreview" class="btn btn-sm" style="padding: 6px 12px; margin: 0; font-size: 12px; background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white;">🔄 刷新预览</button>
+          </div>
+          <textarea id="previewSource" style="flex: 1; font-family: 'Monaco', 'Courier New', monospace; font-size: 13px; line-height: 1.6; resize: none; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; overflow-y: auto;">${escapeHtml(content)}</textarea>
+        </div>
+
+        <!-- 中间：目录导航 -->
+        <div id="previewTocContainer" style="width: 200px; flex-shrink: 0; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; padding: 0 15px;">
+          <h4 style="margin: 0 0 10px 0; color: #667eea; font-size: 14px;">目录</h4>
+          <nav id="previewToc" style="flex: 1; overflow-y: auto;">
+            <!-- 动态生成目录 -->
+          </nav>
+        </div>
+
+        <!-- 右侧：预览效果 -->
+        <div style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
+          <h4 style="margin: 0 0 10px 0; color: #667eea; font-size: 14px;">预览效果</h4>
+          <div id="previewRendered" style="flex: 1; overflow-y: auto; overflow-x: hidden; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; background: #fff; line-height: 1.8; word-wrap: break-word; overflow-wrap: break-word;">
+            <!-- 渲染后的内容 -->
+          </div>
+        </div>
+      </div>
+      <div style="padding: 12px 20px; background: #f8f9fc; border-radius: 8px; margin: 0 20px 20px 20px; font-size: 13px; color: #64748b;">
+        <strong>提示：</strong>左侧源码可实时编辑，点击"刷新预览"查看效果。关闭时会自动保存编辑内容。实际渲染以Jekyll为准。
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="savePreviewChanges">✅ 保存并关闭</button>
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  // 初始渲染
+  renderMarkdownPreview();
+
+  // 刷新预览按钮事件
+  document.getElementById('refreshPreview').addEventListener('click', renderMarkdownPreview);
+
+  // 保存并关闭按钮事件
+  document.getElementById('savePreviewChanges').addEventListener('click', function() {
+    const editedContent = document.getElementById('previewSource').value;
+    // 回填到原始文档内容输入框
+    document.getElementById('docContent').value = editedContent;
+    closeModal(modal);
+    showAlert('success', '内容已更新，请点击"保存文档"按钮保存修改');
+  });
+
+  // 点击遮罩关闭
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 渲染Markdown预览
+function renderMarkdownPreview() {
+  const source = document.getElementById('previewSource').value;
+  const rendered = document.getElementById('previewRendered');
+  const tocContainer = document.getElementById('previewToc');
+
+  try {
+    // 配置marked选项
+    if (typeof marked !== 'undefined') {
+      marked.setOptions({
+        breaks: true,
+        gfm: true,
+        headerIds: true,
+        mangle: false
+      });
+
+      const html = marked.parse(source);
+      rendered.innerHTML = html;
+
+      // 生成目录
+      generatePreviewToc(rendered, tocContainer);
+
+      // 为所有元素添加边界保护
+      rendered.querySelectorAll('*').forEach(el => {
+        el.style.maxWidth = '100%';
+        el.style.overflowWrap = 'break-word';
+        el.style.wordWrap = 'break-word';
+      });
+
+      // 特别处理代码块和表格
+      rendered.querySelectorAll('pre, table').forEach(el => {
+        el.style.overflowX = 'auto';
+        el.style.maxWidth = '100%';
+      });
+
+      // 处理图片
+      rendered.querySelectorAll('img').forEach(img => {
+        img.style.maxWidth = '100%';
+        img.style.height = 'auto';
+      });
+    } else {
+      rendered.innerHTML = '<p style="color: red;">Markdown渲染库加载失败</p>';
+    }
+  } catch (error) {
+    rendered.innerHTML = `<p style="color: red;">渲染失败: ${escapeHtml(error.message)}</p>`;
+  }
+}
+
+// 生成预览目录
+function generatePreviewToc(container, tocNav) {
+  const headings = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
+
+  if (headings.length === 0) {
+    tocNav.innerHTML = '<p style="color: #94a3b8; font-size: 12px;">无标题</p>';
+    return;
+  }
+
+  let tocHTML = '<ul style="list-style: none; margin: 0; padding: 0;">';
+  headings.forEach((heading, index) => {
+    const level = parseInt(heading.tagName.substring(1));
+    const text = heading.textContent;
+    const id = heading.id || `preview-heading-${index}`;
+
+    if (!heading.id) {
+      heading.id = id;
+    }
+
+    const indent = (level - 1) * 12;
+    tocHTML += `
+      <li style="margin-bottom: 6px;">
+        <a href="#${id}"
+           class="preview-toc-link"
+           style="display: block; padding: 6px 8px; padding-left: ${indent + 8}px; color: #475569; text-decoration: none; font-size: ${14 - (level - 1)}px; border-radius: 6px; transition: all 0.3s ease; border-left: 2px solid transparent;"
+           onclick="event.preventDefault(); document.getElementById('${id}').scrollIntoView({behavior: 'smooth', block: 'start'});">
+          ${escapeHtml(text)}
+        </a>
+      </li>
+    `;
+  });
+  tocHTML += '</ul>';
+
+  tocNav.innerHTML = tocHTML;
+
+  // 添加悬停效果
+  tocNav.querySelectorAll('.preview-toc-link').forEach(link => {
+    link.addEventListener('mouseenter', function() {
+      this.style.background = 'rgba(102, 126, 234, 0.1)';
+      this.style.color = '#667eea';
+      this.style.borderLeftColor = '#667eea';
+    });
+    link.addEventListener('mouseleave', function() {
+      this.style.background = '';
+      this.style.color = '#475569';
+      this.style.borderLeftColor = 'transparent';
+    });
+  });
+}
+
+// HTML转义工具函数
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// 解析语雀导出的 Markdown 文档 - 处理标题降级、引用块和表格
+function parseYuqueMarkdown(content) {
+  let title = '';
+  let processedContent = content;
+
+  // 1. 提取标题（从第一个 h1 标签或第一个 # 标题）用于填充表单
+  const h1Match = content.match(/<h1[^>]*>(.*?)<\/h1>/);
+  if (h1Match) {
+    const h1Content = h1Match[1];
+    // 移除 font 标签获取纯文本
+    title = h1Content.replace(/<font[^>]*>(.*?)<\/font>/g, '$1').trim();
+  } else {
+    // 如果没有HTML h1,尝试提取第一个Markdown标题
+    const mdH1Match = content.match(/^#\s+(.+)$/m);
+    if (mdH1Match) {
+      title = mdH1Match[1].trim();
+    }
+  }
+
+  // 2. 【修复引用块】确保引用块每行都有 > 符号
+  // 语雀导出的引用块可能只在第一行有 >,后续行缺少 >
+  processedContent = processedContent.replace(/^(>.*?)(\n(?!>|\n|$))/gm, function(match, quoteLine, nextLine) {
+    // 如果引用块后面跟着非引用块行且不是空行,给后续行添加 >
+    return quoteLine + nextLine;
+  });
+
+  // 处理多行引用块：确保连续的非空行都有 > 符号
+  const lines = processedContent.split('\n');
+  let inBlockquote = false;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // 检测引用块开始
+    if (line.trim().startsWith('>')) {
+      inBlockquote = true;
+    }
+    // 如果在引用块中，且当前行不是空行，且没有 > 符号
+    else if (inBlockquote && line.trim() !== '' && !line.startsWith('>')) {
+      // 检查是否是表格或其他特殊格式
+      if (!line.trim().startsWith('|') && !line.trim().startsWith('#')) {
+        lines[i] = '> ' + line;
+      } else {
+        // 遇到表格或标题，结束引用块
+        inBlockquote = false;
+      }
+    }
+    // 遇到空行，结束引用块
+    else if (line.trim() === '') {
+      inBlockquote = false;
+    }
+  }
+  processedContent = lines.join('\n');
+
+  // 3. 【修复表格】确保表格格式正确
+  // 语雀导出的表格可能格式不规范，需要确保表格行都有正确的格式
+  const tableLines = processedContent.split('\n');
+  let inTable = false;
+  let tableStart = -1;
+
+  for (let i = 0; i < tableLines.length; i++) {
+    const line = tableLines[i].trim();
+
+    // 检测表格开始（包含 | 的行）
+    if (line.includes('|') && !inTable) {
+      inTable = true;
+      tableStart = i;
+    }
+    // 如果在表格中
+    else if (inTable) {
+      // 如果当前行不包含 | 或者是空行，表格结束
+      if (!line.includes('|') || line === '') {
+        // 验证表格是否有分隔行（第二行应该是 |---|---|）
+        if (tableStart >= 0 && i - tableStart >= 2) {
+          const headerLine = tableLines[tableStart].trim();
+          const separatorLine = tableLines[tableStart + 1].trim();
+
+          // 如果第二行不是分隔符，尝试修复
+          if (!separatorLine.match(/^[\|\s:-]+$/)) {
+            // 统计表头的列数
+            const headerCols = headerLine.split('|').filter(cell => cell.trim() !== '').length;
+            // 生成分隔行
+            const separator = '| ' + Array(headerCols).fill('---').join(' | ') + ' |';
+            tableLines.splice(tableStart + 1, 0, separator);
+            i++; // 调整索引
+          }
+        }
+
+        inTable = false;
+        tableStart = -1;
+      }
+    }
+  }
+  processedContent = tableLines.join('\n');
+
+  // 4. 【智能标题降级】检测第一个标题级别，决定是否降级
+  // 查找第一个标题（Markdown格式 # 开头）
+  const firstMdHeading = processedContent.match(/^(#{1,6})\s/m);
+
+  // 只有当第一个标题是 # (h1) 时才降级
+  const shouldDemoteHeadings = firstMdHeading && firstMdHeading[1] === '#';
+
+  // 5. 处理 Markdown 格式的标题降级（保持内容完全不变）
+  if (shouldDemoteHeadings) {
+    // 使用临时标记避免重复替换,保持标题内容完全不变
+    processedContent = processedContent.replace(/^# (.*)$/gm, '{{H1}}$1');
+    processedContent = processedContent.replace(/^## (.*)$/gm, '{{H2}}$1');
+    processedContent = processedContent.replace(/^### (.*)$/gm, '{{H3}}$1');
+    processedContent = processedContent.replace(/^#### (.*)$/gm, '{{H4}}$1');
+    processedContent = processedContent.replace(/^##### (.*)$/gm, '{{H5}}$1');
+    processedContent = processedContent.replace(/^###### (.*)$/gm, '{{H6}}$1');
+
+    // 替换为降级后的标题（内容保持原样）
+    processedContent = processedContent.replace(/^\{\{H1\}\}(.*)$/gm, '## $1');
+    processedContent = processedContent.replace(/^\{\{H2\}\}(.*)$/gm, '### $1');
+    processedContent = processedContent.replace(/^\{\{H3\}\}(.*)$/gm, '#### $1');
+    processedContent = processedContent.replace(/^\{\{H4\}\}(.*)$/gm, '##### $1');
+    processedContent = processedContent.replace(/^\{\{H5\}\}(.*)$/gm, '###### $1');
+    processedContent = processedContent.replace(/^\{\{H6\}\}(.*)$/gm, '###### $1');
+  }
+  // 如果不需要降级，保持原标题级别和内容完全不变
+
+  return {
+    title,
+    content: processedContent
+  };
+}
+
 // 提交文档表单
 document.getElementById('docForm').addEventListener('submit', async (e) => {
   e.preventDefault();
