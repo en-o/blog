@@ -3,6 +3,69 @@ layout: default
 ---
 
 <div class="doc-wrapper">
+  <!-- 左侧相邻文章导航 - 仅桌面端显示 -->
+  <aside class="doc-neighbors desktop-only">
+    <div class="neighbors-sticky">
+      <h3>相邻文章</h3>
+      <div class="neighbors-list">
+        {% assign all_docs = site.docs | sort: 'date' | reverse %}
+        {% assign current_index = nil %}
+        {% for doc in all_docs %}
+          {% if doc.url == page.url %}
+            {% assign current_index = forloop.index0 %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+
+        {% if current_index %}
+          <!-- 上一篇 -->
+          {% assign prev_index = current_index | minus: 1 %}
+          {% if prev_index >= 0 %}
+            {% assign prev_doc = all_docs[prev_index] %}
+            <div class="neighbor-item prev">
+              <div class="neighbor-label">← 上一篇</div>
+              <a href="{{ prev_doc.url | relative_url }}" class="neighbor-link">
+                <div class="neighbor-title">{{ prev_doc.title }}</div>
+                <div class="neighbor-meta">
+                  <span>{{ prev_doc.category }}</span>
+                  <span>{{ prev_doc.date | date: "%Y-%m-%d" }}</span>
+                </div>
+              </a>
+            </div>
+          {% endif %}
+
+          <!-- 当前文章 -->
+          <div class="neighbor-item current">
+            <div class="neighbor-label">• 当前</div>
+            <div class="neighbor-current">
+              <div class="neighbor-title">{{ page.title }}</div>
+              <div class="neighbor-meta">
+                <span>{{ page.category }}</span>
+                <span>{{ page.date | date: "%Y-%m-%d" }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 下一篇 -->
+          {% assign next_index = current_index | plus: 1 %}
+          {% if next_index < all_docs.size %}
+            {% assign next_doc = all_docs[next_index] %}
+            <div class="neighbor-item next">
+              <div class="neighbor-label">下一篇 →</div>
+              <a href="{{ next_doc.url | relative_url }}" class="neighbor-link">
+                <div class="neighbor-title">{{ next_doc.title }}</div>
+                <div class="neighbor-meta">
+                  <span>{{ next_doc.category }}</span>
+                  <span>{{ next_doc.date | date: "%Y-%m-%d" }}</span>
+                </div>
+              </a>
+            </div>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </aside>
+
   <article class="doc-article">
     <!-- 移动端专属头部 -->
     <div class="mobile-doc-header">
