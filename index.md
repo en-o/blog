@@ -87,7 +87,7 @@ title: 首页
     <div class="home-card">
       <h3>📝 最近更新</h3>
       <ul class="recent-docs">
-        {% for doc in site.docs limit:5 %}
+        {% for doc in site.docs limit:3 %}
         <li>
           <a href="{{ doc.url }}">{{ doc.title }}</a>
           <span class="doc-date">{{ doc.date | date: "%Y-%m-%d" }}</span>
