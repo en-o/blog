@@ -27,6 +27,14 @@ title: 首页
       {% endif %}
     </div>
   </div>
+  
+   <!-- 新增：时钟模块 -->
+  <div class="profile-clock">
+    <div class="clock" id="homeClock"></div>
+    <div class="clock-digital" id="clockDigital"></div>
+    <div class="clock-date" id="clockDate"></div>
+  </div>
+
 </div>
 
 <div class="home-grid">
