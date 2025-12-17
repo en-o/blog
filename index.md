@@ -64,6 +64,27 @@ title: 首页
         {% endfor %}
       </ul>
     </div>
+
+    <!-- GitHub 贡献图 -->
+    <div class="home-card">
+      <h3>📊 GitHub</h3>
+      <div class="github-contributions">
+        <div class="contribution-graph" id="github-chart">
+          <div class="loading-text">加载中...</div>
+        </div>
+        <div class="contribution-legend">
+          <span class="legend-label">少</span>
+          <div class="legend-colors">
+            <div class="legend-box" data-level="0"></div>
+            <div class="legend-box" data-level="1"></div>
+            <div class="legend-box" data-level="2"></div>
+            <div class="legend-box" data-level="3"></div>
+            <div class="legend-box" data-level="4"></div>
+          </div>
+          <span class="legend-label">多</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 右侧：项目和最近更新 -->
