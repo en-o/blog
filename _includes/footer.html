@@ -11,6 +11,18 @@
   </div>
 </footer>
 
+{% if site.baidu_analytics %}
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?{{ site.baidu_analytics }}";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+{% endif %}
+
 {% if site.github_url %}
 <a href="{{ site.github_url }}" target="_blank" class="github-corner" aria-label="View source on GitHub">
   <svg width="60" height="60" viewBox="0 0 250 250" style="fill:#667eea; color:#fff; position: fixed; top: 0; border: 0; right: 0; z-index: 9999;" aria-hidden="true">
