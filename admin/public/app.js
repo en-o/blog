@@ -1215,7 +1215,7 @@ document.getElementById('configForm').addEventListener('submit', async (e) => {
     const result = await res.json();
 
     if (result.success) {
-      showAlert('success', '配置保存成功');
+      showAlert('success', '✅ 配置保存成功！\n\n请重启 Jekyll 服务使配置生效：\nbundle exec jekyll serve --host 0.0.0.0');
     } else {
       showAlert('error', result.error);
     }
@@ -1251,7 +1251,10 @@ async function uploadFavicon() {
 
       if (result.success) {
         showAlert('success', '图标上传成功');
-        loadConfig();
+        // 立即更新预览，不依赖loadConfig
+        document.getElementById('faviconPreview').innerHTML = `
+          <img src="/assets/images/favicon.ico?t=${Date.now()}" style="width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Favicon">
+        `;
         input.value = '';
       } else {
         showAlert('error', result.error);
@@ -1291,7 +1294,10 @@ async function uploadAvatar() {
 
       if (result.success) {
         showAlert('success', '头像上传成功');
-        loadConfig();
+        // 立即更新预览，不依赖loadConfig
+        document.getElementById('avatarPreview').innerHTML = `
+          <img src="/assets/images/avatar.jpg?t=${Date.now()}" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover;" alt="Avatar">
+        `;
         input.value = '';
       } else {
         showAlert('error', result.error);
@@ -1397,13 +1403,18 @@ document.getElementById('gitForm').addEventListener('submit', async (e) => {
 // ============= 工具函数 =============
 
 function showAlert(type, message) {
+  // 移除旧的提示
+  const oldAlert = document.querySelector('.alert');
+  if (oldAlert) oldAlert.remove();
+
   const alert = document.createElement('div');
   alert.className = `alert alert-${type}`;
+  alert.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; max-width: 600px; white-space: pre-wrap;';
   alert.textContent = message;
 
-  document.querySelector('.container').insertBefore(alert, document.querySelector('.tabs'));
+  document.body.appendChild(alert);
 
-  setTimeout(() => alert.remove(), 5000);
+  setTimeout(() => alert.remove(), 8000);
 }
 
 // 显示技能模态框
