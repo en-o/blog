@@ -1168,7 +1168,7 @@ async function loadConfig() {
     // 显示图标预览
     if (data.favicon) {
       document.getElementById('faviconPreview').innerHTML = `
-        <img src="../${data.favicon}?t=${Date.now()}" style="width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Favicon">
+        <img src="${data.favicon}?t=${Date.now()}" style="width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Favicon">
       `;
     } else {
       document.getElementById('faviconPreview').innerHTML = '<p style="color: #999;">暂无图标</p>';
@@ -1176,7 +1176,7 @@ async function loadConfig() {
 
     if (data.avatar) {
       document.getElementById('avatarPreview').innerHTML = `
-        <img src="../${data.avatar}?t=${Date.now()}" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover;" alt="Avatar">
+        <img src="${data.avatar}?t=${Date.now()}" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover;" alt="Avatar">
       `;
     } else {
       document.getElementById('avatarPreview').innerHTML = '<p style="color: #999;">暂无头像</p>';

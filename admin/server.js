@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 // 静态文件
 app.use(express.static(path.join(__dirname, 'public')));
 
+// 挂载博客根目录的 assets 文件夹
+app.use('/assets', express.static(path.join(__dirname, '..', 'assets')));
+
 // 路由
 app.use('/api/pages', require('./routes/pages'));
 app.use('/api/docs', require('./routes/docs'));
