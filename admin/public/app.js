@@ -195,23 +195,30 @@ async function loadProjects() {
 
 // 渲染项目列表
 function renderProjectsList() {
-  const html = projectsData.map((project, index) => `
-    <div class="list-item">
-      <div>
-        <div class="list-item-title">
-          ${project.name}
-          ${project.star ? '<span class="star-badge">⭐</span>' : ''}
+  const html = projectsData.map((project, index) => {
+    const linksHtml = project.links && project.links.length > 0
+      ? `<div class="list-item-meta">扩展链接: ${project.links.map(l => `<a href="${l.url}" target="_blank">${l.name}</a>`).join(', ')}</div>`
+      : '';
+
+    return `
+      <div class="list-item">
+        <div>
+          <div class="list-item-title">
+            ${project.name}
+            ${project.star ? '<span class="star-badge">⭐</span>' : ''}
+          </div>
+          <div class="list-item-meta">${project.description}</div>
+          <div class="list-item-meta">${project.url}</div>
+          ${linksHtml}
+          <div class="list-item-meta">${(project.tags || []).join(', ')}</div>
         </div>
-        <div class="list-item-meta">${project.description}</div>
-        <div class="list-item-meta">${project.url}</div>
-        <div class="list-item-meta">${(project.tags || []).join(', ')}</div>
+        <div class="list-item-actions">
+          <button class="btn btn-sm btn-primary" onclick="editProject(${index})">编辑</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteProject(${index})">删除</button>
+        </div>
       </div>
-      <div class="list-item-actions">
-        <button class="btn btn-sm btn-primary" onclick="editProject(${index})">编辑</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteProject(${index})">删除</button>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   document.getElementById('projectsList').innerHTML = html || '<p style="color:#999;">暂无项目</p>';
 }
@@ -225,6 +232,10 @@ function editProject(index) {
   document.getElementById('projectTags').value = (project.tags || []).join(', ');
   document.getElementById('projectStar').checked = project.star || false;
 
+  // 设置临时链接并渲染
+  tempProjectLinks = project.links ? JSON.parse(JSON.stringify(project.links)) : [];
+  renderProjectLinks(tempProjectLinks);
+
   editingProjectIndex = index;
 
   const submitBtn = document.querySelector('#projectForm button[type="submit"]');
@@ -232,6 +243,47 @@ function editProject(index) {
   submitBtn.className = 'btn btn-success';
 
   document.getElementById('projectForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+// 渲染项目扩展链接
+function renderProjectLinks(links = []) {
+  const container = document.getElementById('projectLinksContainer');
+  container.innerHTML = links.map((link, index) => `
+    <div class="project-link-item" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+      <input type="text" placeholder="链接名称" value="${link.name || ''}"
+             onchange="updateProjectLinkName(${index}, this.value)"
+             style="flex: 1; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+      <input type="url" placeholder="链接地址" value="${link.url || ''}"
+             onchange="updateProjectLinkUrl(${index}, this.value)"
+             style="flex: 2; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px;">
+      <button type="button" class="btn btn-sm btn-danger" onclick="removeProjectLink(${index})">删除</button>
+    </div>
+  `).join('');
+}
+
+// 全局变量存储临时的扩展链接
+let tempProjectLinks = [];
+
+// 添加项目扩展链接
+function addProjectLink() {
+  tempProjectLinks.push({ name: '', url: '' });
+  renderProjectLinks(tempProjectLinks);
+}
+
+// 更新链接名称
+function updateProjectLinkName(index, value) {
+  tempProjectLinks[index].name = value;
+}
+
+// 更新链接地址
+function updateProjectLinkUrl(index, value) {
+  tempProjectLinks[index].url = value;
+}
+
+// 删除扩展链接
+function removeProjectLink(index) {
+  tempProjectLinks.splice(index, 1);
+  renderProjectLinks(tempProjectLinks);
 }
 
 // 删除项目
@@ -245,6 +297,8 @@ function deleteProject(index) {
 function resetProjectForm() {
   document.getElementById('projectForm').reset();
   editingProjectIndex = -1;
+  tempProjectLinks = [];
+  renderProjectLinks([]);
 
   const submitBtn = document.querySelector('#projectForm button[type="submit"]');
   submitBtn.textContent = '添加项目';
@@ -262,6 +316,12 @@ document.getElementById('projectForm').addEventListener('submit', async (e) => {
     tags: document.getElementById('projectTags').value.split(',').map(t => t.trim()).filter(Boolean),
     star: document.getElementById('projectStar').checked
   };
+
+  // 过滤掉空的扩展链接
+  const validLinks = tempProjectLinks.filter(link => link.name && link.url);
+  if (validLinks.length > 0) {
+    project.links = validLinks;
+  }
 
   if (editingProjectIndex >= 0) {
     projectsData[editingProjectIndex] = project;
@@ -1161,6 +1221,10 @@ async function loadConfig() {
     document.getElementById('configFooterPoweredByName').value = data.footer_powered_by_name || 'Jekyll';
     document.getElementById('configFooterPoweredByLink').value = data.footer_powered_by_link || 'https://jekyllrb.com/';
 
+    // 统计配置
+    document.getElementById('configBaiduAnalytics').value = data.baidu_analytics || '';
+    document.getElementById('configBusuanziCounter').checked = data.busuanzi_counter !== false;
+
     // 显示图标预览
     if (data.favicon) {
       document.getElementById('faviconPreview').innerHTML = `
@@ -1196,7 +1260,9 @@ document.getElementById('configForm').addEventListener('submit', async (e) => {
     footer_powered_by: document.getElementById('configFooterPoweredBy').checked,
     footer_powered_by_text: document.getElementById('configFooterPoweredByText').value,
     footer_powered_by_name: document.getElementById('configFooterPoweredByName').value,
-    footer_powered_by_link: document.getElementById('configFooterPoweredByLink').value
+    footer_powered_by_link: document.getElementById('configFooterPoweredByLink').value,
+    baidu_analytics: document.getElementById('configBaiduAnalytics').value,
+    busuanzi_counter: document.getElementById('configBusuanziCounter').checked
   };
 
   try {
@@ -1209,7 +1275,7 @@ document.getElementById('configForm').addEventListener('submit', async (e) => {
     const result = await res.json();
 
     if (result.success) {
-      showAlert('success', '配置保存成功');
+      showAlert('success', '✅ 配置保存成功！\n\n请重启 Jekyll 服务使配置生效：\nbundle exec jekyll serve --host 0.0.0.0');
     } else {
       showAlert('error', result.error);
     }
@@ -1245,7 +1311,10 @@ async function uploadFavicon() {
 
       if (result.success) {
         showAlert('success', '图标上传成功');
-        loadConfig();
+        // 立即更新预览，不依赖loadConfig
+        document.getElementById('faviconPreview').innerHTML = `
+          <img src="/assets/images/favicon.ico?t=${Date.now()}" style="width: 64px; height: 64px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" alt="Favicon">
+        `;
         input.value = '';
       } else {
         showAlert('error', result.error);
@@ -1285,7 +1354,10 @@ async function uploadAvatar() {
 
       if (result.success) {
         showAlert('success', '头像上传成功');
-        loadConfig();
+        // 立即更新预览，不依赖loadConfig
+        document.getElementById('avatarPreview').innerHTML = `
+          <img src="/assets/images/avatar.jpg?t=${Date.now()}" style="width: 120px; height: 120px; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); object-fit: cover;" alt="Avatar">
+        `;
         input.value = '';
       } else {
         showAlert('error', result.error);
@@ -1391,13 +1463,18 @@ document.getElementById('gitForm').addEventListener('submit', async (e) => {
 // ============= 工具函数 =============
 
 function showAlert(type, message) {
+  // 移除旧的提示
+  const oldAlert = document.querySelector('.alert');
+  if (oldAlert) oldAlert.remove();
+
   const alert = document.createElement('div');
   alert.className = `alert alert-${type}`;
+  alert.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; max-width: 600px; white-space: pre-wrap;';
   alert.textContent = message;
 
-  document.querySelector('.container').insertBefore(alert, document.querySelector('.tabs'));
+  document.body.appendChild(alert);
 
-  setTimeout(() => alert.remove(), 5000);
+  setTimeout(() => alert.remove(), 8000);
 }
 
 // 显示技能模态框

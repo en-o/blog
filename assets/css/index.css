@@ -202,6 +202,36 @@
   font-size: 14px;
   margin: 0 0 12px 0;
   line-height: 1.5;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px 0;
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(102, 126, 234, 0.12);
+  color: #667eea;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  transition: all 0.2s ease;
+}
+
+.project-link:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-1px);
 }
 
 .project-tags {
@@ -434,6 +464,16 @@
   .project-item-desc {
     font-size: 13px;
     margin-bottom: 10px;
+  }
+
+  .project-links {
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .project-link {
+    padding: 3px 8px;
+    font-size: 11px;
   }
 
   .project-tag {

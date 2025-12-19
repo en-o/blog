@@ -100,6 +100,13 @@ title: 首页
             <h4><a href="{{ project.url }}" target="_blank">{{ project.name }}</a></h4>
           </div>
           <p class="project-desc">{{ project.description }}</p>
+          {% if project.links %}
+          <div class="project-links">
+            {% for link in project.links %}
+            <a href="{{ link.url }}" target="_blank" class="project-link">{{ link.name }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
           <div class="project-tags">
             {% for tag in project.tags %}
             <span class="project-tag">{{ tag }}</span>
@@ -138,6 +145,13 @@ title: 首页
             {% if project.star %}<span class="star-badge">⭐</span>{% endif %}
           </div>
           <p class="project-item-desc">{{ project.description }}</p>
+          {% if project.links %}
+          <div class="project-links">
+            {% for link in project.links %}
+            <a href="{{ link.url }}" target="_blank" class="project-link">{{ link.name }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
           <div class="project-tags">
             {% for tag in project.tags %}
             <span class="project-tag">{{ tag }}</span>

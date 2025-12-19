@@ -33,7 +33,9 @@ router.get('/info', async (req, res) => {
         footer_powered_by: config.footer_powered_by !== false,
         footer_powered_by_text: config.footer_powered_by_text || 'Powered by',
         footer_powered_by_name: config.footer_powered_by_name || 'Jekyll',
-        footer_powered_by_link: config.footer_powered_by_link || 'https://jekyllrb.com/'
+        footer_powered_by_link: config.footer_powered_by_link || 'https://jekyllrb.com/',
+        baidu_analytics: config.baidu_analytics || '',
+        busuanzi_counter: config.busuanzi_counter !== false
       }
     });
   } catch (error) {
@@ -57,7 +59,9 @@ router.put('/info', async (req, res) => {
       footer_powered_by,
       footer_powered_by_text,
       footer_powered_by_name,
-      footer_powered_by_link
+      footer_powered_by_link,
+      baidu_analytics,
+      busuanzi_counter
     } = req.body;
 
     // 读取现有配置内容（保留注释）
@@ -156,6 +160,31 @@ router.put('/info', async (req, res) => {
         );
       } else {
         configContent += `\nfooter_powered_by_link: "${footer_powered_by_link}"`;
+      }
+    }
+
+    // 统计配置
+    if (baidu_analytics !== undefined) {
+      if (configContent.match(/^baidu_analytics:.*$/m)) {
+        configContent = configContent.replace(
+          /^baidu_analytics:.*$/m,
+          baidu_analytics ? `baidu_analytics: "${baidu_analytics}"` : '# baidu_analytics: ""'
+        );
+      } else {
+        if (baidu_analytics) {
+          configContent += `\n\n# 百度统计配置\nbaidu_analytics: "${baidu_analytics}"`;
+        }
+      }
+    }
+
+    if (busuanzi_counter !== undefined) {
+      if (configContent.match(/^busuanzi_counter:.*$/m)) {
+        configContent = configContent.replace(
+          /^busuanzi_counter:.*$/m,
+          `busuanzi_counter: ${busuanzi_counter}`
+        );
+      } else {
+        configContent += `\n\n# 不蒜子访问量统计\nbusuanzi_counter: ${busuanzi_counter}`;
       }
     }
 

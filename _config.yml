@@ -51,3 +51,9 @@ footer_powered_by_text: "Powered by"
 footer_powered_by_name: "tan"
 footer_powered_by_link: "https://github.com/en-o"
 github_url: https://github.com/en-o/blog
+
+# 百度统计配置
+baidu_analytics: "c630ecba9d6dc3f9cc2372632e2508f0"
+
+# 不蒜子访问量统计
+busuanzi_counter: true

@@ -8,8 +8,31 @@
     {% if site.footer_powered_by != false %}
     <p>{{ site.footer_powered_by_text | default: "Powered by" }} <a href="{{ site.footer_powered_by_link | default: 'https://jekyllrb.com/' }}" target="_blank">{{ site.footer_powered_by_name | default: "Jekyll" }}</a></p>
     {% endif %}
+    {% if site.busuanzi_counter != false %}
+    <p style="font-size: 0.85em; color: #999;">
+      <span id="busuanzi_container_site_pv">访问 <span id="busuanzi_value_site_pv"></span></span>
+      <span style="margin: 0 8px;">·</span>
+      <span id="busuanzi_container_site_uv">访客 <span id="busuanzi_value_site_uv"></span></span>
+    </p>
+    {% endif %}
   </div>
 </footer>
+
+{% if site.busuanzi_counter != false %}
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+{% endif %}
+
+{% if site.baidu_analytics %}
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?{{ site.baidu_analytics }}";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+{% endif %}
 
 {% if site.github_url %}
 <a href="{{ site.github_url }}" target="_blank" class="github-corner" aria-label="View source on GitHub">
