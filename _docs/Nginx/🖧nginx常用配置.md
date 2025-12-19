@@ -236,7 +236,9 @@ location /bistdashboard/ {
 
 ## 限制上传文件大小
 > client_max_body_size 主要就是限制请求的body数据大小
+> 
 > client_body_buffer_size 上传文件如果太多缓存空间可能也需要处理下
+> 
 
 ```nginx
 文件大小限制
