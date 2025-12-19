@@ -14,7 +14,8 @@
       "Bash(bundle exec jekyll build:*)",
       "Read(///**)",
       "Bash(awk:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(bash:*)"
     ],
     "deny": [],
     "ask": []
