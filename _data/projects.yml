@@ -7,8 +7,13 @@
     - Markdown
   star: true
 - name: 站点导航
-  description: 自用的一个业务导航项目
+  description: 自用的一个业务导航项目。微软和火狐扩展市场：导航助手(Oasis)，注意这个插件是单独的插件的导航跟oasis的功能没做关联
   url: https://gitee.com/tanoo/oasis
+  links:
+    - name: Edge 扩展
+      url: https://microsoftedge.microsoft.com/addons/detail/%E5%AF%BC%E8%88%AA%E5%8A%A9%E6%89%8Boasis/oodgoeancfegjnggcflkgggaaemjggkc
+    - name: Firefox 扩展
+      url: https://addons.mozilla.org/zh-CN/firefox/addon/%E5%AF%BC%E8%88%AA%E5%8A%A9%E6%89%8B-oasis/
   tags:
     - JAVA
     - React
@@ -48,3 +53,6 @@
     - JAVA
     - Maven
   star: true
+  links:
+    - name: 文档
+      url: https://www.yuque.com/tanning/yg9ipo
