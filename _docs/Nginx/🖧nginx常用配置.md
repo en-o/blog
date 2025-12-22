@@ -205,12 +205,26 @@ location /admin {
 > + dashboard/js/xx.js
 > + dashboard/css/xx.css
 >
-> # 访问 [http://127.0.0.1:80/bistdashboard/html/index.html](http://127.0.0.1:80/bistdashboard/html/index.html)
+> 访问 [http://127.0.0.1:80/bistdashboard/html/index.html](http://127.0.0.1:80/bistdashboard/html/index.html)
 >
 
 ```nginx
+# 代理公共目录
 location /bistdashboard/ {
     alias /tan/test/dashboard/;
+}
+
+ 
+# 代理指定页面 index
+location / {
+    root /home/nginxconfig/html;
+    index test.html;
+}
+# 代理指定页面 try_files
+#  =404 如果文件不存在 → 立即返回 404，不会再去尝试其他 location 块或默认首页
+location / {
+    root /home/nginxconfig/html;
+    try_files /test.html =404;
 }
 ```
 
@@ -855,14 +869,29 @@ server {
 ```
 
 ## openresty 隐藏版本号
+> 
+> 安全加固，避免暴露服务器版本信息，减少被针对性攻击的风险
+> 
+
 ```nginx
-### 在http节点下加入下面的配置2
+## 在http节点下加入下面的配置2
 http {
-  sendfile        on;
+  #控制 Nginx 在错误页面（如 404、500）和响应头 Server 字段中是否显示 版本号
+  server_tokens off;
 }
 ```
 
+## 优化文件传输性能
+- 当启用时（on），Nginx 可以直接通过内核在文件描述符和网络套接字之间传输数据，无需将数据复制到用户空间，从而减少 CPU 和内存开销，提升静态文件（如图片、CSS、JS）的传输性能
+- 适用于提供大量静态资源的场景。
 
+```nginx
+## 在http节点下加入下面的配置2
+http {
+  #控制是否启用操作系统的 sendfile() 系统调用来传输文件
+  sendfile        on;
+}
+```
 
 
 

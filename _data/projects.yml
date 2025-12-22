@@ -19,7 +19,7 @@
     - React
     - 浏览器插件
   star: true
-- name: Nginx证书管理
+- name: 运维工具
   description: 处理 ssl证书，密钥管理，端口查询，数据库备份
   url: https://gitee.com/tanoo/ops
   tags:
@@ -56,3 +56,15 @@
   links:
     - name: 文档
       url: https://www.yuque.com/tanning/yg9ipo
+- name: Nginx证书下载
+  description: 完全由前端构成的证书下载
+  url: https://github.com/en-o/dnsSsl
+  tags:
+    - SSL
+    - nginx
+    - https
+    - 证书
+  star: true
+  links:
+    - name: 在线站点
+      url: https://ssl.tannn.cn/
