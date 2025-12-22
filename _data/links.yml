@@ -7,6 +7,23 @@
   description: 笔记本
   avatar: >-
     https://mdn.alipayobjects.com/huamei_0prmtq/afts/img/A*PXAJTYXseTsAAAAAAAAAAAAADvuFAQ/original
+- name: 跨平台传输文件
+  url: https://pairdrop.net/
+  description: 实现跨平台文件传输。无需安装，无需注册
+  avatar: https://pairdrop.net/images/favicon-96x96.png
+- name: DNS SSL 证书申请助手
+  url: https://ssl.tannn.cn/
+  description: DNS SSL 证书申请助手
+  avatar: https://ssl.tannn.cn/assets/favicon.svg
+- name: 互联网档案馆
+  url: https://archive.org
+  description: >-
+    无论您是想找回丢失的网页内容，还是探索互联网的发展历程，archive.org都是一个非常宝贵的资源
+  avatar: https://archive.org/favicon.ico
+- name: 电视台
+  url: https://tv.garden/
+  description: ' 可以看全世界的电视台'
+  avatar: https://tv.garden/assets/favicons/favicon.svg
 - name: Algorithms
   url: https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
   description: 正则大全
@@ -16,7 +33,3 @@
   description: json
   avatar: >-
     https://www.daimagu.com/assets/upload/2025-10/30/61295e9d3de246dcba5a196965dc2908.png
-- name: 跨平台传输文件
-  url: https://pairdrop.net/
-  description: 实现跨平台文件传输。无需安装，无需注册
-  avatar: https://pairdrop.net/images/favicon-96x96.png
