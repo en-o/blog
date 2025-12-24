@@ -1218,32 +1218,34 @@ async function loadGithubProjects() {
 }
 
 function renderGithubProjectsList() {
-  // 按添加时间倒序排序
-  const sortedProjects = githubProjectsData.sort((a, b) => {
+  // 按添加时间倒序排序 - 创建副本避免修改原数组
+  const sortedProjects = [...githubProjectsData].sort((a, b) => {
     const dateA = new Date(a.addtime);
     const dateB = new Date(b.addtime);
     return dateB - dateA;
   });
 
-  const html = sortedProjects.map((project, index) => `
+  const html = sortedProjects.map((project) => {
+    // 找到该项目在原数组中的真实索引
+    const realIndex = githubProjectsData.findIndex(p =>
+      p.url === project.url && p.addtime === project.addtime
+    );
+
+    return `
     <div class="list-item">
       <div>
         <div class="list-item-title">${project.name}</div>
         <div class="list-item-meta">${project.description}</div>
         <div class="list-item-meta">${project.url}</div>
-        <div class="list-item-meta">
-          ${project.language ? `语言: ${project.language}` : ''}
-          ${project.stars ? ` | Stars: ${project.stars}` : ''}
-          ${project.addtime ? ` | 添加时间: ${project.addtime}` : ''}
-        </div>
+        <div class="list-item-meta">添加时间: ${project.addtime || ''}</div>
         <div class="list-item-meta">标签: ${(project.tags || []).join(', ')}</div>
       </div>
       <div class="list-item-actions">
-        <button class="btn btn-sm btn-primary" onclick="editGithubProject(${index})">编辑</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteGithubProject(${index})">删除</button>
+        <button class="btn btn-sm btn-primary" onclick="editGithubProject(${realIndex})">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGithubProject(${realIndex})">删除</button>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
   document.getElementById('githubProjectsList').innerHTML = html || '<p style="color:#999;">暂无 GitHub 精选项目</p>';
 }
@@ -1356,27 +1358,20 @@ document.getElementById('githubProjectForm').addEventListener('submit', async (e
     .map(t => t.trim())
     .filter(Boolean);
 
-  // 确保包含 github 标签
-  if (!tags.includes('github')) {
-    tags.unshift('github');
+  // 如果用户没有填写任何标签，则添加默认的 "github" 标签
+  if (tags.length === 0) {
+    tags.push('github');
   }
 
   const project = {
     name: document.getElementById('githubProjectName').value,
     description: document.getElementById('githubProjectDesc').value,
     url: document.getElementById('githubProjectUrl').value,
-    stars: 0,  // 默认为0，博客页面会自动获取
-    language: '',  // 默认为空，博客页面会自动获取
     tags: tags,
     addtime: addtime
   };
 
   if (editingGithubProjectIndex >= 0) {
-    // 更新时保留已有的 stars 和 language
-    const existingProject = githubProjectsData[editingGithubProjectIndex];
-    project.stars = existingProject.stars || 0;
-    project.language = existingProject.language || '';
-
     githubProjectsData[editingGithubProjectIndex] = project;
   } else {
     // 添加到开头（最新的在前面）

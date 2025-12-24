@@ -1,0 +1,6 @@
+- name: DualQRCode
+  description: 生成包含两个 URL 的二维码，不同角度扫描，返回的 URL 不一样
+  url: https://github.com/tailwindlabs/tailwindcss
+  tags:
+    - 二维码
+  addtime: 2025-12-24 11:20
