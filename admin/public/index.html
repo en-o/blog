@@ -421,6 +421,16 @@
       </div>
 
       <div class="card">
+        <h2>快速操作</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="pullFromRemote()">⬇️ 拉取更新</button>
+          <button class="btn btn-secondary" onclick="showDiffModal()">📊 查看差异</button>
+          <button class="btn btn-warning" onclick="showStashModal()">💾 暂存改动</button>
+          <button class="btn btn-secondary" onclick="refreshGitStatus()">🔄 刷新状态</button>
+        </div>
+      </div>
+
+      <div class="card">
         <h2>提交并推送</h2>
         <form id="gitForm">
           <div class="form-group">
@@ -433,6 +443,43 @@
           </div>
           <button type="submit" class="btn btn-success">提交并推送到 GitHub</button>
         </form>
+      </div>
+
+      <div class="card">
+        <h2>分支管理</h2>
+        <div style="margin-bottom: 15px;">
+          <button class="btn btn-secondary" onclick="loadBranches()">🔄 刷新分支列表</button>
+          <button class="btn btn-primary" onclick="showCreateBranchModal()">➕ 创建新分支</button>
+          <button class="btn btn-success" onclick="showMergeBranchModal()">🔀 合并分支</button>
+        </div>
+        <div id="branchesList" class="loading">点击刷新加载分支列表...</div>
+      </div>
+
+      <div class="card">
+        <h2>暂存列表 (Stash)</h2>
+        <div style="margin-bottom: 15px;">
+          <button class="btn btn-secondary" onclick="loadStashList()">🔄 刷新暂存列表</button>
+        </div>
+        <div id="stashList" class="loading">点击刷新加载暂存列表...</div>
+      </div>
+
+      <div class="card">
+        <h2>远程仓库</h2>
+        <div style="margin-bottom: 15px;">
+          <button class="btn btn-secondary" onclick="loadRemotes()">🔄 刷新远程仓库</button>
+          <button class="btn btn-primary" onclick="showAddRemoteModal()">➕ 添加远程仓库</button>
+        </div>
+        <div id="remotesList" class="loading">点击刷新加载远程仓库...</div>
+      </div>
+
+      <div class="card">
+        <h2>标签管理</h2>
+        <div style="margin-bottom: 15px;">
+          <button class="btn btn-secondary" onclick="loadTags()">🔄 刷新标签列表</button>
+          <button class="btn btn-primary" onclick="showCreateTagModal()">🏷️ 创建标签</button>
+          <button class="btn btn-success" onclick="pushAllTags()">⬆️ 推送所有标签</button>
+        </div>
+        <div id="tagsList" class="loading">点击刷新加载标签列表...</div>
       </div>
 
       <div class="card">

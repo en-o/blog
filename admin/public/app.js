@@ -1611,6 +1611,11 @@ async function loadGitStatus() {
   }
 }
 
+// 刷新Git状态
+function refreshGitStatus() {
+  loadGitStatus();
+}
+
 // 加载提交记录
 async function loadGitLog() {
   try {
@@ -1662,6 +1667,700 @@ document.getElementById('gitForm').addEventListener('submit', async (e) => {
     showAlert('error', '操作失败: ' + error.message);
   }
 });
+
+// 拉取远程更新
+async function pullFromRemote() {
+  const branch = document.getElementById('gitBranch').value || 'main';
+
+  if (!confirm(`确定要从远程拉取 ${branch} 分支的更新吗？`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/pull`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ branch })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', '拉取成功！');
+      loadGitStatus();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '拉取失败: ' + error.message);
+  }
+}
+
+// 查看差异
+async function showDiffModal() {
+  try {
+    const res = await fetch(`${API_BASE}/git/diff`);
+    const { data } = await res.json();
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+      <div class="modal" style="width: 90%; max-width: 1200px;">
+        <div class="modal-header">
+          <h3>📊 文件差异</h3>
+        </div>
+        <div class="modal-body">
+          <pre style="background: #f5f5f5; padding: 20px; border-radius: 8px; overflow-x: auto; max-height: 500px; font-family: monospace; font-size: 13px; line-height: 1.6;">${data || '无差异'}</pre>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal(this)">关闭</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal(modal);
+    });
+  } catch (error) {
+    showAlert('error', '获取差异失败: ' + error.message);
+  }
+}
+
+// 暂存改动
+function showStashModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>💾 暂存当前改动</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>暂存描述（可选）</label>
+          <input type="text" id="stashMessage" placeholder="描述这次暂存的内容...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+        <button class="btn btn-primary" onclick="saveStash()">保存暂存</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 保存暂存
+async function saveStash() {
+  const message = document.getElementById('stashMessage').value;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/stash/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', '已暂存当前改动！');
+      closeModal(document.querySelector('.modal-overlay'));
+      loadGitStatus();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '暂存失败: ' + error.message);
+  }
+}
+
+// 加载分支列表
+async function loadBranches() {
+  document.getElementById('branchesList').innerHTML = '<div class="loading">加载中...</div>';
+
+  try {
+    const res = await fetch(`${API_BASE}/git/branches`);
+    const { data } = await res.json();
+
+    const html = `
+      <div style="margin-bottom: 15px; padding: 10px; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #3b82f6;">
+        <strong>当前分支:</strong> ${data.current}
+      </div>
+      ${data.all.map(branch => `
+        <div class="list-item">
+          <div>
+            <div class="list-item-title">
+              ${branch}
+              ${branch === data.current ? '<span style="color: #3b82f6; font-size: 12px; margin-left: 8px;">● 当前</span>' : ''}
+            </div>
+          </div>
+          <div class="list-item-actions">
+            ${branch !== data.current ? `<button class="btn btn-sm btn-primary" onclick="checkoutBranch('${branch}')">切换</button>` : ''}
+            ${branch !== data.current ? `<button class="btn btn-sm btn-danger" onclick="deleteBranch('${branch}')">删除</button>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    `;
+
+    document.getElementById('branchesList').innerHTML = html;
+  } catch (error) {
+    document.getElementById('branchesList').innerHTML = `<p style="color:red;">加载失败: ${error.message}</p>`;
+  }
+}
+
+// 创建分支模态框
+function showCreateBranchModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>➕ 创建新分支</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>分支名称 *</label>
+          <input type="text" id="newBranchName" placeholder="例如: feature-new-ui" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+        <button class="btn btn-primary" onclick="createBranch()">创建</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 创建分支
+async function createBranch() {
+  const name = document.getElementById('newBranchName').value.trim();
+
+  if (!name) {
+    showAlert('error', '请输入分支名称');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/git/branch/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      closeModal(document.querySelector('.modal-overlay'));
+      loadBranches();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '创建失败: ' + error.message);
+  }
+}
+
+// 切换分支
+async function checkoutBranch(name) {
+  if (!confirm(`确定要切换到分支 ${name} 吗？`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/branch/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      loadBranches();
+      loadGitStatus();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '切换失败: ' + error.message);
+  }
+}
+
+// 删除分支
+async function deleteBranch(name) {
+  if (!confirm(`确定要删除分支 ${name} 吗？此操作不可恢复！`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/branch/${name}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      loadBranches();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '删除失败: ' + error.message);
+  }
+}
+
+// 合并分支模态框
+function showMergeBranchModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🔀 合并分支</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>要合并的分支 *</label>
+          <input type="text" id="mergeBranchName" placeholder="输入要合并到当前分支的分支名称" required>
+        </div>
+        <p style="color: #64748b; font-size: 13px;">提示: 将指定分支的内容合并到当前分支</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+        <button class="btn btn-success" onclick="mergeBranch()">合并</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 合并分支
+async function mergeBranch() {
+  const branch = document.getElementById('mergeBranchName').value.trim();
+
+  if (!branch) {
+    showAlert('error', '请输入要合并的分支名称');
+    return;
+  }
+
+  if (!confirm(`确定要将分支 ${branch} 合并到当前分支吗？`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/merge`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ branch })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      closeModal(document.querySelector('.modal-overlay'));
+      loadGitStatus();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '合并失败: ' + error.message);
+  }
+}
+
+// 加载暂存列表
+async function loadStashList() {
+  document.getElementById('stashList').innerHTML = '<div class="loading">加载中...</div>';
+
+  try {
+    const res = await fetch(`${API_BASE}/git/stash/list`);
+    const { data } = await res.json();
+
+    if (!data.all || data.all.length === 0) {
+      document.getElementById('stashList').innerHTML = '<p style="color:#999;">暂无暂存</p>';
+      return;
+    }
+
+    const html = data.all.map((stash, index) => `
+      <div class="list-item">
+        <div>
+          <div class="list-item-title">stash@{${index}}</div>
+          <div class="list-item-meta">${stash.message || stash.hash}</div>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn btn-sm btn-success" onclick="applyStash(${index})">应用</button>
+          <button class="btn btn-sm btn-primary" onclick="popStash(${index})">弹出</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteStash(${index})">删除</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('stashList').innerHTML = html;
+  } catch (error) {
+    document.getElementById('stashList').innerHTML = `<p style="color:red;">加载失败: ${error.message}</p>`;
+  }
+}
+
+// 应用暂存
+async function applyStash(index) {
+  try {
+    const res = await fetch(`${API_BASE}/git/stash/apply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      loadGitStatus();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '应用失败: ' + error.message);
+  }
+}
+
+// 弹出暂存
+async function popStash(index) {
+  if (!confirm('确定要弹出这个暂存吗？弹出后会从暂存列表中删除。')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/stash/pop`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      loadStashList();
+      loadGitStatus();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '弹出失败: ' + error.message);
+  }
+}
+
+// 删除暂存
+async function deleteStash(index) {
+  if (!confirm('确定要删除这个暂存吗？此操作不可恢复！')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/stash/${index}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      loadStashList();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '删除失败: ' + error.message);
+  }
+}
+
+// 加载远程仓库
+async function loadRemotes() {
+  document.getElementById('remotesList').innerHTML = '<div class="loading">加载中...</div>';
+
+  try {
+    const res = await fetch(`${API_BASE}/git/remotes`);
+    const { data } = await res.json();
+
+    if (!data || data.length === 0) {
+      document.getElementById('remotesList').innerHTML = '<p style="color:#999;">暂无远程仓库</p>';
+      return;
+    }
+
+    const html = data.map(remote => `
+      <div class="list-item">
+        <div>
+          <div class="list-item-title">${remote.name}</div>
+          <div class="list-item-meta">
+            Fetch: ${remote.refs.fetch}<br>
+            Push: ${remote.refs.push}
+          </div>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn btn-sm btn-danger" onclick="deleteRemote('${remote.name}')">删除</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('remotesList').innerHTML = html;
+  } catch (error) {
+    document.getElementById('remotesList').innerHTML = `<p style="color:red;">加载失败: ${error.message}</p>`;
+  }
+}
+
+// 添加远程仓库模态框
+function showAddRemoteModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>➕ 添加远程仓库</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>名称 *</label>
+          <input type="text" id="remoteName" placeholder="例如: origin" required>
+        </div>
+        <div class="form-group">
+          <label>URL *</label>
+          <input type="text" id="remoteUrl" placeholder="例如: https://github.com/user/repo.git" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+        <button class="btn btn-primary" onclick="addRemote()">添加</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 添加远程仓库
+async function addRemote() {
+  const name = document.getElementById('remoteName').value.trim();
+  const url = document.getElementById('remoteUrl').value.trim();
+
+  if (!name || !url) {
+    showAlert('error', '请填写完整信息');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/git/remote/add`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, url })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      closeModal(document.querySelector('.modal-overlay'));
+      loadRemotes();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '添加失败: ' + error.message);
+  }
+}
+
+// 删除远程仓库
+async function deleteRemote(name) {
+  if (!confirm(`确定要删除远程仓库 ${name} 吗？`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/remote/${name}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      loadRemotes();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '删除失败: ' + error.message);
+  }
+}
+
+// 加载标签列表
+async function loadTags() {
+  document.getElementById('tagsList').innerHTML = '<div class="loading">加载中...</div>';
+
+  try {
+    const res = await fetch(`${API_BASE}/git/tags`);
+    const { data } = await res.json();
+
+    if (!data.all || data.all.length === 0) {
+      document.getElementById('tagsList').innerHTML = '<p style="color:#999;">暂无标签</p>';
+      return;
+    }
+
+    const html = data.all.map(tag => `
+      <div class="list-item">
+        <div>
+          <div class="list-item-title">🏷️ ${tag}</div>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn btn-sm btn-success" onclick="pushTag('${tag}')">推送</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteTag('${tag}')">删除</button>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('tagsList').innerHTML = html;
+  } catch (error) {
+    document.getElementById('tagsList').innerHTML = `<p style="color:red;">加载失败: ${error.message}</p>`;
+  }
+}
+
+// 创建标签模态框
+function showCreateTagModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <div class="modal-header">
+        <h3>🏷️ 创建标签</h3>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>标签名称 *</label>
+          <input type="text" id="tagName" placeholder="例如: v1.0.0" required>
+        </div>
+        <div class="form-group">
+          <label>标签描述（可选）</label>
+          <textarea id="tagMessage" rows="3" placeholder="添加描述以创建附注标签"></textarea>
+          <small>如果填写描述，将创建附注标签（annotated tag），否则创建轻量标签</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal(this)">取消</button>
+        <button class="btn btn-primary" onclick="createTag()">创建</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal);
+  });
+}
+
+// 创建标签
+async function createTag() {
+  const name = document.getElementById('tagName').value.trim();
+  const message = document.getElementById('tagMessage').value.trim();
+
+  if (!name) {
+    showAlert('error', '请输入标签名称');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/git/tag/create`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, message })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      closeModal(document.querySelector('.modal-overlay'));
+      loadTags();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '创建失败: ' + error.message);
+  }
+}
+
+// 推送单个标签
+async function pushTag(name) {
+  if (!confirm(`确定要推送标签 ${name} 到远程吗？`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/tag/push`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '推送失败: ' + error.message);
+  }
+}
+
+// 推送所有标签
+async function pushAllTags() {
+  if (!confirm('确定要推送所有标签到远程吗？')) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/tag/push`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '推送失败: ' + error.message);
+  }
+}
+
+// 删除标签
+async function deleteTag(name) {
+  if (!confirm(`确定要删除标签 ${name} 吗？此操作不可恢复！`)) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/git/tag/${name}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', result.message);
+      loadTags();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '删除失败: ' + error.message);
+  }
+}
 
 // ============= 工具函数 =============
 
