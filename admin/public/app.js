@@ -20,6 +20,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tabName === 'pages') loadPages();
     if (tabName === 'docs') loadDocs();
     if (tabName === 'data') loadDataManagement();
+    if (tabName === 'github') loadGithubProjects();
     if (tabName === 'config') loadConfig();
     if (tabName === 'git') loadGitStatus();
   });
@@ -1200,6 +1201,213 @@ async function saveThoughtsData() {
   }
 }
 
+// ============= GitHub 精选管理 =============
+
+let githubProjectsData = [];
+let editingGithubProjectIndex = -1;
+
+async function loadGithubProjects() {
+  try {
+    const res = await fetch(`${API_BASE}/data/github-projects`);
+    const { data } = await res.json();
+    githubProjectsData = data || [];
+    renderGithubProjectsList();
+  } catch (error) {
+    showAlert('error', '加载 GitHub 项目失败: ' + error.message);
+  }
+}
+
+function renderGithubProjectsList() {
+  // 按添加时间倒序排序
+  const sortedProjects = githubProjectsData.sort((a, b) => {
+    const dateA = new Date(a.addtime);
+    const dateB = new Date(b.addtime);
+    return dateB - dateA;
+  });
+
+  const html = sortedProjects.map((project, index) => `
+    <div class="list-item">
+      <div>
+        <div class="list-item-title">${project.name}</div>
+        <div class="list-item-meta">${project.description}</div>
+        <div class="list-item-meta">${project.url}</div>
+        <div class="list-item-meta">
+          ${project.language ? `语言: ${project.language}` : ''}
+          ${project.stars ? ` | Stars: ${project.stars}` : ''}
+          ${project.addtime ? ` | 添加时间: ${project.addtime}` : ''}
+        </div>
+        <div class="list-item-meta">标签: ${(project.tags || []).join(', ')}</div>
+      </div>
+      <div class="list-item-actions">
+        <button class="btn btn-sm btn-primary" onclick="editGithubProject(${index})">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteGithubProject(${index})">删除</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('githubProjectsList').innerHTML = html || '<p style="color:#999;">暂无 GitHub 精选项目</p>';
+}
+
+function editGithubProject(index) {
+  const project = githubProjectsData[index];
+  document.getElementById('githubProjectName').value = project.name || '';
+  document.getElementById('githubProjectDesc').value = project.description || '';
+  document.getElementById('githubProjectUrl').value = project.url || '';
+  document.getElementById('githubProjectTags').value = (project.tags || []).join(', ');
+
+  // 转换时间格式为 datetime-local
+  if (project.addtime) {
+    const datetime = project.addtime.includes(' ')
+      ? project.addtime.replace(' ', 'T')
+      : project.addtime + 'T00:00';
+    document.getElementById('githubProjectAddtime').value = datetime;
+  }
+
+  editingGithubProjectIndex = index;
+
+  const submitBtn = document.querySelector('#githubProjectForm button[type="submit"]');
+  submitBtn.textContent = '更新项目';
+  submitBtn.className = 'btn btn-success';
+
+  document.getElementById('githubProjectForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function deleteGithubProject(index) {
+  if (!confirm('确定要删除这个 GitHub 项目吗？')) return;
+
+  githubProjectsData.splice(index, 1);
+  saveGithubProjectsData();
+}
+
+function resetGithubProjectForm() {
+  document.getElementById('githubProjectForm').reset();
+
+  // 设置为当前日期时间
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('githubProjectAddtime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+  editingGithubProjectIndex = -1;
+
+  const submitBtn = document.querySelector('#githubProjectForm button[type="submit"]');
+  submitBtn.textContent = '添加项目';
+  submitBtn.className = 'btn btn-primary';
+}
+
+// 从 GitHub API 获取项目信息
+async function fetchGithubRepoInfo() {
+  const url = document.getElementById('githubProjectUrl').value.trim();
+
+  if (!url) {
+    showAlert('error', '请先填写 GitHub 链接');
+    return;
+  }
+
+  // 解析 GitHub URL
+  const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+  if (!match) {
+    showAlert('error', 'GitHub 链接格式不正确，应为: https://github.com/owner/repo');
+    return;
+  }
+
+  const owner = match[1];
+  const repo = match[2];
+
+  try {
+    // 调用 GitHub API
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        showAlert('error', '仓库不存在或无法访问');
+      } else if (response.status === 403) {
+        showAlert('error', 'GitHub API 请求次数已达上限，请稍后再试');
+      } else {
+        showAlert('error', '获取仓库信息失败');
+      }
+      return;
+    }
+
+    const data = await response.json();
+
+    // 自动填充表单
+    document.getElementById('githubProjectName').value = data.name || '';
+    document.getElementById('githubProjectDesc').value = data.description || '';
+
+    showAlert('success', `成功获取项目信息！项目将在博客页面自动获取 Stars 和编程语言`);
+  } catch (error) {
+    showAlert('error', '获取失败: ' + error.message);
+  }
+}
+
+document.getElementById('githubProjectForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  // 将 datetime-local 格式转换为 YAML 格式 (YYYY-MM-DD HH:mm)
+  const datetimeLocal = document.getElementById('githubProjectAddtime').value;
+  const addtime = datetimeLocal.replace('T', ' ');
+
+  const tags = document.getElementById('githubProjectTags').value
+    .split(',')
+    .map(t => t.trim())
+    .filter(Boolean);
+
+  // 确保包含 github 标签
+  if (!tags.includes('github')) {
+    tags.unshift('github');
+  }
+
+  const project = {
+    name: document.getElementById('githubProjectName').value,
+    description: document.getElementById('githubProjectDesc').value,
+    url: document.getElementById('githubProjectUrl').value,
+    stars: 0,  // 默认为0，博客页面会自动获取
+    language: '',  // 默认为空，博客页面会自动获取
+    tags: tags,
+    addtime: addtime
+  };
+
+  if (editingGithubProjectIndex >= 0) {
+    // 更新时保留已有的 stars 和 language
+    const existingProject = githubProjectsData[editingGithubProjectIndex];
+    project.stars = existingProject.stars || 0;
+    project.language = existingProject.language || '';
+
+    githubProjectsData[editingGithubProjectIndex] = project;
+  } else {
+    // 添加到开头（最新的在前面）
+    githubProjectsData.unshift(project);
+  }
+
+  await saveGithubProjectsData();
+  resetGithubProjectForm();
+});
+
+async function saveGithubProjectsData() {
+  try {
+    const res = await fetch(`${API_BASE}/data/github-projects`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(githubProjectsData)
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      showAlert('success', 'GitHub 项目保存成功');
+      renderGithubProjectsList();
+    } else {
+      showAlert('error', result.error);
+    }
+  } catch (error) {
+    showAlert('error', '保存失败: ' + error.message);
+  }
+}
+
 // ============= 配置管理 =============
 
 // 加载配置信息
@@ -1626,6 +1834,9 @@ const hours = String(now.getHours()).padStart(2, '0');
 const minutes = String(now.getMinutes()).padStart(2, '0');
 document.getElementById('thoughtDatetime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
 
+// 设置 GitHub 精选项目的初始添加时间
+document.getElementById('githubProjectAddtime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
 // 加载初始显示的标签页数据
 const initialTab = document.querySelector('.tab.active');
 if (initialTab) {
@@ -1634,6 +1845,7 @@ if (initialTab) {
   else if (tabName === 'pages') loadPages();
   else if (tabName === 'docs') loadDocs();
   else if (tabName === 'data') loadDataManagement();
+  else if (tabName === 'github') loadGithubProjects();
   else if (tabName === 'config') loadConfig();
   else if (tabName === 'git') loadGitStatus();
 }

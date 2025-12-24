@@ -54,4 +54,28 @@ router.put('/thoughts', async (req, res) => {
   }
 });
 
+// 获取 GitHub 项目列表
+router.get('/github-projects', async (req, res) => {
+  try {
+    const filePath = path.join(DATA_DIR, 'github_projects.yml');
+    const content = await fs.readFile(filePath, 'utf-8');
+    const data = yaml.load(content);
+    res.json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// 更新 GitHub 项目列表
+router.put('/github-projects', async (req, res) => {
+  try {
+    const filePath = path.join(DATA_DIR, 'github_projects.yml');
+    const yamlContent = yaml.dump(req.body);
+    await fs.writeFile(filePath, yamlContent, 'utf-8');
+    res.json({ success: true, message: 'GitHub 项目更新成功' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 module.exports = router;

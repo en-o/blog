@@ -20,6 +20,7 @@
       <button class="tab" data-tab="pages">📝 页面管理</button>
       <button class="tab" data-tab="docs">📚 文档管理</button>
       <button class="tab" data-tab="data">💾 数据管理</button>
+      <button class="tab" data-tab="github">⭐ GitHub</button>
       <button class="tab" data-tab="config">⚙️ 配置管理</button>
       <button class="tab" data-tab="git">🔄 Git 操作</button>
     </div>
@@ -374,6 +375,41 @@
             <button type="button" class="btn btn-primary btn-sm" onclick="uploadAvatar()">上传Avatar</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- GitHub 精选管理 -->
+    <div id="github" class="tab-content">
+      <div class="card">
+        <h2>GitHub 精选项目管理</h2>
+        <form id="githubProjectForm" style="margin-bottom: 30px;">
+          <div class="form-group">
+            <label>项目名称 *</label>
+            <input type="text" id="githubProjectName" placeholder="例如: React" required>
+          </div>
+          <div class="form-group">
+            <label>项目描述 *</label>
+            <textarea id="githubProjectDesc" rows="2" placeholder="简短描述这个项目" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>GitHub 链接 *</label>
+            <input type="url" id="githubProjectUrl" placeholder="https://github.com/facebook/react" required>
+            <small>填写链接后，Stars 和编程语言将在博客页面加载时自动获取</small>
+          </div>
+          <div class="form-group">
+            <label>标签</label>
+            <input type="text" id="githubProjectTags" placeholder="多个标签用逗号分隔，默认包含 github 标签">
+            <small>用于分类筛选，默认会包含 "github" 标签</small>
+          </div>
+          <div class="form-group">
+            <label>添加时间</label>
+            <input type="datetime-local" id="githubProjectAddtime" required>
+            <small>用于排序，默认按时间倒序显示</small>
+          </div>
+          <button type="submit" class="btn btn-primary">添加项目</button>
+          <button type="button" class="btn btn-secondary" onclick="resetGithubProjectForm()">重置</button>
+        </form>
+        <div id="githubProjectsList"></div>
       </div>
     </div>
 
