@@ -2,6 +2,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0;
+  min-height: calc(100vh - 250px);
 }
 
 /* 顶部标签过滤区域 */
@@ -588,6 +589,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 16px 20px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 /* 响应式设计 */
@@ -615,6 +617,10 @@
   /* 显示移动端悬浮按钮 */
   .mobile-timeline-toggle {
     display: flex !important;
+  }
+
+  .github-projects-container {
+    min-height: calc(100vh - 200px);
   }
 
   .main-content {
@@ -651,6 +657,7 @@
 @media (max-width: 480px) {
   .github-projects-container {
     padding: 0;
+    min-height: calc(100vh - 180px);
   }
 
   .project-title-row {
