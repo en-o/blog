@@ -216,12 +216,23 @@ async function autoFetchGithubData() {
 }
 
 // 年份折叠切换函数（全局函数，供内联 onclick 调用）
-function toggleYear(year) {
+window.toggleYear = function(year) {
+  console.log('toggleYear called with year:', year);
   const yearGroup = document.querySelector(`.timeline-year-group[data-year="${year}"]`);
+  console.log('Found yearGroup:', yearGroup);
   if (yearGroup) {
     yearGroup.classList.toggle('collapsed');
+    console.log('Toggled collapsed class, now has:', yearGroup.classList.contains('collapsed'));
+  } else {
+    console.error('Year group not found for year:', year);
+    // 尝试列出所有年份组
+    const allYearGroups = document.querySelectorAll('.timeline-year-group');
+    console.log('All year groups:', allYearGroups);
+    allYearGroups.forEach(group => {
+      console.log('  - data-year:', group.getAttribute('data-year'));
+    });
   }
-}
+};
 
 document.addEventListener('DOMContentLoaded', function() {
   const filterButtons = document.querySelectorAll('.tag-filter');
@@ -245,6 +256,22 @@ document.addEventListener('DOMContentLoaded', function() {
   // 默认折叠所有年份
   timelineYearGroups.forEach(group => {
     group.classList.add('collapsed');
+  });
+
+  // 为桌面端时间线的年份头部绑定点击事件（作为 onclick 的备份）
+  const desktopYearHeaders = timelineSidebar ? timelineSidebar.querySelectorAll('.timeline-year-header') : [];
+  desktopYearHeaders.forEach(header => {
+    // 移除可能存在的 onclick，改用事件监听器
+    header.removeAttribute('onclick');
+    header.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const yearGroup = this.closest('.timeline-year-group');
+      if (yearGroup) {
+        yearGroup.classList.toggle('collapsed');
+        console.log('Desktop year toggled:', yearGroup.getAttribute('data-year'), 'collapsed:', yearGroup.classList.contains('collapsed'));
+      }
+    });
   });
 
   // 设置编程语言颜色（支持多语言）
