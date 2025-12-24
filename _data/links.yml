@@ -24,6 +24,10 @@
   url: https://tv.garden/
   description: ' 可以看全世界的电视台'
   avatar: https://tv.garden/assets/favicons/favicon.svg
+- name: 双链式二维码生成器
+  url: https://dualqrcode.com/
+  description: 生成包含两个 URL 的二维码，不同角度扫描，返回的 URL 不一样
+  avatar: https://dualqrcode.com/qr-icon.svg
 - name: Algorithms
   url: https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
   description: 正则大全
