@@ -44,3 +44,10 @@
   tags:
     - 二维码
   addtime: 2023-10-24 11:20
+- name: Malware-Patch
+  description: 阻止中国流氓软件的管理员授权
+  url: https://github.com/the1812/Malware-Patch
+  tags:
+    - windows
+    - 使用工具
+  addtime: 2023-09-24 11:20
