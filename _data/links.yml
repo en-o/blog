@@ -17,8 +17,7 @@
   avatar: https://ssl.tannn.cn/assets/favicon.svg
 - name: 互联网档案馆
   url: https://archive.org
-  description: >-
-    无论您是想找回丢失的网页内容，还是探索互联网的发展历程，archive.org都是一个非常宝贵的资源
+  description: 无论您是想找回丢失的网页内容，还是探索互联网的发展历程，archive.org都是一个非常宝贵的资源
   avatar: https://archive.org/favicon.ico
 - name: 电视台
   url: https://tv.garden/
@@ -37,3 +36,8 @@
   description: json
   avatar: >-
     https://www.daimagu.com/assets/upload/2025-10/30/61295e9d3de246dcba5a196965dc2908.png
+- name: 404设计大全
+  url: https://www.404s.design/
+  description: 404s.design
+  avatar: >-
+    https://cdn.prod.website-files.com/65ba70a4bb6f912baf009423/65bc1ed3f64896f42998ce1d_Frame%204.png
