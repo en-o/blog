@@ -1,3 +1,11 @@
+- name: yuque-dl
+  description: 语雀知识库下载为本地markdown
+  url: https://github.com/gxr404/yuque-dl
+  tags:
+    - 下载
+    - 语雀
+    - 使用工具
+  addtime: 2026-01-14 10:09
 - name: ArchiveBox
   description: 一个开源、自托管的网页归档工具，能将你提供的网页链接保存成多种格式
   url: https://github.com/ArchiveBox/ArchiveBox
