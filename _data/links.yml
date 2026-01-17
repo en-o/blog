@@ -2,6 +2,10 @@
   url: https://t.tannn.cn/
   description: 挂在github上的一个导航站点，我好久没更新了
   avatar: ' https://t.tannn.cn/images/N.png'
+- name: 书灯
+  url: https://lychnos.tannn.cn/#/
+  description: 在翻开书之前，先点一盏灯
+  avatar: https://lychnos.tannn.cn/site_icon.svg
 - name: 我的语雀
   url: https://www.yuque.com/tanning
   description: 笔记本
@@ -41,7 +45,7 @@
   description: 404s.design
   avatar: >-
     https://cdn.prod.website-files.com/65ba70a4bb6f912baf009423/65bc1ed3f64896f42998ce1d_Frame%204.png
-- name: linux.do/
+- name: linux.do
   url: https://linux.do/
   description: 一个中文Linux技术社区
   avatar: >-
