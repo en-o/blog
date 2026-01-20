@@ -14,6 +14,8 @@
       url: https://microsoftedge.microsoft.com/addons/detail/%E5%AF%BC%E8%88%AA%E5%8A%A9%E6%89%8Boasis/oodgoeancfegjnggcflkgggaaemjggkc
     - name: Firefox 扩展
       url: https://addons.mozilla.org/zh-CN/firefox/addon/%E5%AF%BC%E8%88%AA%E5%8A%A9%E6%89%8B-oasis/
+    - name: chrome 扩展
+      url: https://chromewebstore.google.com/search/%E5%AF%BC%E8%88%AA%E5%8A%A9%E6%89%8B(Oasis)
   tags:
     - JAVA
     - React
@@ -68,3 +70,15 @@
   links:
     - name: 在线站点
       url: https://ssl.tannn.cn/
+- name: 书灯
+  description: 在翻开书之前，先点一盏灯 (我的一个ai相关的项目)
+  url: https://github.com/en-o/lychnos
+  tags:
+    - AI
+    - 读书
+    - 分析
+    - 生图
+  star: true
+  links:
+    - name: 在线站点
+      url: https://lychnos.tannn.cn/
