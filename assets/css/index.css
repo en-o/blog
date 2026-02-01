@@ -555,22 +555,36 @@
 /* 操作栏 */
 .resume-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   gap: 12px;
   padding: 16px 24px;
   background: var(--color-light-60);
   border-bottom: 1px solid var(--color-border-light);
 }
 
+.resume-actions-left,
+.resume-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .resume-btn-download,
 .resume-btn-print,
-.resume-btn-close {
-  padding: 8px 20px;
+.resume-btn-close,
+.resume-btn-edit,
+.resume-btn-save,
+.resume-btn-reset {
+  padding: 8px 16px;
   border-radius: var(--radius-md);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .resume-btn-download {
@@ -603,6 +617,100 @@
 
 .resume-btn-close:hover {
   background: var(--color-light-60);
+}
+
+.resume-btn-edit {
+  background: var(--color-white);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-20);
+}
+
+.resume-btn-edit:hover {
+  background: var(--color-primary-10);
+}
+
+.resume-btn-save {
+  background: #10b981;
+  color: var(--color-white);
+  border: none;
+}
+
+.resume-btn-save:hover {
+  background: #059669;
+}
+
+.resume-btn-reset {
+  background: var(--color-white);
+  color: #ef4444;
+  border: 1px solid #fecaca;
+}
+
+.resume-btn-reset:hover {
+  background: #fef2f2;
+}
+
+.resume-cache-hint {
+  font-size: 12px;
+  color: var(--color-primary);
+  background: var(--color-primary-10);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+}
+
+/* 板块头部 */
+.resume-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-primary-20);
+}
+
+.resume-section-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.resume-section-delete {
+  display: none;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.resume-section-delete:hover {
+  background: #ef4444;
+  color: var(--color-white);
+}
+
+/* 编辑模式样式 */
+.resume-editing [contenteditable="true"] {
+  outline: 2px dashed var(--color-primary-30);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+  min-height: 1em;
+}
+
+.resume-editing [contenteditable="true"]:focus {
+  outline: 2px solid var(--color-primary);
+  background: var(--color-primary-05);
+}
+
+.resume-editing [contenteditable="true"]:hover {
+  background: var(--color-primary-05);
 }
 
 /* 简历正文 */
@@ -677,15 +785,6 @@
 
 .resume-section {
   margin-bottom: 28px;
-}
-
-.resume-section h2 {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--color-primary);
-  margin: 0 0 16px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--color-primary-20);
 }
 
 .resume-skill-row {
@@ -920,16 +1019,22 @@
     display: none !important;
   }
 
+  .resume-section-delete {
+    display: none !important;
+  }
+
+  .resume-section-header {
+    border-bottom: 2px solid var(--color-primary-20);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+  }
+
+  .resume-section-header h2 {
+    font-size: 16px;
+  }
+
   .resume-body {
     padding: 15mm;
-  }
-
-  .resume-name {
-    font-size: 24px;
-  }
-
-  .resume-section h2 {
-    font-size: 16px;
   }
 
   /* 防止空白页 */
@@ -986,13 +1091,27 @@
   .resume-actions {
     padding: 12px 16px;
     flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .resume-actions-left,
+  .resume-actions-right {
+    gap: 6px;
   }
 
   .resume-btn-download,
   .resume-btn-print,
-  .resume-btn-close {
-    padding: 6px 14px;
-    font-size: 13px;
+  .resume-btn-close,
+  .resume-btn-edit,
+  .resume-btn-save,
+  .resume-btn-reset {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .resume-cache-hint {
+    font-size: 10px;
+    padding: 3px 6px;
   }
 
   .resume-body {
@@ -1003,7 +1122,13 @@
     font-size: 22px;
   }
 
-  .resume-section h2 {
+  .resume-section-header h2 {
     font-size: 16px;
+  }
+
+  .resume-section-delete {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
   }
 }

@@ -178,44 +178,66 @@ title: 首页
 <div class="resume-overlay" id="resume-overlay">
   <div class="resume-container">
     <div class="resume-actions">
-      <button id="resume-download-btn" class="resume-btn-download">📥 下载 PDF</button>
-      <button id="resume-print-btn" class="resume-btn-print" title="打印时请在浏览器设置中关闭页眉页脚">🖨️ 打印</button>
-      <button id="resume-close-btn" class="resume-btn-close">关闭</button>
+      <div class="resume-actions-left">
+        <button id="resume-edit-btn" class="resume-btn-edit">✏️ 编辑</button>
+        <button id="resume-save-btn" class="resume-btn-save" style="display:none;">💾 保存</button>
+        <button id="resume-reset-btn" class="resume-btn-reset" style="display:none;">🔄 重置</button>
+        <span id="resume-cache-hint" class="resume-cache-hint" style="display:none;">📦 已加载缓存</span>
+      </div>
+      <div class="resume-actions-right">
+        <button id="resume-download-btn" class="resume-btn-download">📥 下载 PDF</button>
+        <button id="resume-print-btn" class="resume-btn-print" title="打印时请在浏览器设置中关闭页眉页脚">🖨️ 打印</button>
+        <button id="resume-close-btn" class="resume-btn-close">关闭</button>
+      </div>
     </div>
     <div class="resume-body" id="resume-body">
-      <h1 class="resume-name">{{ site.data.profile.name }}</h1>
+      <h1 class="resume-name" data-editable="true">{{ site.data.profile.name }}</h1>
       <div class="resume-contact">
         <div class="resume-contact-row">
-          {% if site.data.profile.social.email %}<span class="resume-contact-item"><i>📧</i><label>Email</label><a href="mailto:{{ site.data.profile.social.email }}">{{ site.data.profile.social.email }}</a></span>{% endif %}
+          {% if site.data.profile.social.email %}<span class="resume-contact-item"><i>📧</i><label>Email</label><span data-editable="true">{{ site.data.profile.social.email }}</span></span>{% endif %}
           <span class="resume-contact-item"><i>💼</i><label>工作年限</label><span id="work-years"></span>年</span>
         </div>
         <div class="resume-contact-row">
-          {% if site.data.profile.social.github %}<span class="resume-contact-item"><i>🔗</i><label>GitHub</label><a href="{{ site.data.profile.social.github }}">{{ site.data.profile.social.github }}</a></span>{% endif %}
-          {% if site.data.profile.social.gitee %}<span class="resume-contact-item"><i>🔗</i><label>Gitee</label><a href="{{ site.data.profile.social.gitee }}">{{ site.data.profile.social.gitee }}</a></span>{% endif %}
+          {% if site.data.profile.social.github %}<span class="resume-contact-item"><i>🔗</i><label>GitHub</label><span data-editable="true">{{ site.data.profile.social.github }}</span></span>{% endif %}
+          {% if site.data.profile.social.gitee %}<span class="resume-contact-item"><i>🔗</i><label>Gitee</label><span data-editable="true">{{ site.data.profile.social.gitee }}</span></span>{% endif %}
         </div>
       </div>
 
-      <div class="resume-bio">{{ site.data.profile.intro }}</div>
+      <div class="resume-bio" data-editable="true">{{ site.data.profile.intro }}</div>
 
-      <div class="resume-section">
-        <h2>求职意向</h2>
+      <div class="resume-section" data-section="objective">
+        <div class="resume-section-header">
+          <h2>求职意向</h2>
+          <button class="resume-section-delete" title="删除此板块">✕</button>
+        </div>
+        <div class="resume-section-content" data-editable="true">
         {% if site.data.resume.objective and site.data.resume.objective != "" %}
         <p class="resume-objective">{{ site.data.resume.objective }}</p>
         {% endif %}
+        </div>
       </div>
 
-      <div class="resume-section">
-        <h2>技能栈</h2>
+      <div class="resume-section" data-section="skills">
+        <div class="resume-section-header">
+          <h2>技能栈</h2>
+          <button class="resume-section-delete" title="删除此板块">✕</button>
+        </div>
+        <div class="resume-section-content" data-editable="true">
         {% for skill in site.data.profile.skills %}
         <div class="resume-skill-row">
           <strong>{{ skill.name }}：</strong>
           <span>{{ skill.items | join: "、" }}</span>
         </div>
         {% endfor %}
+        </div>
       </div>
 
-      <div class="resume-section">
-        <h2>工作经历</h2>
+      <div class="resume-section" data-section="work">
+        <div class="resume-section-header">
+          <h2>工作经历</h2>
+          <button class="resume-section-delete" title="删除此板块">✕</button>
+        </div>
+        <div class="resume-section-content" data-editable="true">
         {% for job in site.data.resume.work_experience %}
         <div class="resume-job">
           <div class="resume-job-header">
@@ -235,11 +257,17 @@ title: 首页
           {% endif %}
         </div>
         {% endfor %}
+        </div>
       </div>
 
-      <div class="resume-section">
-        <h2>项目经历</h2>
-        <h3 class="resume-sub-title">公司项目</h3>
+      <div class="resume-section" data-section="projects">
+        <div class="resume-section-header">
+          <h2>项目经历</h2>
+          <button class="resume-section-delete" title="删除此板块">✕</button>
+        </div>
+        <div class="resume-section-content">
+        <h3 class="resume-sub-title" data-editable="true">公司项目</h3>
+        <div data-editable="true">
         {% for project in site.data.resume.company_projects %}
         <div class="resume-project">
           <div class="resume-project-header">
@@ -263,8 +291,10 @@ title: 首页
           {% endif %}
         </div>
         {% endfor %}
+        </div>
 
-        <h3 class="resume-sub-title">个人项目</h3>
+        <h3 class="resume-sub-title" data-editable="true">个人项目</h3>
+        <div data-editable="true">
         {% assign starred_projects = site.data.projects | where: "star", true %}
         {% assign normal_projects = site.data.projects | where: "star", false %}
         {% for project in starred_projects %}
@@ -301,10 +331,16 @@ title: 首页
           {% endif %}
         </div>
         {% endfor %}
+        </div>
+        </div>
       </div>
 
-      <div class="resume-section">
-        <h2>教育经历</h2>
+      <div class="resume-section" data-section="education">
+        <div class="resume-section-header">
+          <h2>教育经历</h2>
+          <button class="resume-section-delete" title="删除此板块">✕</button>
+        </div>
+        <div class="resume-section-content" data-editable="true">
         {% for edu in site.data.resume.education %}
         <div class="resume-edu">
           <div class="resume-edu-header">
@@ -314,10 +350,15 @@ title: 首页
           <div class="resume-edu-detail">{{ edu.major }} · {{ edu.degree }}</div>
         </div>
         {% endfor %}
+        </div>
       </div>
 
-      <div class="resume-section">
-        <h2>证书/认证</h2>
+      <div class="resume-section" data-section="certifications">
+        <div class="resume-section-header">
+          <h2>证书/认证</h2>
+          <button class="resume-section-delete" title="删除此板块">✕</button>
+        </div>
+        <div class="resume-section-content" data-editable="true">
         {% if site.data.resume.certifications.size > 0 %}
         <ul>
           {% for cert in site.data.resume.certifications %}
@@ -325,13 +366,19 @@ title: 首页
           {% endfor %}
         </ul>
         {% endif %}
+        </div>
       </div>
 
-      <div class="resume-section">
-        <h2>自我评价</h2>
+      <div class="resume-section" data-section="evaluation">
+        <div class="resume-section-header">
+          <h2>自我评价</h2>
+          <button class="resume-section-delete" title="删除此板块">✕</button>
+        </div>
+        <div class="resume-section-content" data-editable="true">
         {% if site.data.resume.self_evaluation and site.data.resume.self_evaluation != "" %}
         <p class="resume-evaluation">{{ site.data.resume.self_evaluation }}</p>
         {% endif %}
+        </div>
       </div>
     </div>
   </div>
@@ -346,6 +393,15 @@ document.addEventListener('DOMContentLoaded', function() {
   var printBtn = document.getElementById('resume-print-btn');
   var downloadBtn = document.getElementById('resume-download-btn');
   var resumeBody = document.getElementById('resume-body');
+  var editBtn = document.getElementById('resume-edit-btn');
+  var saveBtn = document.getElementById('resume-save-btn');
+  var resetBtn = document.getElementById('resume-reset-btn');
+  var cacheHint = document.getElementById('resume-cache-hint');
+
+  var CACHE_KEY = 'resume_cache';
+  var CACHE_EXPIRY = 7 * 24 * 60 * 60 * 1000; // 7天过期
+  var isEditMode = false;
+  var originalHTML = resumeBody.innerHTML;
 
   // 计算工作年限
   var startYear = {{ site.data.resume.start_year | default: 2018 }};
@@ -353,18 +409,131 @@ document.addEventListener('DOMContentLoaded', function() {
   var workYears = now.getFullYear() - startYear;
   document.getElementById('work-years').textContent = workYears;
 
+  // 加载缓存
+  function loadCache() {
+    try {
+      var cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        var data = JSON.parse(cached);
+        if (Date.now() - data.timestamp < CACHE_EXPIRY) {
+          resumeBody.innerHTML = data.html;
+          cacheHint.style.display = 'inline';
+          // 重新计算工作年限（因为替换了 HTML）
+          var workYearsEl = document.getElementById('work-years');
+          if (workYearsEl) workYearsEl.textContent = workYears;
+          return true;
+        } else {
+          localStorage.removeItem(CACHE_KEY);
+        }
+      }
+    } catch(e) {}
+    return false;
+  }
+
+  // 保存缓存
+  function saveCache() {
+    try {
+      var data = {
+        html: resumeBody.innerHTML,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    } catch(e) {}
+  }
+
+  // 进入编辑模式
+  function enterEditMode() {
+    isEditMode = true;
+    resumeBody.classList.add('resume-editing');
+    editBtn.style.display = 'none';
+    saveBtn.style.display = 'inline-flex';
+    resetBtn.style.display = 'inline-flex';
+
+    // 启用 contenteditable
+    var editables = resumeBody.querySelectorAll('[data-editable="true"]');
+    editables.forEach(function(el) {
+      el.setAttribute('contenteditable', 'true');
+    });
+
+    // 显示删除按钮
+    var deleteButtons = resumeBody.querySelectorAll('.resume-section-delete');
+    deleteButtons.forEach(function(btn) {
+      btn.style.display = 'inline-flex';
+    });
+  }
+
+  // 退出编辑模式
+  function exitEditMode() {
+    isEditMode = false;
+    resumeBody.classList.remove('resume-editing');
+    editBtn.style.display = 'inline-flex';
+    saveBtn.style.display = 'none';
+    resetBtn.style.display = 'none';
+
+    // 禁用 contenteditable
+    var editables = resumeBody.querySelectorAll('[data-editable="true"]');
+    editables.forEach(function(el) {
+      el.removeAttribute('contenteditable');
+    });
+
+    // 隐藏删除按钮
+    var deleteButtons = resumeBody.querySelectorAll('.resume-section-delete');
+    deleteButtons.forEach(function(btn) {
+      btn.style.display = 'none';
+    });
+  }
+
+  // 删除板块
+  function handleSectionDelete(e) {
+    if (!isEditMode) return;
+    var section = e.target.closest('.resume-section');
+    if (section && confirm('确定删除此板块？')) {
+      section.remove();
+    }
+  }
+
+  // 事件绑定
+  resumeBody.addEventListener('click', function(e) {
+    if (e.target.classList.contains('resume-section-delete')) {
+      handleSectionDelete(e);
+    }
+  });
+
+  editBtn.addEventListener('click', enterEditMode);
+
+  saveBtn.addEventListener('click', function() {
+    saveCache();
+    exitEditMode();
+    cacheHint.style.display = 'inline';
+    alert('已保存到本地缓存！');
+  });
+
+  resetBtn.addEventListener('click', function() {
+    if (confirm('确定重置？将恢复原始数据并清除缓存。')) {
+      localStorage.removeItem(CACHE_KEY);
+      resumeBody.innerHTML = originalHTML;
+      // 重新计算工作年限
+      var workYearsEl = document.getElementById('work-years');
+      if (workYearsEl) workYearsEl.textContent = workYears;
+      exitEditMode();
+      cacheHint.style.display = 'none';
+    }
+  });
+
   openBtn.addEventListener('click', function() {
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
   });
 
   closeBtn.addEventListener('click', function() {
+    if (isEditMode) exitEditMode();
     overlay.classList.remove('active');
     document.body.style.overflow = '';
   });
 
   overlay.addEventListener('click', function(e) {
     if (e.target === overlay) {
+      if (isEditMode) exitEditMode();
       overlay.classList.remove('active');
       document.body.style.overflow = '';
     }
@@ -372,12 +541,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 打印按钮
   printBtn.addEventListener('click', function() {
+    if (isEditMode) exitEditMode();
     alert('提示：打印时请在浏览器打印设置中取消勾选「页眉和页脚」以获得更好效果。\n\n或直接使用「下载 PDF」按钮。');
     window.print();
   });
 
   // 下载 PDF 按钮
   downloadBtn.addEventListener('click', function() {
+    if (isEditMode) exitEditMode();
+    // 临时隐藏删除按钮
+    var deleteButtons = resumeBody.querySelectorAll('.resume-section-delete');
+    deleteButtons.forEach(function(btn) { btn.style.visibility = 'hidden'; });
+
     var opt = {
       margin: [10, 10, 10, 10],
       filename: '{{ site.data.profile.name }}-简历.pdf',
@@ -385,7 +560,12 @@ document.addEventListener('DOMContentLoaded', function() {
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    html2pdf().set(opt).from(resumeBody).save();
+    html2pdf().set(opt).from(resumeBody).save().then(function() {
+      deleteButtons.forEach(function(btn) { btn.style.visibility = ''; });
+    });
   });
+
+  // 页面加载时尝试加载缓存
+  loadCache();
 });
 </script>
