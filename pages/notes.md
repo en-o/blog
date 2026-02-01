@@ -7,6 +7,13 @@ permalink: /notes.html
 <div class="notes-page" id="notes-page">
   <div class="notes-header">
     <span class="notes-current-name" id="notes-current-name">{{ site.data.notes[0].icon }} {{ site.data.notes[0].name }}</span>
+    <select id="notes-mobile-select" class="notes-mobile-select">
+      {% for note in site.data.notes %}
+      <option value="{{ note.url }}" data-name="{{ note.icon }} {{ note.name }}" {% if forloop.first %}selected{% endif %}>
+        {{ note.icon }} {{ note.name }}
+      </option>
+      {% endfor %}
+    </select>
     <div class="notes-actions">
       <button id="notes-fullscreen-btn" class="notes-action-btn" title="最大化">
         <span class="fullscreen-icon" id="fullscreen-icon">⛶</span>
@@ -44,15 +51,20 @@ document.addEventListener('DOMContentLoaded', function() {
   var fullscreenIcon = document.getElementById('fullscreen-icon');
   var notesPage = document.getElementById('notes-page');
   var currentName = document.getElementById('notes-current-name');
+  var mobileSelect = document.getElementById('notes-mobile-select');
   var notesMap = JSON.parse(document.getElementById('notes-map').textContent);
+
+  function switchNote(url, name) {
+    iframe.src = url;
+    externalLink.href = url;
+    currentName.textContent = name;
+  }
 
   // 根据 hash 切换笔记
   function loadFromHash() {
     var name = decodeURIComponent(location.hash.replace('#', ''));
     if (name && notesMap[name]) {
-      iframe.src = notesMap[name].url;
-      externalLink.href = notesMap[name].url;
-      currentName.textContent = notesMap[name].icon + ' ' + name;
+      switchNote(notesMap[name].url, notesMap[name].icon + ' ' + name);
     }
   }
 
@@ -61,6 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // hash 变化时切换
   window.addEventListener('hashchange', loadFromHash);
+
+  // 移动端 select 切换
+  mobileSelect.addEventListener('change', function() {
+    var selected = this.options[this.selectedIndex];
+    switchNote(this.value, selected.dataset.name);
+  });
 
   // 切换最大化
   fullscreenBtn.addEventListener('click', function() {
