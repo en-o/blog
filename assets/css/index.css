@@ -497,3 +497,372 @@
     margin-left: 0;
   }
 }
+
+/* ========== 简历生成功能 ========== */
+
+/* 生成简历按钮 */
+.resume-generate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-xs);
+  padding: 6px 12px;
+  background: var(--gradient-primary);
+  color: var(--color-white);
+  text-decoration: none;
+  border-radius: var(--radius-base);
+  font-size: 14px;
+  font-weight: 500;
+  transition: var(--transition-normal);
+  cursor: pointer;
+}
+
+.resume-generate-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--color-primary-30);
+}
+
+/* 简历弹窗遮罩 */
+.resume-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  overflow-y: auto;
+  padding: 40px 20px;
+}
+
+.resume-overlay.active {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* 简历容器 */
+.resume-container {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 800px;
+  overflow: hidden;
+}
+
+/* 操作栏 */
+.resume-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  background: var(--color-light-60);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.resume-btn-download,
+.resume-btn-print,
+.resume-btn-close {
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+.resume-btn-download {
+  background: var(--gradient-primary);
+  color: var(--color-white);
+  border: none;
+}
+
+.resume-btn-download:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.resume-btn-print {
+  background: var(--color-primary-10);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-20);
+}
+
+.resume-btn-print:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.resume-btn-close {
+  background: var(--color-white);
+  color: var(--color-text-medium);
+  border: 1px solid var(--color-border-light);
+}
+
+.resume-btn-close:hover {
+  background: var(--color-light-60);
+}
+
+/* 简历正文 */
+.resume-body {
+  padding: 40px;
+}
+
+.resume-name {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.resume-contact {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--color-text-medium);
+}
+
+.resume-contact a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.resume-bio {
+  text-align: center;
+  color: var(--color-text-gray);
+  font-size: 15px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.resume-section {
+  margin-bottom: 28px;
+}
+
+.resume-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-primary-20);
+}
+
+.resume-skill-row {
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.resume-skill-row strong {
+  color: var(--color-text-dark);
+}
+
+.resume-skill-row span {
+  color: var(--color-text-medium);
+}
+
+.resume-project {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+.resume-project:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.resume-project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.resume-project-header strong {
+  font-size: 15px;
+  color: var(--color-text-dark);
+}
+
+.resume-project-tags {
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+.resume-project p {
+  font-size: 14px;
+  color: var(--color-text-medium);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.resume-project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.resume-project-links a {
+  color: var(--color-primary);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.resume-project-links a:hover {
+  text-decoration: underline;
+}
+
+.resume-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.resume-section li {
+  font-size: 14px;
+  color: var(--color-text-medium);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+/* 打印样式 */
+@media print {
+  @page {
+    margin: 10mm;
+    size: A4;
+  }
+
+  html, body {
+    width: 100%;
+    height: auto;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .resume-overlay,
+  .resume-overlay * {
+    visibility: visible;
+  }
+
+  .resume-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    background: none;
+    display: block !important;
+    overflow: visible;
+  }
+
+  .resume-container {
+    box-shadow: none;
+    border-radius: 0;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  .resume-actions {
+    display: none !important;
+  }
+
+  .resume-body {
+    padding: 0;
+  }
+
+  .resume-name {
+    font-size: 24px;
+  }
+
+  .resume-section h2 {
+    font-size: 16px;
+  }
+
+  /* 防止空白页 */
+  .site-header,
+  .site-footer,
+  .home-profile-card,
+  .home-grid,
+  .github-corner {
+    display: none !important;
+  }
+
+  .resume-project {
+    break-inside: avoid;
+  }
+
+  .resume-section {
+    break-inside: avoid;
+  }
+}
+
+/* 移动端简历弹窗 */
+@media (max-width: 768px) {
+  .resume-overlay {
+    padding: 20px 10px;
+  }
+
+  .resume-body {
+    padding: 24px 20px;
+  }
+
+  .resume-name {
+    font-size: 26px;
+  }
+
+  .resume-contact {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .resume-project-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .resume-generate-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .resume-actions {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .resume-btn-download,
+  .resume-btn-print,
+  .resume-btn-close {
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .resume-body {
+    padding: 20px 16px;
+  }
+
+  .resume-name {
+    font-size: 22px;
+  }
+
+  .resume-section h2 {
+    font-size: 16px;
+  }
+}

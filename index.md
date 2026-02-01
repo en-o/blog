@@ -25,6 +25,10 @@ title: 首页
         Email
       </a>
       {% endif %}
+      <a href="javascript:void(0)" id="resume-btn" class="resume-generate-btn">
+        <svg height="16" width="16" viewBox="0 0 16 16"><path fill="currentColor" d="M3.5 1A1.5 1.5 0 002 2.5v11A1.5 1.5 0 003.5 15h9a1.5 1.5 0 001.5-1.5v-8L9.5 1H3.5zM3 2.5a.5.5 0 01.5-.5H9v3.5A1.5 1.5 0 0010.5 7H13v6.5a.5.5 0 01-.5.5h-9a.5.5 0 01-.5-.5v-11zM10 2.7L12.3 5h-1.8a.5.5 0 01-.5-.5V2.7zM5 9h6v1H5V9zm0 2h6v1H5v-1zm0-4h3v1H5V7z"></path></svg>
+        生成简历
+      </a>
     </div>
   </div>
   
@@ -163,3 +167,110 @@ title: 首页
     </div>
   </div>
 </div>
+
+<!-- 简历弹窗 -->
+<div class="resume-overlay" id="resume-overlay">
+  <div class="resume-container">
+    <div class="resume-actions">
+      <button id="resume-download-btn" class="resume-btn-download">📥 下载 PDF</button>
+      <button id="resume-print-btn" class="resume-btn-print" title="打印时请在浏览器设置中关闭页眉页脚">🖨️ 打印</button>
+      <button id="resume-close-btn" class="resume-btn-close">关闭</button>
+    </div>
+    <div class="resume-body" id="resume-body">
+      <h1 class="resume-name">{{ site.data.profile.name }}</h1>
+      <div class="resume-contact">
+        {% if site.data.profile.social.email %}<span>📧 Email: {{ site.data.profile.social.email }}</span>{% endif %}
+        {% if site.data.profile.social.github %}<span>🔗 GitHub: <a href="{{ site.data.profile.social.github }}">{{ site.data.profile.social.github }}</a></span>{% endif %}
+      </div>
+
+      <div class="resume-bio">{{ site.data.profile.intro }}</div>
+
+      <div class="resume-section">
+        <h2>技能栈</h2>
+        {% for skill in site.data.profile.skills %}
+        <div class="resume-skill-row">
+          <strong>{{ skill.name }}：</strong>
+          <span>{{ skill.items | join: "、" }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="resume-section">
+        <h2>项目经历</h2>
+        {% for project in site.data.projects %}
+        <div class="resume-project">
+          <div class="resume-project-header">
+            <strong>{{ project.name }}{% if project.star %} ⭐{% endif %}</strong>
+            <span class="resume-project-tags">{{ project.tags | join: " / " }}</span>
+          </div>
+          <p>{{ project.description }}</p>
+          {% if project.url or project.links %}
+          <div class="resume-project-links">
+            {% if project.url %}<a href="{{ project.url }}" target="_blank">🔗 {{ project.url }}</a>{% endif %}
+            {% for link in project.links %}
+            <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="resume-section">
+        <h2>当前在做</h2>
+        <ul>
+          {% for item in site.data.profile.currently %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var overlay = document.getElementById('resume-overlay');
+  var openBtn = document.getElementById('resume-btn');
+  var closeBtn = document.getElementById('resume-close-btn');
+  var printBtn = document.getElementById('resume-print-btn');
+  var downloadBtn = document.getElementById('resume-download-btn');
+  var resumeBody = document.getElementById('resume-body');
+
+  openBtn.addEventListener('click', function() {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+
+  closeBtn.addEventListener('click', function() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // 打印按钮
+  printBtn.addEventListener('click', function() {
+    alert('提示：打印时请在浏览器打印设置中取消勾选「页眉和页脚」以获得更好效果。\n\n或直接使用「下载 PDF」按钮。');
+    window.print();
+  });
+
+  // 下载 PDF 按钮
+  downloadBtn.addEventListener('click', function() {
+    var opt = {
+      margin: [10, 10, 10, 10],
+      filename: '{{ site.data.profile.name }}-简历.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(resumeBody).save();
+  });
+});
+</script>
