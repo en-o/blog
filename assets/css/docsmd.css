@@ -197,6 +197,8 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--gap-lg);
+  position: relative;
+  cursor: pointer;
 }
 
 .mobile-doc-items li:hover {
@@ -212,6 +214,15 @@
   text-decoration: none;
   font-weight: 500;
   font-size: 14px;
+}
+
+.mobile-doc-items a::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .mobile-doc-items a:hover {
@@ -436,6 +447,8 @@
   transition: var(--transition-normal);
   border-radius: var(--radius-lg);
   margin-bottom: 4px;
+  position: relative;
+  cursor: pointer;
 }
 
 .doc-list li:hover {
@@ -456,6 +469,15 @@
   text-decoration: none;
   font-weight: 500;
   transition: var(--transition-normal);
+}
+
+.doc-list a::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .doc-list a:hover {
