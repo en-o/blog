@@ -6,16 +6,7 @@ permalink: /notes.html
 
 <div class="notes-page" id="notes-page">
   <div class="notes-header">
-    <div class="notes-selector">
-      <label for="notes-select">选择手札：</label>
-      <select id="notes-select" class="notes-dropdown">
-        {% for note in site.data.notes %}
-        <option value="{{ note.url }}" {% if forloop.first %}selected{% endif %}>
-          {{ note.icon }} {{ note.name }}
-        </option>
-        {% endfor %}
-      </select>
-    </div>
+    <span class="notes-current-name" id="notes-current-name">{{ site.data.notes[0].icon }} {{ site.data.notes[0].name }}</span>
     <div class="notes-actions">
       <button id="notes-fullscreen-btn" class="notes-action-btn" title="最大化">
         <span class="fullscreen-icon" id="fullscreen-icon">⛶</span>
@@ -37,30 +28,46 @@ permalink: /notes.html
   </div>
 </div>
 
+<script type="application/json" id="notes-map">
+{
+  {% for note in site.data.notes %}
+  "{{ note.name }}": { "url": "{{ note.url }}", "icon": "{{ note.icon }}" }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+}
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  var select = document.getElementById('notes-select');
   var iframe = document.getElementById('notes-iframe');
   var externalLink = document.getElementById('notes-external-link');
   var fullscreenBtn = document.getElementById('notes-fullscreen-btn');
   var fullscreenIcon = document.getElementById('fullscreen-icon');
   var notesPage = document.getElementById('notes-page');
+  var currentName = document.getElementById('notes-current-name');
+  var notesMap = JSON.parse(document.getElementById('notes-map').textContent);
 
-  select.addEventListener('change', function() {
-    var url = this.value;
-    iframe.src = url;
-    externalLink.href = url;
-  });
+  // 根据 hash 切换笔记
+  function loadFromHash() {
+    var name = decodeURIComponent(location.hash.replace('#', ''));
+    if (name && notesMap[name]) {
+      iframe.src = notesMap[name].url;
+      externalLink.href = notesMap[name].url;
+      currentName.textContent = notesMap[name].icon + ' ' + name;
+    }
+  }
+
+  // 初始加载
+  loadFromHash();
+
+  // hash 变化时切换
+  window.addEventListener('hashchange', loadFromHash);
 
   // 切换最大化
   fullscreenBtn.addEventListener('click', function() {
     notesPage.classList.toggle('notes-maximized');
-    // 切换图标
     if (notesPage.classList.contains('notes-maximized')) {
-      fullscreenIcon.textContent = '⛶';
       fullscreenIcon.style.transform = 'rotate(45deg)';
     } else {
-      fullscreenIcon.textContent = '⛶';
       fullscreenIcon.style.transform = 'rotate(0deg)';
     }
   });
