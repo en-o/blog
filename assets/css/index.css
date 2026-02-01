@@ -736,7 +736,7 @@
 /* 打印样式 */
 @media print {
   @page {
-    margin: 10mm;
+    margin: 0;
     size: A4;
   }
 
@@ -746,6 +746,8 @@
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   body * {
@@ -780,7 +782,7 @@
   }
 
   .resume-body {
-    padding: 0;
+    padding: 15mm;
   }
 
   .resume-name {
