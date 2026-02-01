@@ -23,6 +23,9 @@
   {% if page.url == '/docs.html' %}
   <link rel="stylesheet" href="{{ '/assets/css/docsmd.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   {% endif %}
+  {% if page.url == '/notes.html' %}
+  <link rel="stylesheet" href="{{ '/assets/css/notes.css' | relative_url }}?v={{ site.time | date: '%s' }}">
+  {% endif %}
   {% if page.layout == 'doc' %}
   <link rel="stylesheet" href="{{ '/assets/css/docs.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   {% endif %}
