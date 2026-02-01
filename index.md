@@ -19,6 +19,12 @@ title: 首页
         GitHub
       </a>
       {% endif %}
+      {% if site.data.profile.social.gitee %}
+      <a href="{{ site.data.profile.social.gitee }}" target="_blank">
+        <svg height="16" width="16" viewBox="0 0 1024 1024"><path fill="currentColor" d="M512 1024C229.222 1024 0 794.778 0 512S229.222 0 512 0s512 229.222 512 512-229.222 512-512 512z m259.149-568.883h-290.74a25.293 25.293 0 0 0-25.292 25.293l-0.026 63.206c0 13.952 11.315 25.293 25.267 25.293h177.024c13.978 0 25.293 11.315 25.293 25.267v12.646a75.853 75.853 0 0 1-75.853 75.853h-240.23a25.293 25.293 0 0 1-25.267-25.293V417.203a75.853 75.853 0 0 1 75.827-75.853h353.946a25.293 25.293 0 0 0 25.267-25.292l0.077-63.207a25.293 25.293 0 0 0-25.268-25.293H417.152a189.62 189.62 0 0 0-189.62 189.645V771.15c0 13.977 11.316 25.293 25.294 25.293h372.94a170.65 170.65 0 0 0 170.65-170.65V480.384a25.293 25.293 0 0 0-25.293-25.267z"></path></svg>
+        Gitee
+      </a>
+      {% endif %}
       {% if site.data.profile.social.email %}
       <a href="mailto:{{ site.data.profile.social.email }}">
         <svg height="16" width="16" viewBox="0 0 16 16"><path fill="currentColor" d="M1.75 2A1.75 1.75 0 000 3.75v.736a.75.75 0 000 .027v7.737C0 13.216.784 14 1.75 14h12.5A1.75 1.75 0 0016 12.25v-8.5A1.75 1.75 0 0014.25 2H1.75zM14.5 4.07v-.32a.25.25 0 00-.25-.25H1.75a.25.25 0 00-.25.25v.32L8 7.88l6.5-3.81zm-13 1.74v6.441c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25V5.809L8.38 9.397a.75.75 0 01-.76 0L1.5 5.809z"></path></svg>
@@ -179,11 +185,24 @@ title: 首页
     <div class="resume-body" id="resume-body">
       <h1 class="resume-name">{{ site.data.profile.name }}</h1>
       <div class="resume-contact">
-        {% if site.data.profile.social.email %}<span>📧 Email: {{ site.data.profile.social.email }}</span>{% endif %}
-        {% if site.data.profile.social.github %}<span>🔗 GitHub: <a href="{{ site.data.profile.social.github }}">{{ site.data.profile.social.github }}</a></span>{% endif %}
+        <div class="resume-contact-row">
+          {% if site.data.profile.social.email %}<span class="resume-contact-item"><i>📧</i><label>Email</label><a href="mailto:{{ site.data.profile.social.email }}">{{ site.data.profile.social.email }}</a></span>{% endif %}
+          <span class="resume-contact-item"><i>💼</i><label>工作年限</label><span id="work-years"></span>年</span>
+        </div>
+        <div class="resume-contact-row">
+          {% if site.data.profile.social.github %}<span class="resume-contact-item"><i>🔗</i><label>GitHub</label><a href="{{ site.data.profile.social.github }}">{{ site.data.profile.social.github }}</a></span>{% endif %}
+          {% if site.data.profile.social.gitee %}<span class="resume-contact-item"><i>🔗</i><label>Gitee</label><a href="{{ site.data.profile.social.gitee }}">{{ site.data.profile.social.gitee }}</a></span>{% endif %}
+        </div>
       </div>
 
       <div class="resume-bio">{{ site.data.profile.intro }}</div>
+
+      <div class="resume-section">
+        <h2>求职意向</h2>
+        {% if site.data.resume.objective and site.data.resume.objective != "" %}
+        <p class="resume-objective">{{ site.data.resume.objective }}</p>
+        {% endif %}
+      </div>
 
       <div class="resume-section">
         <h2>技能栈</h2>
@@ -196,11 +215,79 @@ title: 首页
       </div>
 
       <div class="resume-section">
+        <h2>工作经历</h2>
+        {% for job in site.data.resume.work_experience %}
+        <div class="resume-job">
+          <div class="resume-job-header">
+            <strong>{{ job.company }}</strong>
+            <span class="resume-job-period">{{ job.period }}</span>
+          </div>
+          <div class="resume-job-position">{{ job.position }}</div>
+          {% if job.description and job.description != "" %}
+          <p>{{ job.description }}</p>
+          {% endif %}
+          {% if job.highlights.size > 0 %}
+          <ul>
+            {% for item in job.highlights %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="resume-section">
         <h2>项目经历</h2>
-        {% for project in site.data.projects %}
+        <h3 class="resume-sub-title">公司项目</h3>
+        {% for project in site.data.resume.company_projects %}
         <div class="resume-project">
           <div class="resume-project-header">
-            <strong>{{ project.name }}{% if project.star %} ⭐{% endif %}</strong>
+            <strong>{{ project.name }}</strong>
+            <span class="resume-project-tags">{{ project.period }}</span>
+          </div>
+          <div class="resume-project-meta">
+            {% if project.company %}<span>{{ project.company }}</span>{% endif %}
+            {% if project.role %}<span>{{ project.role }}</span>{% endif %}
+          </div>
+          <p>{{ project.description }}</p>
+          {% if project.highlights.size > 0 %}
+          <ul>
+            {% for item in project.highlights %}
+            <li>{{ item }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% if project.tags.size > 0 %}
+          <div class="resume-project-tag-list">{{ project.tags | join: " / " }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        <h3 class="resume-sub-title">个人项目</h3>
+        {% assign starred_projects = site.data.projects | where: "star", true %}
+        {% assign normal_projects = site.data.projects | where: "star", false %}
+        {% for project in starred_projects %}
+        <div class="resume-project">
+          <div class="resume-project-header">
+            <strong>{{ project.name }} ⭐</strong>
+            <span class="resume-project-tags">{{ project.tags | join: " / " }}</span>
+          </div>
+          <p>{{ project.description }}</p>
+          {% if project.url or project.links %}
+          <div class="resume-project-links">
+            {% if project.url %}<a href="{{ project.url }}" target="_blank">🔗 {{ project.url }}</a>{% endif %}
+            {% for link in project.links %}
+            <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% for project in normal_projects %}
+        <div class="resume-project">
+          <div class="resume-project-header">
+            <strong>{{ project.name }}</strong>
             <span class="resume-project-tags">{{ project.tags | join: " / " }}</span>
           </div>
           <p>{{ project.description }}</p>
@@ -217,12 +304,34 @@ title: 首页
       </div>
 
       <div class="resume-section">
-        <h2>当前在做</h2>
+        <h2>教育经历</h2>
+        {% for edu in site.data.resume.education %}
+        <div class="resume-edu">
+          <div class="resume-edu-header">
+            <strong>{{ edu.school }}</strong>
+            <span class="resume-edu-period">{{ edu.period }}</span>
+          </div>
+          <div class="resume-edu-detail">{{ edu.major }} · {{ edu.degree }}</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="resume-section">
+        <h2>证书/认证</h2>
+        {% if site.data.resume.certifications.size > 0 %}
         <ul>
-          {% for item in site.data.profile.currently %}
-          <li>{{ item }}</li>
+          {% for cert in site.data.resume.certifications %}
+          <li>{{ cert }}</li>
           {% endfor %}
         </ul>
+        {% endif %}
+      </div>
+
+      <div class="resume-section">
+        <h2>自我评价</h2>
+        {% if site.data.resume.self_evaluation and site.data.resume.self_evaluation != "" %}
+        <p class="resume-evaluation">{{ site.data.resume.self_evaluation }}</p>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -237,6 +346,12 @@ document.addEventListener('DOMContentLoaded', function() {
   var printBtn = document.getElementById('resume-print-btn');
   var downloadBtn = document.getElementById('resume-download-btn');
   var resumeBody = document.getElementById('resume-body');
+
+  // 计算工作年限
+  var startYear = {{ site.data.resume.start_year | default: 2018 }};
+  var now = new Date();
+  var workYears = now.getFullYear() - startYear;
+  document.getElementById('work-years').textContent = workYears;
 
   openBtn.addEventListener('click', function() {
     overlay.classList.add('active');
