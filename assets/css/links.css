@@ -2,42 +2,42 @@
 .friends-links {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
+  gap: var(--gap-lg);
+  margin-top: var(--gap-xl);
 }
 
 .link-card {
   display: flex;
   align-items: center;
-  padding: 20px;
+  padding: var(--gap-lg);
   background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  transition: var(--transition-smooth);
+  border: 1px solid var(--color-white-30);
 }
 
 .link-card:hover {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.18);
-  border-color: rgba(102, 126, 234, 0.3);
+  background: var(--color-white-80);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--color-primary-30);
 }
 
 .link-card img {
   width: 60px;
   height: 60px;
-  border-radius: 50%;
-  margin-right: 15px;
+  border-radius: var(--radius-full);
+  margin-right: var(--gap-md);
   object-fit: cover;
-  border: 2px solid #f1f5f9;
-  transition: all 0.3s ease;
+  border: 2px solid var(--color-light-blue);
+  transition: var(--transition-normal);
 }
 
 .link-card:hover img {
-  border-color: #667eea;
+  border-color: var(--color-primary);
   transform: scale(1.05);
 }
 
@@ -46,13 +46,13 @@
 }
 
 .link-info h3 a {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .link-info h3 a:hover {
@@ -60,7 +60,7 @@
 }
 
 .link-info p {
-  color: #64748b;
+  color: var(--color-text-gray);
   font-size: 14px;
 }
 
@@ -78,26 +78,26 @@
 @media (max-width: 768px) {
   .friends-links {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: var(--gap-md);
   }
 
   .link-card {
-    padding: 15px;
+    padding: var(--gap-md);
   }
 
   /* 移动端提示框全屏显示 */
   .help-tooltip {
     position: fixed !important;
-    left: 20px !important;
-    right: 20px !important;
+    left: var(--gap-lg) !important;
+    right: var(--gap-lg) !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
     width: auto !important;
     max-width: none !important;
-    background: white !important;
-    border-radius: 16px !important;
-    padding: 20px !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+    background: var(--color-white) !important;
+    border-radius: var(--radius-xl) !important;
+    padding: var(--gap-lg) !important;
+    box-shadow: 0 8px 32px var(--color-overlay-dark) !important;
   }
 
   .help-icon.active::before {
@@ -107,7 +107,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: var(--color-overlay);
     z-index: 999;
   }
 
@@ -118,18 +118,18 @@
 
 @media (max-width: 480px) {
   .friends-links {
-    gap: 12px;
-    margin-top: 20px;
+    gap: var(--gap-lg);
+    margin-top: var(--gap-lg);
   }
 
   .link-card {
-    padding: 12px;
+    padding: var(--gap-lg);
   }
 
   .link-card img {
     width: 50px;
     height: 50px;
-    margin-right: 12px;
+    margin-right: var(--gap-lg);
   }
 
   .link-info h3 {

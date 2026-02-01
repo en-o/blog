@@ -1,5 +1,5 @@
 .github-projects-container {
-  max-width: 1400px;
+  max-width: var(--container-max-width-lg);
   margin: 0 auto;
   padding: 0;
   min-height: calc(100vh - 250px);
@@ -12,17 +12,17 @@
   gap: 1rem;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  background: var(--color-white-70);
+  backdrop-filter: var(--blur-sm);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-primary-10);
   box-shadow: 0 4px 16px rgba(102, 126, 234, 0.06);
   position: relative;
 }
 
 .filter-label {
   font-weight: 600;
-  color: #475569;
+  color: var(--color-text-medium);
   white-space: nowrap;
   padding-top: 0.6rem;
   font-size: 0.95rem;
@@ -35,7 +35,7 @@
   flex: 1;
   max-height: 42px;
   overflow: hidden;
-  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition-expand);
   position: relative;
 }
 
@@ -45,28 +45,28 @@
 
 .toggle-tags-btn {
   padding: 0.6rem 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--gradient-primary);
+  color: var(--color-white);
   border: none;
-  border-radius: 20px;
+  border-radius: var(--radius-2xl);
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 500;
   white-space: nowrap;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+  box-shadow: var(--shadow-btn);
 }
 
 .toggle-tags-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-btn-hover);
 }
 
 .toggle-icon {
-  transition: transform 0.3s ease;
+  transition: var(--transition-transform);
 }
 
 .toggle-tags-btn.expanded .toggle-icon {
@@ -75,29 +75,29 @@
 
 .tag-filter {
   padding: 0.6rem 1.2rem;
-  border: 1px solid #e2e8f0;
-  background: white;
-  border-radius: 24px;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  border-radius: var(--radius-3xl);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--color-text-gray);
   font-weight: 500;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-xs);
 }
 
 .tag-filter:hover {
-  background: #f8fafc;
-  border-color: #667eea;
+  background: var(--color-light);
+  border-color: var(--color-primary);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 8px var(--color-primary-15);
 }
 
 .tag-filter.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--gradient-primary);
+  color: var(--color-white);
   border-color: transparent;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: var(--shadow-btn-hover);
 }
 
 /* 主内容区域：左右布局 */
@@ -116,20 +116,20 @@
 }
 
 .project-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(102, 126, 234, 0.15);
-  border-radius: 16px;
+  background: var(--color-white-80);
+  backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--color-primary-15);
+  border-radius: var(--radius-xl);
   padding: 2rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.08);
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-card);
 }
 
 .project-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.18);
-  border-color: rgba(102, 126, 234, 0.3);
-  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 12px 32px var(--color-primary-18);
+  border-color: var(--color-primary-30);
+  background: var(--color-white-95);
 }
 
 .project-card.hidden {
@@ -155,13 +155,13 @@
 }
 
 .project-name a {
-  color: #1e293b;
+  color: var(--color-text-primary);
   text-decoration: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .project-name a:hover {
@@ -174,7 +174,7 @@
   gap: 0.4rem;
   padding: 0.4rem 0.8rem;
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #92400e;
   font-size: 0.9rem;
   font-weight: 600;
@@ -187,8 +187,8 @@
 }
 
 .project-description {
-  color: #475569;
-  line-height: 1.7;
+  color: var(--color-text-medium);
+  line-height: var(--line-height);
   margin: 0 0 1.5rem 0;
   font-size: 1rem;
 }
@@ -209,7 +209,7 @@
 
 .meta-label {
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--color-text-gray);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -226,28 +226,28 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--color-text-gray);
   font-weight: 500;
   padding: 0.4rem 0.8rem;
-  background: rgba(241, 245, 249, 0.8);
-  border-radius: 8px;
+  background: var(--color-light-blue-80);
+  border-radius: var(--radius-base);
 }
 
 .language-dot {
   width: 12px;
   height: 12px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   display: inline-block;
   flex-shrink: 0;
 }
 
 .language-more {
   font-size: 0.85rem;
-  color: #94a3b8;
+  color: var(--color-text-light);
   font-weight: 500;
   padding: 0.4rem 0.8rem;
-  background: rgba(241, 245, 249, 0.5);
-  border-radius: 8px;
+  background: var(--color-light-blue-50);
+  border-radius: var(--radius-base);
   white-space: nowrap;
 }
 
@@ -262,11 +262,11 @@
   padding: 0.4rem 0.9rem;
   background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
   border: 1px solid #a5b4fc;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   font-size: 0.8rem;
   color: #4338ca;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   box-shadow: 0 1px 3px rgba(67, 56, 202, 0.1);
 }
 
@@ -280,12 +280,12 @@
 .timeline-sidebar {
   position: sticky;
   top: 100px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 16px;
+  background: linear-gradient(135deg, var(--color-white-95) 0%, var(--color-light-90) 100%);
+  backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--color-primary-20);
+  border-radius: var(--radius-xl);
   padding: 1.5rem 1rem;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 20px var(--color-primary-10);
   max-height: calc(100vh - 140px);
   overflow-y: auto;
 }
@@ -294,12 +294,12 @@
   margin: 0 0 1.25rem 0;
   font-size: 1rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid rgba(102, 126, 234, 0.15);
+  border-bottom: 2px solid var(--color-primary-15);
   text-align: center;
   letter-spacing: 0.3px;
 }
@@ -329,20 +329,20 @@
   cursor: pointer;
   padding: 0.5rem 0.75rem;
   margin: -0.5rem -0.75rem 0.75rem -0.75rem;
-  border-radius: 10px;
-  transition: all 0.3s ease;
+  border-radius: var(--radius-md);
+  transition: var(--transition-normal);
   background: rgba(102, 126, 234, 0.03);
   border-left: 3px solid transparent;
 }
 
 .timeline-year-header:hover {
-  background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
-  border-left-color: #667eea;
+  background: linear-gradient(90deg, var(--color-primary-10) 0%, var(--color-secondary-05) 100%);
+  border-left-color: var(--color-primary);
 }
 
 .year-toggle-icon {
-  transition: transform 0.3s ease;
-  color: #667eea;
+  transition: var(--transition-transform);
+  color: var(--color-primary);
   flex-shrink: 0;
   width: 14px;
   height: 14px;
@@ -355,7 +355,7 @@
 .timeline-year {
   font-size: 1.1rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -370,7 +370,7 @@
 
 .timeline-year-items {
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition-slow);
   max-height: 2000px;
   opacity: 1;
 }
@@ -389,7 +389,7 @@
   position: relative;
   padding-bottom: 1rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   padding-left: 0;
 }
 
@@ -402,7 +402,7 @@
 }
 
 .timeline-item:hover .timeline-content {
-  background: linear-gradient(90deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.06) 100%);
+  background: linear-gradient(90deg, var(--color-primary-12) 0%, rgba(118, 75, 162, 0.06) 100%);
 }
 
 .timeline-dot {
@@ -411,22 +411,22 @@
 
 .timeline-content {
   padding: 0.6rem 0.75rem;
-  border-radius: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-base);
+  transition: var(--transition-smooth);
   border-left: 3px solid transparent;
-  background: rgba(248, 250, 252, 0.3);
+  background: var(--color-light-50);
 }
 
 .timeline-item:hover .timeline-content {
-  border-left-color: #667eea;
+  border-left-color: var(--color-primary);
 }
 
 .timeline-project-name {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--color-text-primary);
   font-size: 0.875rem;
   margin-bottom: 0.3rem;
-  line-height: 1.3;
+  line-height: var(--line-height-tight);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -436,7 +436,7 @@
 
 .timeline-time {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--color-text-light);
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -444,7 +444,7 @@
 }
 
 .timeline-time::before {
-  content: '📅';
+  content: '';
   font-size: 0.7rem;
 }
 
@@ -454,20 +454,20 @@
 }
 
 .timeline-sidebar::-webkit-scrollbar-track {
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 10px;
+  background: var(--color-primary-05);
+  border-radius: var(--radius-md);
   margin: 8px 0;
 }
 
 .timeline-sidebar::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: var(--gradient-primary-vertical);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--color-white-30);
 }
 
 .timeline-sidebar::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
-  box-shadow: 0 0 6px rgba(102, 126, 234, 0.5);
+  background: var(--gradient-secondary-vertical);
+  box-shadow: 0 0 6px var(--color-primary-50);
 }
 
 /* 移动端悬浮时间线按钮 */
@@ -478,13 +478,13 @@
   bottom: 80px;
   width: 56px;
   height: 56px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   border: none;
-  border-radius: 50%;
-  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 20px var(--color-primary-40);
   cursor: pointer;
-  z-index: 1000;
-  transition: all 0.3s ease;
+  z-index: var(--z-floating);
+  transition: var(--transition-normal);
   padding: 0;
   align-items: center;
   justify-content: center;
@@ -492,7 +492,7 @@
 
 .mobile-timeline-toggle:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+  box-shadow: var(--shadow-focus);
 }
 
 .mobile-timeline-toggle:active {
@@ -512,11 +512,11 @@
   left: 0;
   width: 100%;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 9998;
+  background: var(--color-overlay);
+  z-index: var(--z-overlay);
   opacity: 0;
   visibility: hidden;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .mobile-timeline-overlay.show {
@@ -531,11 +531,11 @@
   left: 0;
   width: 100%;
   max-height: 70vh;
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
+  background: var(--color-white-98);
+  backdrop-filter: var(--blur-lg);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  box-shadow: var(--shadow-top);
+  z-index: var(--z-modal);
   transition: bottom 0.3s ease;
   overflow: hidden;
   display: flex;
@@ -551,15 +551,15 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 2px solid rgba(102, 126, 234, 0.15);
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-bottom: 2px solid var(--color-primary-15);
+  background: var(--gradient-primary-light);
 }
 
 .mobile-bottom-timeline-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -568,20 +568,20 @@
 .mobile-bottom-timeline-close {
   width: 32px;
   height: 32px;
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--color-primary-10);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-base);
   font-size: 24px;
-  color: #667eea;
+  color: var(--color-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .mobile-bottom-timeline-close:hover {
-  background: rgba(102, 126, 234, 0.2);
+  background: var(--color-primary-20);
   transform: scale(1.1);
 }
 
@@ -593,26 +593,6 @@
 }
 
 /* 响应式设计 */
-@media (max-width: 1024px) {
-  .main-content {
-    grid-template-columns: 1fr 240px;
-    gap: 1.5rem;
-  }
-
-  .timeline-sidebar {
-    padding: 1.25rem 0.875rem;
-  }
-
-  .filter-section {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-label {
-    padding-top: 0;
-  }
-}
-
 @media (max-width: 768px) {
   /* 显示移动端悬浮按钮 */
   .mobile-timeline-toggle {
@@ -625,6 +605,7 @@
 
   .main-content {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   /* 隐藏桌面端时间线 */
@@ -642,6 +623,12 @@
 
   .filter-section {
     padding: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-label {
+    padding-top: 0;
   }
 
   .filter-tags-wrapper {
@@ -651,6 +638,10 @@
   .tag-filter {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
+  }
+
+  .timeline-sidebar {
+    padding: 1.25rem 0.875rem;
   }
 }
 

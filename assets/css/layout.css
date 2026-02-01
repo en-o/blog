@@ -4,15 +4,15 @@
   top: 0;
   left: 0;
   right: 0;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  z-index: 1000;
+  background: var(--color-white);
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-header);
 }
 
 .main-nav {
-  max-width: 1000px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--container-padding);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -22,41 +22,41 @@
 .logo {
   font-size: 24px;
   font-weight: bold;
-  color: #0366d6;
+  color: var(--color-link);
   text-decoration: none;
 }
 
 .nav-menu {
   display: flex;
   list-style: none;
-  gap: 30px;
+  gap: var(--gap-xl);
 }
 
 .nav-menu a {
-  color: #333;
+  color: var(--color-text-nav);
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.3s;
+  transition: var(--transition-color);
 }
 
 .nav-menu a:hover {
-  color: #0366d6;
+  color: var(--color-link);
 }
 
 /* 页脚样式 */
 .site-footer {
-  background: white;
+  background: var(--color-white);
   margin-top: 60px;
   padding: 30px 0;
-  border-top: 1px solid #e1e4e8;
+  border-top: 1px solid var(--color-border-light);
 }
 
 .footer-content {
-  max-width: 1000px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--container-padding);
   text-align: center;
-  color: #666;
+  color: var(--color-text-muted);
 }
 
 .footer-content p {
@@ -64,7 +64,7 @@
 }
 
 .footer-content a {
-  color: #0366d6;
+  color: var(--color-link);
   text-decoration: none;
 }
 
@@ -100,13 +100,13 @@
   }
 
   .nav-menu {
-    gap: 20px;
+    gap: var(--gap-lg);
     font-size: 14px;
   }
 }
 
 /* 移动端优化 - 手机 */
-@media (max-width: 500px) {
+@media (max-width: 480px) {
   .github-corner:hover .octo-arm {
     animation: none;
   }
@@ -114,9 +114,7 @@
   .github-corner .octo-arm {
     animation: octocat-wave 560ms ease-in-out;
   }
-}
 
-@media (max-width: 480px) {
   .main-nav {
     padding: 0 60px 0 10px;
     height: 50px;
@@ -127,7 +125,7 @@
   }
 
   .nav-menu {
-    gap: 8px;
+    gap: var(--gap-sm);
     font-size: 12px;
   }
 
@@ -141,7 +139,7 @@
   }
 
   .footer-content {
-    padding: 0 15px;
+    padding: 0 var(--container-padding-tablet);
     font-size: 13px;
   }
 

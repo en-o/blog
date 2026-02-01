@@ -15,7 +15,9 @@
       "Read(///**)",
       "Bash(awk:*)",
       "WebSearch",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
